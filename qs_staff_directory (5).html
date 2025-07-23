@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickStart Nova Scotia Staff Directory</title>
+    <style>
+        @media print {
+            body { margin: 0; }
+            .page-break { page-break-before: always; }
+            .summary-stats { display: none !important; }
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 20px;
+        }
+        
+        .header h1 {
+            color: #007bff;
+            font-size: 2.2em;
+            margin: 0;
+            font-weight: bold;
+        }
+        
+        .header h2 {
+            color: #6c757d;
+            font-size: 1.2em;
+            margin: 10px 0;
+            font-weight: normal;
+        }
+        
+        .date {
+            color: #6c757d;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+        
+        .zone-section {
+            margin-bottom: 40px;
+        }
+        
+        .zone-header {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.3em;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .central-zone { background: linear-gradient(135deg, #e83e8c, #d91a72); }
+        .eastern-zone { background: linear-gradient(135deg, #17a2b8, #138496); }
+        .western-zone { background: linear-gradient(135deg, #28a745, #1e7e34); }
+        .northern-zone { background: linear-gradient(135deg, #fd7e14, #e55100); }
+        
+        .staff-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .staff-card {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .staff-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .staff-name {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #343a40;
+            margin-bottom: 5px;
+        }
+        
+        .staff-position {
+            color: #007bff;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+        
+        .staff-location {
+            color: #6c757d;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+        }
+        
+        .contact-info {
+            font-size: 0.9em;
+        }
+        
+        .contact-info div {
+            margin-bottom: 3px;
+        }
+        
+        .phone {
+            color: #28a745;
+            font-weight: 500;
+        }
+        
+        .email {
+            color: #007bff;
+            word-break: break-word;
+        }
+        
+        .email a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        
+        .email a:hover {
+            text-decoration: underline;
+        }
+        
+        .personal-note {
+            color: #dc3545;
+            font-size: 0.8em;
+            font-style: italic;
+        }
+        
+        .leave-note {
+            color: #ffc107;
+            font-size: 0.8em;
+            font-style: italic;
+            background: #fff3cd;
+            padding: 3px 6px;
+            border-radius: 3px;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+        
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #007bff;
+        }
+        
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>QuickStart Nova Scotia</h1>
+            <h2>Staff Contact Directory</h2>
+            <div class="date">Updated: March 26, 2024</div>
+        </div>
+        
+        <div class="summary-stats">
+            <div class="stat-card">
+                <div class="stat-number">4</div>
+                <div class="stat-label">Service Zones</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">35+</div>
+                <div class="stat-label">Staff Members</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">11</div>
+                <div class="stat-label">Parent Coaches</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">6</div>
+                <div class="stat-label">Specialists</div>
+            </div>
+        </div>
+        
+        <!-- Central Zone -->
+        <div class="zone-section">
+            <div class="zone-header central-zone">Central Zone</div>
+            <div class="staff-grid">
+                <div class="staff-card">
+                    <div class="staff-name">Jamie-Lynn Black</div>
+                    <div class="staff-position">Director</div>
+                    <div class="staff-location">Central</div>
+                    <div class="contact-info">
+                        <div class="email"><a href="mailto:jblack@autismns.ca">jblack@autismns.ca</a></div>
+                        <div class="personal-note">(Personal)</div>
+                    </div>
+                </div>
+                
+                <div class="staff-card">
+                    <div class="staff-name">Connor Bray-Stone</div>
+                    <div class="staff-position">Manager</div>
+                    <div class="staff-location">Central</div>
+                    <div class="contact-info">
+                        <div class="email"><a href="mailto:Cbraystone@autismns.ca">Cbraystone@autismns.ca</a></div>
+                        <div class="personal-note">(Personal)</div>
+                    </div>
+                </div>
+                
+                <div class="staff-card">
+                    <div class="staff-name">Megan MacDougall</div>
+                    <div class="staff-position">Supervisor</div>
+                    <div class="staff-location">Central</div>
+                    <div class="contact-info">
+                        <div class="phone">782-414-7790</div>
+                        <div class="email"><a href="mailto:Mmacdougall@autismns.ca">Mmacdougall@autismns.ca</a></div>
+                        <div class="personal-note">(Personal)</div>
+                    </div>
+                </div>
+                
+                <div class="staff-card">
+                    <div class="staff-name">Jessica McKee-Mitchell</div>
+                    <div class="staff-position">Supervisor</div>
+                    <div class="staff-location">Central & Western</div>
+                    <div class="contact-info">
+                        <div class="phone">782-414-2712</div>
+                        <div class="email"><a href="mailto:jmckeemitchell@autismns.ca">jmckeemitchell@autismns.ca</a></div>
+                    </div>
+                </div>
+                
+                <div class="staff-card">
+                    <div class="staff-name">Haley Lundy</div>
+                    <div class="staff-position">ESDM Supervisor</div>
+                    <div class="staff-location">Central & Eastern</div>
+                    <div class="contact-info">
+                        <div class="phone">782-414-6547</div>
+                        <div class="email"><a href="mailto:Hlundy@autismns.ca">Hlundy@autismns.ca</a></div>
+                    </div>
+                </div>
+                
+                <div class="staff-card">
+                    <div class="staff-name">Valeria Diaz</div>
+                    <div class="staff-position">Administrative Assistant</div>
+                    <div class="staff-location">Central</div>
+                    <div class="contact-info">
+                        <div class="phone">902-593-1015 ext. 3061</div>
+                        <div class="email"><a href="mailto:vdiaz@autismns.ca">vdiaz@autismns.ca</a></div>
+                    </div>
+                </div>
+                
+                <div class="staff-card">
+                    <div class="staff-name">Yuna Jeon</div>
+                    <div class="staff-position">Administrative Assistant</div>
+                    <div class="staff-location">Central</div>
+                    <div class="contact-info">
+                        <div class="phone">902-706-7408</div>
+                        <div class="email"><a href="mailto:Yjeon@autismns.ca">Yjeon@autismns.ca</a></div>
+                    </div>
+                </div>
+                
+                <div class="staff-card">
+                    <div class="staff-name">Robyn Follett</div>
+                    <div class="staff-position">ESDM Interventionist</div>
+                    <div class="staff-location">Central</div>
+                    <div class="contact-info">
+                        <div class="email"><a href="mailto:rfollett@autismns.ca">rfollett@autismns.ca</a></div>
+                        <div class="personal-note">(Personal)</div>
+                    </div>
+                </div>
+                
+                <div class="staff-card">
+                    <div class="staff-name">Samantha Fitzgerald</div>
+                    <div class="staff-position">ESDM Interventionist</div>
+                    <div class="staff-location">Central</div>
+                    <div class="contact-info">
+                        <div class="phone">902-706-7415</div>
+                        <div class="email"><a href="mailto:Sfitzgerald@autismns.ca">Sfitzgerald@autismns.ca</a></div>
+                        <div class="personal-note">(Personal)</div>
+                    </div>
+                </div>
+                
+                <div class="staff-card">
+                    <div class="staff-name">Sarah Leddin</div>
+                    <div class="staff-position">Parent Coach</div>
+                    <div class="staff-location">Central</div>
+                    <div class="contact-info">
+                        <div class="phone">P</div>
+                        <div class="email"><a href="mailto:Sleddin@autismns.ca">Sleddin@autismns.ca</a></div>
+                        <div class="leave-note">(Personal Leave)</div>
+                    </div>
+                </div>
+                
+                <div class="staff-card">
+                    <div class="staff-name">Danielle Hyson</div>
+                    <div class="staff-position">Parent Coach</div>
+                    <div class="staff-location">Central</div>
+                    <div class="contact-info">
+                        <div class="phone">782-321-9868</div>
+                        <div class="email"><a href="mailto:dhyson@autismns.ca">dhyson@autismns.ca</a></div>
+                    </div>
+                </div>
+                
+                <div class="staff-card">
+                    <div class="staff-name">Kelsey Cormier</div>
+                    <div class="staff-position">Parent Coach</div>
+                    <div class="staff-location">Central</div>
+                    <div class="contact-info">
+                        <div class="phone">782-321-8226</div>
+                        <div class="email"><a href="mailto:kcormier@autismns.ca">kcormier@autismns.ca</a></div>
+                    </div>
+                </div>
+                
+                <div class="staff-card">
+                    <div class="staff-name">Allyson MacLean</div>
+                    <div class="staff-position">Parent Coach</div>
+                    <div class="staff-location">Central</div>
+                    <div class="contact-info">
+                        <div class="phone">782-414-4814</div>
+                        <div class="email"><a href="mailto:amaclean@autismns.ca">amaclean@autismns.ca</a></div>
+                    </div>
+                </div>
+                
+                <div class="staff-card">
+                    <div class="staff-name">Lindsay Hines</div>
+                    <div class="staff-position">Parent Coach</div>
+                    <div class="staff-location">Central</div>
+                    <div class="contact-info">
+                        <div class="phone">782-321-7712</div>
+                        <div class="email"><a href="mailto:Lhines@autismns.ca">Lhines@autismns.ca</a></div>
+                    </div>
+                </div>
+                
+                <div class="staff-card">
+                    <div class="staff-name">Cheyenne Hall</div>
+                    <div class="staff-position">Parent Coach</div>
+                    <div class="staff-location">Central</div>
+                    <div class="contact-info">
+                        <div class="phone">782-414-4754</div>
+                        <div class="email"><a href="mailto:chall@autismns.ca">chall@autismns.ca</a></div>
+                    </div>
+                </div>
+                
+                <div class="staff-card">
+                    <div class="staff-name">Courtney Appleby</div>
+                    <div class="staff-position">Parent Coach</div>
+                    <div class="staff-location">Central</div>
+                    <div class="contact-info">
+                        <div class="phone">902-414-4651</div>
+                        <div class="email"><a href="mailto:Cappleby@autismns.ca">Cappleby@autismns.ca</a></div>
+                        <div class="leave-note">(Personal Leave)</div>
+                    </div>
+                </div>
+                
+                <div class="staff-card">
+                    <div class="staff-name">Hannah Page</div>
+                    <div class="staff-position">Parent Coach</div>
+                    <div class="staff-location">Central</div>
+                    <div class="contact-info">
+                        <div class="phone">782-414-6038</div>
+                        <div class="email"><a href="mailto:Hpage@autismns.ca">Hpage@autismns.ca</a></div>
+                    </div>
+                </div>
+                
+                <div class="staff-card">
+                    <div class="staff-name">Chelsey Taylor</div>
+                    <div class="staff-position">Parent Coach</div>
+                    <div class="staff-location">Central & Western</div>
+                    <div class="contact-info">
+                        <div class="phone">782-321-2731</div>
+                        <div class="email"><a href="mailto:Ctaylor@autismns.ca">Ctaylor@autismns.ca</a></div>
+                    </div>
+                </div>
+                
+                <div class="staff-card">
+                    <div class="staff-name">Jennifer Archibald</div>
+                    <div class="staff-position">Occupational Therapist</div>
+                    <div class="staff-location">Central</div>
+                    <div class="contact-info">
+                        <div class="phone">902-220-2572</div>
+                        <div class="email"><a href="mailto:jarchibald@autismns.ca">jarchibald@autismns.ca</a></div>
+                    </div>
+                </div>
+                
+                <div class="staff-card">
+                    <div class="staff-name">Sarah Boyne</div>
+                    <div class="staff-position">Speech Language Pathologist</div>
+                    <div class="staff-location">Central</div>
+                    <div class="contact-info">
+                        <div class="phone">902-430-4130</div>
+                        <div class="email"><a href="mailto:Sboyne@autismns.ca">Sboyne@autismns.ca</a></div>
+                    </div>
+                </div>
+                
+                <div class="staff-card">
+                    <div class="staff-name">Lorelle Sinclair</div>
+                    <div class="staff-position">Speech Language Pathologist</div>
+                    <div class="staff-location">Central</div>
+                    <div class="contact-info">
+                        <div class="phone">902-471-1166</div>
+                        <div class="email"><a href="mailto:lsinclair@autismns.ca">lsinclair@autismns.ca</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Eastern Zone -->
+        <div class="zone-section">
+            <div class="zone-header eastern-zone">Eastern Zone</div>
+            <div class="staff-grid">
+                <div class="staff-card">
+                    <div class="staff-name">Haley Lundy</div>
+                    <div class="staff-position">Supervisor</div>
+                    <div class="staff-location">Eastern & Central</div>
+                    <div class="contact-info">
+                        <div class="phone">782-414-6547</div>
+                        <div class="email"><a href="mailto:Hlundy@autismns.ca">Hlundy@autismns.ca</a></div>
+                    </div>
+                </div>
+                
+                <div class="staff-card">
+                    <div class="staff-name">Jodi Giovannini</div>
+                    <div class="staff-position">Supervisor</div>
+                    <div class="staff-location">Eastern & Northern</div>
+                    <div class="contact-info">
+                        <div class="phone">782-321-4851</div>
+                        <div class="email"><a href="mailto:jgiovannini@autismns.ca">jgiovannini@autismns.ca</a></div>
+                    </div>
+                </div>
+                
+                <div class="staff-card">
+                    <div class="staff-name">Nancy Penney</div>
+                    <div class="staff-position">ESDM Interventionist</div>
+                    <div class="staff-location">Eastern</div>
+                    <div class="contact-info">
+                        <div class="phone">902-706-7396</div>
+                        <div class="email"><a href="mailto:npenney@autismns.ca">npenney@autismns.ca</a></div>
+                    </div>
+                </div>
+                
+                <div class="staff-card">
+                    <div class="staff-name">Laura Chiasson</div>
+                    <div class="staff-position">Parent Coach</div>
+                    <div class="staff-location">Eastern</div>
+                    <div class="contact-info">
+                        <div class="phone">902-202-4177</div>
+                        <div class="email"><a href="mailto:lchiasson@autismns.ca">lchiasson@autismns.ca</a></div>
+                    </div>
+                </div>
+                
+                <div class="staff-card">
+                    <div class="staff-name">Vanessa Dundas</div>
+                    <div class="staff-position">Parent Coach</div>
+                    <div class="staff-location">Eastern</div>
+                    <div class="contact-info">
+                        <div class="phone">902-777-3104</div>
+                        <div class="email"><a href="mailto:Vdundas@autismns.ca">Vdundas@autismns.ca</a></div>
+                    </div>
+                </div>
+                
+                <div class="staff-card">
+                    <div class="staff-name">Brenna Pettersen</div>
+                    <div class="staff-position">Speech Language Pathologist</div>
+                    <div class="staff-location">Eastern</div>
+                    <div class="contact-info">
+                        <div class="phone">902-574-4275</div>
+                        <div class="email"><a href="mailto:Bpettersen@autismns.ca">Bpettersen@autismns.ca</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Western Zone -->
+        <div class="zone-section">
+            <div class="zone-header western-zone">Western Zone</div>
+            <div class="staff-grid">
+                <div class="staff-card">
+                    <div class="staff-name">Jessica McKee-Mitchell</div>
+                    <div class="staff-position">Supervisor</div>
+                    <div class="staff-location">Western & Central</div>
+                    <div class="contact-info">
+                        <div class="phone">782-414-2712</div>
+                        <div class="email"><a href="mailto:jmckeemitchell@autismns.ca">jmckeemitchell@autismns.ca</a></div>
+                    </div>
+                </div>
+                
+                <div class="staff-card">
+                    <div class="staff-name">Jennifer Clattenburg</div>
+                    <div class="staff-position">Parent Coach</div>
+                    <div class="staff-location">Western</div>
+                    <div class="contact-info">
+                        <div class="phone">902-414-6407</div>
+                        <div class="email"><a href="mailto:jclattenburg@autismns.ca">jclattenburg@autismns.ca</a></div>
+                    </div>
+                </div>
+                
+                <div class="staff-card">
+                    <div class="staff-name">Natalie Comeau</div>
+                    <div class="staff-position">Parent Coach</div>
+                    <div class="staff-location">Western</div>
+                    <div class="contact-info">
+                        <div class="phone">902-815-7443</div>
+                        <div class="email"><a href="mailto:ncomeau@autismns.ca">ncomeau@autismns.ca</a></div>
+                    </div>
+                </div>
+                
+                <div class="staff-card">
+                    <div class="staff-name">Katherine Gerber</div>
+                    <div class="staff-position">Parent Coach</div>
+                    <div class="staff-location">Western</div>
+                    <div class="contact-info">
+                        <div class="phone">902-385-3700</div>
+                        <div class="email"><a href="mailto:kgerber@autismns.ca">kgerber@autismns.ca</a></div>
+                    </div>
+                </div>
+                
+                <div class="staff-card">
+                    <div class="staff-name">Chelsey Taylor</div>
+                    <div class="staff-position">Parent Coach</div>
+                    <div class="staff-location">Western & Central</div>
+                    <div class="contact-info">
+                        <div class="phone">782-321-2731</div>
+                        <div class="email"><a href="mailto:Ctaylor@autismns.ca">Ctaylor@autismns.ca</a></div>
+                    </div>
+                </div>
+                
+                <div class="staff-card">
+                    <div class="staff-name">Kim Lake</div>
+                    <div class="staff-position">Occupational Therapist</div>
+                    <div class="staff-location">Western</div>
+                    <div class="contact-info">
+                        <div class="phone">902-514-0849</div>
+                        <div class="email"><a href="mailto:klake@autismns.ca">klake@autismns.ca</a></div>
+                    </div>
+                </div>
+                
+                <div class="staff-card">
+                    <div class="staff-name">Erin Woodbury</div>
+                    <div class="staff-position">Speech Language Pathologist</div>
+                    <div class="staff-location">Western</div>
+                    <div class="contact-info">
+                        <div class="phone">902-430-4136</div>
+                        <div class="email"><a href="mailto:ewoodbury@autismns.ca">ewoodbury@autismns.ca</a></div>
+                    </div>
+                </div>
+                
+                <div class="staff-card">
+                    <div class="staff-name">Elise Lynch</div>
+                    <div class="staff-position">Speech Language Pathologist</div>
+                    <div class="staff-location">Western</div>
+                    <div class="contact-info">
+                        <div class="phone">902-698-2689</div>
+                        <div class="email"><a href="mailto:Elynch@autismns.ca">Elynch@autismns.ca</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Northern Zone -->
+        <div class="zone-section">
+            <div class="zone-header northern-zone">Northern Zone</div>
+            <div class="staff-grid">
+                <div class="staff-card">
+                    <div class="staff-name">Jodi Giovannini</div>
+                    <div class="staff-position">Supervisor</div>
+                    <div class="staff-location">Northern & Eastern</div>
+                    <div class="contact-info">
+                        <div class="phone">782-321-4851</div>
+                        <div class="email"><a href="mailto:jgiovannini@autismns.ca">jgiovannini@autismns.ca</a></div>
+                    </div>
+                </div>
+                
+                <div class="staff-card">
+                    <div class="staff-name">Lindsay Hines</div>
+                    <div class="staff-position">Parent Coach</div>
+                    <div class="staff-location">Northern</div>
+                    <div class="contact-info">
+                        <div class="phone">782-321-7712</div>
+                        <div class="email"><a href="mailto:lhines@autismns.ca">lhines@autismns.ca</a></div>
+                    </div>
+                </div>
+                
+                <div class="staff-card">
+                    <div class="staff-name">Sierra Ring</div>
+                    <div class="staff-position">Parent Coach</div>
+                    <div class="staff-location">Northern</div>
+                    <div class="contact-info">
+                        <div class="phone">902-814-2522</div>
+                        <div class="email"><a href="mailto:Sring@autismns.ca">Sring@autismns.ca</a></div>
+                    </div>
+                </div>
+                
+                <div class="staff-card">
+                    <div class="staff-name">Maggie Bergman</div>
+                    <div class="staff-position">Parent Coach</div>
+                    <div class="staff-location">Northern</div>
+                    <div class="contact-info">
+                        <div class="email"><a href="mailto:mbergman@autismns.ca">mbergman@autismns.ca</a></div>
+                    </div>
+                </div>
+                
+                <div class="staff-card">
+                    <div class="staff-name">Laura Kindervater</div>
+                    <div class="staff-position">Speech Language Pathologist</div>
+                    <div class="staff-location">Northern</div>
+                    <div class="contact-info">
+                        <div class="phone">902-956-0617</div>
+                        <div class="email"><a href="mailto:Lkindervater@autismns.ca">Lkindervater@autismns.ca</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p><strong>QuickStart Nova Scotia</strong> - Early Intervention Program</p>
+            <p>For general inquiries: <a href="mailto:quickstart@autismns.ca">quickstart@autismns.ca</a></p>
+            <p>Autism Nova Scotia | 5945 Spring Garden Road, Halifax, NS B3H 1Y4</p>
+            <p>Phone: 902-446-4995 | Toll Free: 1-877-544-4495</p>
+            <p style="margin-top: 15px; font-size: 0.8em; color: #999;">
+                This directory is for professional use only. Please respect staff privacy and use contact information appropriately.
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        // Print functionality
+        function printDirectory() {
+            window.print();
+        }
+        
+        // Add print button if needed
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.querySelector('.container');
+            const printButton = document.createElement('button');
+            printButton.textContent = 'Print Directory';
+            printButton.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; z-index: 1000;';
+            printButton.onclick = printDirectory;
+            document.body.appendChild(printButton);
+            
+            // Hide button when printing
+            window.addEventListener('beforeprint', function() {
+                printButton.style.display = 'none';
+            });
+            
+            window.addEventListener('afterprint', function() {
+                printButton.style.display = 'block';
+            });
+        });
+    </script>
+</body>
+</html>
