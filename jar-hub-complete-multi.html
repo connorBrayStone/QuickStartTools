@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JAR Tools Hub - Integration Bridge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .integration-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .info-box {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .info-box h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .routine-preview {
+            background: white;
+            border: 2px solid #e8f5e9;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .routine-preview:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-color: #667eea;
+        }
+
+        .routine-preview.selected {
+            border-color: #667eea;
+            background: #f0f7ff;
+        }
+
+        .routine-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .detail-item {
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .hre-status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            color: white;
+            margin-top: 10px;
+        }
+
+        .hre-status.green {
+            background: #4CAF50;
+        }
+
+        .hre-status.yellow {
+            background: #FFC107;
+        }
+
+        .hre-status.red {
+            background: #f44336;
+        }
+
+        .jar-status-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .jar-status-badge {
+            color: #4CAF50;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .jar-action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            margin-right: 5px;
+        }
+
+        .jar-action-btn.create {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .jar-action-btn.edit {
+            background: #667eea;
+            color: white;
+        }
+
+        .jar-action-btn.view {
+            background: #6c757d;
+            color: white;
+        }
+
+        .jar-action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-success {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .navigation-hint {
+            background: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .tool-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .tool-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .tool-card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .tool-card p {
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .status-complete {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .workflow-diagram {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .workflow-step {
+            display: inline-block;
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 5px;
+            margin: 5px;
+            position: relative;
+        }
+
+        .workflow-arrow {
+            display: inline-block;
+            margin: 0 10px;
+            color: #667eea;
+            font-size: 1.5em;
+        }
+
+        .routines-list {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .refresh-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #667eea;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5em;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+
+        .refresh-btn:hover {
+            transform: rotate(180deg);
+        }
+
+        @media (max-width: 768px) {
+            .routine-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .workflow-step {
+                display: block;
+                margin: 10px auto;
+            }
+
+            .workflow-arrow {
+                display: block;
+                transform: rotate(90deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="integration-container">
+        <div class="header">
+            <h1>JAR Framework Hub</h1>
+            <p>Central Management for Your JAR Tools</p>
+        </div>
+
+        <div class="content">
+            <!-- Current Status Section -->
+            <div class="info-box">
+                <h2>📊 Your Current Progress</h2>
+                <div id="currentStatus">
+                    <p>Checking for saved data...</p>
+                </div>
+            </div>
+
+            <!-- Workflow Diagram -->
+            <div class="workflow-diagram">
+                <div class="workflow-step">1. Map Routines</div>
+                <span class="workflow-arrow">→</span>
+                <div class="workflow-step">2. Select Priority Routine</div>
+                <span class="workflow-arrow">→</span>
+                <div class="workflow-step">3. Create JAR Sheet</div>
+            </div>
+
+            <!-- Routines Overview Section -->
+            <div class="info-box" id="routinesOverview" style="display: none;">
+                <h2>🗺️ Your Mapped Routines</h2>
+                <div class="routines-list" id="routinesList">
+                    <!-- Routines will be populated here -->
+                </div>
+            </div>
+
+            <!-- Tools Navigation -->
+            <div class="info-box">
+                <h2>🛠️ Available Tools</h2>
+                <div class="tools-grid">
+                    <div class="tool-card">
+                        <h3>📝 Routine Mapping Tool</h3>
+                        <p>Identify and assess your daily routines with the person you support</p>
+                        <div id="mappingStatus">
+                            <span class="status-indicator status-pending">Not started</span>
+                        </div>
+                        <button class="btn btn-primary" onclick="openMappingTool()">Open Mapping Tool</button>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <h3>📋 JAR Practice Sheet</h3>
+                        <p>Develop detailed JAR framework plans for selected routines</p>
+                        <div id="jarStatus">
+                            <span class="status-indicator status-pending">No sheets created</span>
+                        </div>
+                        <button class="btn btn-primary" onclick="openJARSheet()">Open JAR Sheet</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Help Section -->
+            <div class="navigation-hint">
+                <strong>💡 How to use these tools:</strong>
+                <ol style="margin-top: 10px; margin-left: 20px;">
+                    <li>Start with the <strong>Routine Mapping Tool</strong> to identify your daily routines</li>
+                    <li>Assess which routines already have HRE (Happy, Relaxed, Engaged)</li>
+                    <li>Return here and select a high-priority routine (one with good HRE)</li>
+                    <li>Use the <strong>JAR Practice Sheet</strong> to develop that routine further</li>
+                    <li>Come back anytime to switch between routines or track your progress</li>
+                </ol>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="btn btn-success" onclick="exportAllData()">📥 Export All Data</button>
+                <button class="btn btn-secondary" onclick="clearAllData()">🗑️ Clear All Data</button>
+            </div>
+        </div>
+    </div>
+
+    <button class="refresh-btn" onclick="checkSavedData()" title="Refresh Data">↻</button>
+
+    <script>
+        let selectedRoutineId = null;
+        let routinesData = [];
+
+        // Check and display saved data
+        function checkSavedData() {
+            const statusDiv = document.getElementById('currentStatus');
+            let statusHTML = '';
+
+            // Check for routine mapping data
+            const mappingData = localStorage.getItem('routineMappingData');
+            if (mappingData) {
+                try {
+                    const data = JSON.parse(mappingData);
+                    routinesData = data.routines || [];
+                    const routineCount = routinesData.length;
+                    const hreAssessed = routinesData.filter(r => r.hre).length;
+                    const hreReady = routinesData.filter(r => r.hre === 'yes').length;
+                    
+                    statusHTML += `
+                        <div class="detail-item">
+                            <div class="detail-label">Routine Mapping</div>
+                            <div>✓ ${routineCount} routines identified</div>
+                            <div>✓ ${hreAssessed} assessed for HRE</div>
+                            <div>✓ ${hreReady} ready for JAR development</div>
+                        </div>
+                    `;
+
+                    document.getElementById('mappingStatus').innerHTML = 
+                        `<span class="status-indicator status-complete">${routineCount} routines mapped</span>`;
+                    
+                    // Display routines
+                    displayRoutines(routinesData);
+                    
+                } catch (e) {
+                    console.error('Error parsing mapping data:', e);
+                }
+            } else {
+                statusHTML += `
+                    <div class="detail-item">
+                        <div class="detail-label">Routine Mapping</div>
+                        <div>No routines mapped yet</div>
+                        <div style="margin-top: 10px;">
+                            <button class="btn btn-primary" onclick="openMappingTool()">Start Mapping</button>
+                        </div>
+                    </div>
+                `;
+
+                document.getElementById('mappingStatus').innerHTML = 
+                    `<span class="status-indicator status-pending">Not started</span>`;
+                
+                document.getElementById('routinesOverview').style.display = 'none';
+            }
+
+            // Update JAR status with collection
+            updateJARStatus();
+
+            if (statusHTML === '') {
+                statusHTML = '<div class="no-data">No saved data found. Start by opening the Routine Mapping Tool.</div>';
+            }
+
+            statusDiv.innerHTML = statusHTML;
+        }
+
+        // Display routines with JAR status
+        function displayRoutines(routines) {
+            if (!routines || routines.length === 0) return;
+
+            const routinesOverview = document.getElementById('routinesOverview');
+            const routinesList = document.getElementById('routinesList');
+            
+            // Get JAR sheets collection
+            let jarSheets = {};
+            try {
+                const collection = localStorage.getItem('jarPracticeSheets_collection');
+                if (collection) {
+                    jarSheets = JSON.parse(collection);
+                }
+            } catch (e) {
+                console.error('Error loading JAR sheets:', e);
+            }
+            
+            routinesOverview.style.display = 'block';
+            
+            // Group routines by HRE status
+            const highPriority = routines.filter(r => r.hre === 'yes');
+            const mediumPriority = routines.filter(r => r.hre === 'sometimes');
+            const lowPriority = routines.filter(r => r.hre === 'no');
+            
+            let html = '';
+            
+            if (highPriority.length > 0) {
+                html += '<h4 style="color: #4CAF50; margin-bottom: 10px;">🎯 Ready for JAR (Usually HRE)</h4>';
+                highPriority.forEach(routine => {
+                    html += createRoutineCardWithJAR(routine, jarSheets[routine.id]);
+                });
+            }
+            
+            if (mediumPriority.length > 0) {
+                html += '<h4 style="color: #FFC107; margin-top: 20px; margin-bottom: 10px;">⚡ Build Consistency (Sometimes HRE)</h4>';
+                mediumPriority.forEach(routine => {
+                    html += createRoutineCardWithJAR(routine, jarSheets[routine.id]);
+                });
+            }
+            
+            if (lowPriority.length > 0) {
+                html += '<h4 style="color: #f44336; margin-top: 20px; margin-bottom: 10px;">🔧 Build Foundation (Not yet HRE)</h4>';
+                lowPriority.forEach(routine => {
+                    html += createRoutineCardWithJAR(routine, jarSheets[routine.id]);
+                });
+            }
+            
+            routinesList.innerHTML = html;
+            
+            // Add event handlers for JAR action buttons
+            document.querySelectorAll('.jar-action-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const routineId = this.dataset.routineId;
+                    const action = this.dataset.action;
+                    handleJARAction(routineId, action);
+                });
+            });
+        }
+
+        // Create routine card with JAR status
+        function createRoutineCardWithJAR(routine, jarSheet) {
+            let hreClass = '';
+            let hreText = '';
+            
+            if (routine.hre === 'yes') {
+                hreClass = 'green';
+                hreText = 'Usually HRE';
+            } else if (routine.hre === 'sometimes') {
+                hreClass = 'yellow';
+                hreText = 'Sometimes HRE';
+            } else {
+                hreClass = 'red';
+                hreText = 'Not yet HRE';
+            }
+            
+            // JAR sheet status
+            let jarStatus = '';
+            if (jarSheet) {
+                const lastMod = jarSheet.lastModified ? new Date(jarSheet.lastModified).toLocaleDateString() : 'Unknown date';
+                jarStatus = `
+                    <div class="jar-status-section">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div class="jar-status-badge">
+                                ✅ JAR Sheet Created
+                                <span style="font-size: 0.85em; color: #666; font-weight: normal;">
+                                    (${lastMod})
+                                </span>
+                            </div>
+                            <div>
+                                <button class="jar-action-btn edit" 
+                                        data-routine-id="${routine.id}" 
+                                        data-action="edit">
+                                    Edit JAR
+                                </button>
+                                <button class="jar-action-btn view" 
+                                        data-routine-id="${routine.id}" 
+                                        data-action="view">
+                                    Export
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (routine.hre === 'yes' || routine.hre === 'sometimes') {
+                jarStatus = `
+                    <div class="jar-status-section">
+                        <button class="jar-action-btn create" 
+                                data-routine-id="${routine.id}" 
+                                data-action="create">
+                            + Create JAR Sheet
+                        </button>
+                    </div>
+                `;
+            }
+            
+            return `
+                <div class="routine-preview" data-routine-id="${routine.id}">
+                    <h3>${routine.name || 'Unnamed Routine'}</h3>
+                    <p>${routine.description || 'No description provided'}</p>
+                    <div class="routine-details">
+                        <div class="detail-item">
+                            <div class="detail-label">When</div>
+                            <div>${routine.time || 'Not specified'}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Frequency</div>
+                            <div>${routine.frequency || 'Not specified'}</div>
+                        </div>
+                    </div>
+                    <div class="hre-status ${hreClass}">${hreText}</div>
+                    ${jarStatus}
+                </div>
+            `;
+        }
+
+        // Handle JAR actions
+        function handleJARAction(routineId, action) {
+            const routine = routinesData.find(r => r.id == routineId);
+            if (!routine) {
+                alert('Routine not found');
+                return;
+            }
+            
+            // Save selected routine
+            localStorage.setItem('selectedRoutineForJAR', JSON.stringify(routine));
+            
+            if (action === 'create') {
+                // Prefill for new JAR sheet
+                const jarPrefill = {
+                    activityName: routine.name,
+                    setupLooks: routine.description || ''
+                };
+                localStorage.setItem('jarPracticeToolData_prefill', JSON.stringify(jarPrefill));
+                openJARSheet();
+                
+            } else if (action === 'edit') {
+                // Just set the selected routine, the JAR sheet will load existing data
+                openJARSheet();
+                
+            } else if (action === 'view') {
+                // Export the specific JAR sheet
+                exportSpecificJAR(routineId);
+            }
+        }
+
+        // Export a specific JAR sheet
+        function exportSpecificJAR(routineId) {
+            try {
+                const collection = localStorage.getItem('jarPracticeSheets_collection');
+                if (!collection) {
+                    alert('No JAR sheet found for this routine');
+                    return;
+                }
+                
+                const sheets = JSON.parse(collection);
+                const jarData = sheets[routineId];
+                
+                if (!jarData) {
+                    alert('No JAR sheet found for this routine');
+                    return;
+                }
+                
+                let text = `JAR PRACTICE SHEET\n`;
+                text += `==================\n\n`;
+                text += `Activity: ${jarData.activityName}\n`;
+                text += `Last Updated: ${jarData.lastModified ? new Date(jarData.lastModified).toLocaleString() : 'Unknown'}\n\n`;
+                
+                text += `SETUP\n-----\n${jarData.setupLooks || 'Not filled'}\n\n`;
+                
+                if (jarData.theme) {
+                    text += `INITIAL THEME\n------------\n`;
+                    text += `Description: ${jarData.theme.description || 'Not filled'}\n`;
+                    text += `Your Role: ${jarData.theme.adultRole || 'Not filled'}\n`;
+                    text += `Child's Role: ${jarData.theme.childRole || 'Not filled'}\n`;
+                    text += `Establishment: ${jarData.theme.level || 'Not set'}\n`;
+                    text += `Teaching: ${jarData.theme.teaching || 'Not filled'}\n\n`;
+                }
+                
+                if (jarData.elaborate && jarData.elaborate.length > 0) {
+                    jarData.elaborate.forEach((step, i) => {
+                        text += `ELABORATE STEP ${i + 1}\n`;
+                        text += `---------------\n`;
+                        text += `${step.description || 'Not filled'}\n`;
+                        text += `Your Role: ${step.adultRole || 'Not filled'}\n`;
+                        text += `Child's Role: ${step.childRole || 'Not filled'}\n`;
+                        text += `Teaching: ${step.teaching || 'Not filled'}\n\n`;
+                    });
+                }
+                
+                if (jarData.closing) {
+                    text += `CLOSING\n-------\n`;
+                    text += `${jarData.closing.description || 'Not filled'}\n`;
+                    text += `Teaching: ${jarData.closing.teaching || 'Not filled'}\n`;
+                }
+                
+                // Download file
+                const blob = new Blob([text], { type: 'text/plain' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `JAR_${jarData.activityName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.txt`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                
+            } catch (e) {
+                alert('Error exporting JAR sheet: ' + e.message);
+            }
+        }
+
+        // Update JAR status display
+        function updateJARStatus() {
+            const collection = localStorage.getItem('jarPracticeSheets_collection');
+            const jarStatusDiv = document.getElementById('jarStatus');
+            
+            if (collection) {
+                try {
+                    const sheets = JSON.parse(collection);
+                    const sheetCount = Object.keys(sheets).length;
+                    
+                    if (sheetCount > 0) {
+                        jarStatusDiv.innerHTML = `
+                            <span class="status-indicator status-complete">
+                                ${sheetCount} JAR sheet${sheetCount > 1 ? 's' : ''} created
+                            </span>
+                        `;
+                    } else {
+                        jarStatusDiv.innerHTML = `
+                            <span class="status-indicator status-pending">No sheets created</span>
+                        `;
+                    }
+                } catch (e) {
+                    console.error('Error parsing JAR collection:', e);
+                }
+            } else {
+                // Check for single JAR sheet (backward compatibility)
+                const singleJar = localStorage.getItem('jarPracticeToolData');
+                if (singleJar) {
+                    try {
+                        const data = JSON.parse(singleJar);
+                        jarStatusDiv.innerHTML = `
+                            <span class="status-indicator status-complete">
+                                1 JAR sheet (${data.activityName || 'Unnamed'})
+                            </span>
+                        `;
+                    } catch (e) {
+                        console.error('Error parsing single JAR:', e);
+                    }
+                } else {
+                    jarStatusDiv.innerHTML = `
+                        <span class="status-indicator status-pending">No sheets created</span>
+                    `;
+                }
+            }
+        }
+
+        // Open tools
+        function openMappingTool() {
+            window.open('routine-mapping-tool.html', '_blank');
+        }
+
+        function openJARSheet() {
+            window.open('jar-practice-sheet-fixed.html', '_blank');
+        }
+
+        // Export all data
+        function exportAllData() {
+            let exportText = 'JAR FRAMEWORK TOOLS - COMPLETE DATA EXPORT\n';
+            exportText += '==========================================\n\n';
+            exportText += `Export Date: ${new Date().toLocaleString()}\n\n`;
+
+            // Export mapping data
+            const mappingData = localStorage.getItem('routineMappingData');
+            if (mappingData) {
+                try {
+                    const data = JSON.parse(mappingData);
+                    exportText += 'ROUTINE MAPPING DATA\n';
+                    exportText += '-------------------\n';
+                    exportText += `Role: ${data.role || 'Not specified'}\n`;
+                    exportText += `Setting: ${data.setting || 'Not specified'}\n`;
+                    exportText += `Child/Person: ${data.childName || 'Not specified'}\n\n`;
+
+                    if (data.routines && data.routines.length > 0) {
+                        exportText += 'Routines:\n';
+                        data.routines.forEach(r => {
+                            exportText += `\n• ${r.name || 'Unnamed'}\n`;
+                            exportText += `  Description: ${r.description || 'None'}\n`;
+                            exportText += `  Time: ${r.time || 'Not set'} | Frequency: ${r.frequency || 'Not set'}\n`;
+                            exportText += `  Flexibility: ${r.flexibility || 'Not set'} | Group Size: ${r.groupSize || 'Not set'}\n`;
+                            exportText += `  HRE Status: ${r.hre || 'Not assessed'}\n`;
+                        });
+                    }
+                } catch (e) {
+                    exportText += 'Error reading mapping data\n\n';
+                }
+            }
+
+            // Export JAR sheets collection
+            const jarCollection = localStorage.getItem('jarPracticeSheets_collection');
+            if (jarCollection) {
+                try {
+                    const sheets = JSON.parse(jarCollection);
+                    exportText += '\n\nJAR PRACTICE SHEETS\n';
+                    exportText += '-------------------\n';
+                    
+                    Object.entries(sheets).forEach(([routineId, sheet]) => {
+                        exportText += `\nActivity: ${sheet.activityName || 'Unnamed'}\n`;
+                        exportText += `Routine ID: ${routineId}\n`;
+                        exportText += `Last Modified: ${sheet.lastModified || 'Unknown'}\n`;
+                        exportText += `Setup: ${sheet.setupLooks || 'Not filled'}\n`;
+                        
+                        if (sheet.theme) {
+                            exportText += `Initial Theme: ${sheet.theme.description || 'Not filled'}\n`;
+                        }
+                        
+                        if (sheet.elaborate && sheet.elaborate.length > 0) {
+                            exportText += `Elaboration Steps: ${sheet.elaborate.length}\n`;
+                        }
+                        
+                        exportText += '\n';
+                    });
+                } catch (e) {
+                    exportText += 'Error reading JAR sheets\n\n';
+                }
+            }
+
+            // Download file
+            const blob = new Blob([exportText], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `JAR_Complete_Export_${new Date().toISOString().split('T')[0]}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            alert('Data exported successfully!');
+        }
+
+        // Clear all data
+        function clearAllData() {
+            if (!confirm('⚠️ This will clear ALL saved data from all JAR tools.\n\nAre you sure you want to continue?')) {
+                return;
+            }
+            
+            if (confirm('This action cannot be undone. Are you really sure?')) {
+                // Clear all localStorage items related to JAR tools
+                const keysToRemove = [
+                    'routineMappingData',
+                    'selectedRoutineForJAR',
+                    'jarPracticeToolData',
+                    'jarPracticeToolData_prefill',
+                    'jarPracticeSheets_collection',
+                    'jarPracticeSheet'
+                ];
+                
+                keysToRemove.forEach(key => {
+                    localStorage.removeItem(key);
+                });
+                
+                alert('All data has been cleared.');
+                location.reload();
+            }
+        }
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            checkSavedData();
+        });
+
+        // Auto-refresh every 3 seconds
+        setInterval(checkSavedData, 3000);
+    </script>
+</body>
+</html>

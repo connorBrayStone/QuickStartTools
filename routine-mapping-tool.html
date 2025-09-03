@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Routine Mapping Tool - JAR Framework</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        /* Step indicator */
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+            padding: 0 20px;
+        }
+
+        .step {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            position: relative;
+        }
+
+        .step::after {
+            content: '';
+            position: absolute;
+            top: 25px;
+            right: -50%;
+            width: 100%;
+            height: 2px;
+            background: #e0e0e0;
+            z-index: 0;
+        }
+
+        .step:last-child::after {
+            display: none;
+        }
+
+        .step-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-weight: bold;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step.active .step-circle {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .step.completed .step-circle {
+            background: #4CAF50;
+        }
+
+        .step-label {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .step.active .step-label {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        /* Section styles */
+        .section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .intro-box {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .intro-box h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .intro-box p {
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        /* Form elements */
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .radio-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .radio-item:hover {
+            border-color: #667eea;
+        }
+
+        .radio-item input[type="radio"] {
+            margin-right: 8px;
+        }
+
+        .radio-item.selected {
+            background: #f0f7ff;
+            border-color: #667eea;
+        }
+
+        /* Routine cards */
+        .routine-card {
+            background: white;
+            border: 2px solid #e8f5e9;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .routine-card:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .routine-number {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .routine-card h3 {
+            color: #2e7d32;
+            margin-bottom: 15px;
+        }
+
+        .routine-card input,
+        .routine-card textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .time-frequency {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .time-frequency > div {
+            flex: 1;
+        }
+
+        /* Dimensions grid */
+        .dimensions-grid {
+            display: grid;
+            grid-template-columns: 150px 1fr 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+            align-items: center;
+        }
+
+        .grid-header {
+            font-weight: 600;
+            text-align: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .grid-row-header {
+            font-weight: 600;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .grid-cell {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .grid-cell:hover {
+            border-color: #667eea;
+            background: #f0f7ff;
+        }
+
+        .grid-cell.selected {
+            background: linear-gradient(135deg, #667eea20 0%, #764ba220 100%);
+            border-color: #667eea;
+        }
+
+        /* HRE Assessment */
+        .hre-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .hre-btn {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            background: white;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .hre-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .hre-btn.yes {
+            border-color: #4CAF50;
+            color: #4CAF50;
+        }
+
+        .hre-btn.yes.selected {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .hre-btn.sometimes {
+            border-color: #FFC107;
+            color: #FFC107;
+        }
+
+        .hre-btn.sometimes.selected {
+            background: #FFC107;
+            color: white;
+        }
+
+        .hre-btn.no {
+            border-color: #f44336;
+            color: #f44336;
+        }
+
+        .hre-btn.no.selected {
+            background: #f44336;
+            color: white;
+        }
+
+        /* Summary section */
+        .routine-summary {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .routine-summary h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .summary-item:hover {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .summary-item .routine-name {
+            font-weight: 600;
+        }
+
+        .summary-item .hre-indicator {
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .hre-indicator.green {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .hre-indicator.yellow {
+            background: #FFC107;
+            color: white;
+        }
+
+        .hre-indicator.red {
+            background: #f44336;
+            color: white;
+        }
+
+        /* Action buttons */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-success {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .add-routine-btn {
+            width: 100%;
+            padding: 15px;
+            border: 2px dashed #667eea;
+            background: #f0f7ff;
+            border-radius: 10px;
+            color: #667eea;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .add-routine-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .step-indicator {
+                flex-direction: column;
+            }
+            
+            .step::after {
+                display: none;
+            }
+            
+            .dimensions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media print {
+            .btn, .action-buttons {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Routine Mapping Tool</h1>
+            <p>Identifying Natural Opportunities for Joint Activity Routines</p>
+        </div>
+
+        <div class="main-content">
+            <!-- Step Indicator -->
+            <div class="step-indicator">
+                <div class="step active" id="step1-indicator">
+                    <div class="step-circle">1</div>
+                    <div class="step-label">Setup</div>
+                </div>
+                <div class="step" id="step2-indicator">
+                    <div class="step-circle">2</div>
+                    <div class="step-label">Map Routines</div>
+                </div>
+                <div class="step" id="step3-indicator">
+                    <div class="step-circle">3</div>
+                    <div class="step-label">Assess HRE</div>
+                </div>
+                <div class="step" id="step4-indicator">
+                    <div class="step-circle">4</div>
+                    <div class="step-label">Prioritize</div>
+                </div>
+            </div>
+
+            <!-- Step 1: Setup -->
+            <div class="section active" id="step1">
+                <div class="intro-box">
+                    <h2>Let's Start by Getting to Know Your Context</h2>
+                    <p>This tool will help you identify naturally-occurring routines throughout your day where you have back-and-forth interactions with the autistic person you support.</p>
+                    <p>We'll map out these routines and identify which ones might be good starting points for applying the JAR framework.</p>
+                </div>
+
+                <div class="form-group">
+                    <label>What is your role in supporting this person?</label>
+                    <div class="radio-group">
+                        <label class="radio-item">
+                            <input type="radio" name="role" value="parent">
+                            <span>Parent/Family Member</span>
+                        </label>
+                        <label class="radio-item">
+                            <input type="radio" name="role" value="ece">
+                            <span>ECE/Daycare Provider</span>
+                        </label>
+                        <label class="radio-item">
+                            <input type="radio" name="role" value="teacher">
+                            <span>Teacher/Educator</span>
+                        </label>
+                        <label class="radio-item">
+                            <input type="radio" name="role" value="support">
+                            <span>Support Worker/EPA</span>
+                        </label>
+                        <label class="radio-item">
+                            <input type="radio" name="role" value="therapist">
+                            <span>Therapist/Specialist</span>
+                        </label>
+                        <label class="radio-item">
+                            <input type="radio" name="role" value="other">
+                            <span>Other</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Primary setting where you interact:</label>
+                    <select id="setting">
+                        <option value="">Select a setting...</option>
+                        <option value="home">Home</option>
+                        <option value="school">School/Classroom</option>
+                        <option value="daycare">Daycare/Childcare Center</option>
+                        <option value="community">Community (parks, stores, etc.)</option>
+                        <option value="mixed">Multiple Settings</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Optional: Name or initials of the person you support (for your reference)</label>
+                    <input type="text" id="childName" placeholder="e.g., J.S. or Jamie">
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="goToStep(2)">Next: Map Your Routines</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Map Routines -->
+            <div class="section" id="step2">
+                <div class="intro-box">
+                    <h2>Map Out Your Typical Day</h2>
+                    <p>Think about a typical day with the person you support. What routines naturally occur where you have (or could have) back-and-forth interactions?</p>
+                    <p>These can be care routines (dressing, meals), play times, transitions, or any regular activity you do together.</p>
+                </div>
+
+                <div id="routinesList">
+                    <!-- Routines will be added here dynamically -->
+                </div>
+
+                <button class="add-routine-btn" onclick="addRoutine()">+ Add a Routine</button>
+
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" onclick="goToStep(1)">← Back</button>
+                    <button class="btn btn-primary" onclick="goToStep(3)">Next: Assess HRE</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Assess HRE -->
+            <div class="section" id="step3">
+                <div class="intro-box">
+                    <h2>Quick HRE Check</h2>
+                    <p>For each routine, let's quickly assess: Is the child typically Happy, Relaxed, and Engaged (HRE) during this routine?</p>
+                    <p>This helps identify which routines are already working well versus which ones need more support.</p>
+                </div>
+
+                <div id="hreAssessmentList">
+                    <!-- HRE assessments will be added here -->
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" onclick="goToStep(2)">← Back</button>
+                    <button class="btn btn-primary" onclick="goToStep(4)">Next: See Priorities</button>
+                </div>
+            </div>
+
+            <!-- Step 4: Prioritize -->
+            <div class="section" id="step4">
+                <div class="intro-box">
+                    <h2>Your Routine Map Summary</h2>
+                    <p>Based on your assessment, here are your routines organized by priority for JAR framework application:</p>
+                </div>
+
+                <div class="routine-summary">
+                    <h3>🎯 High Priority (Already HRE - Ready for JAR)</h3>
+                    <div id="highPriorityRoutines"></div>
+                </div>
+
+                <div class="routine-summary">
+                    <h3>⚡ Medium Priority (Sometimes HRE - Build consistency)</h3>
+                    <div id="mediumPriorityRoutines"></div>
+                </div>
+
+                <div class="routine-summary">
+                    <h3>🔧 Foundation Needed (Not yet HRE - Focus on rapport first)</h3>
+                    <div id="lowPriorityRoutines"></div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" onclick="goToStep(3)">← Back</button>
+                    <button class="btn btn-success" onclick="exportMap()">Export Routine Map</button>
+                    <button class="btn btn-primary" onclick="selectRoutineForJAR()">Select a Routine for JAR Sheet</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let routineCount = 0;
+        let routinesData = [];
+        let selectedRole = '';
+        let selectedSetting = '';
+
+        // Role selection
+        document.querySelectorAll('input[name="role"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                document.querySelectorAll('.radio-item').forEach(item => {
+                    item.classList.remove('selected');
+                });
+                e.target.closest('.radio-item').classList.add('selected');
+                selectedRole = e.target.value;
+                
+                // Auto-suggest common settings based on role
+                const settingSuggestions = {
+                    'parent': 'home',
+                    'ece': 'daycare',
+                    'teacher': 'school',
+                    'support': 'school',
+                    'therapist': 'mixed'
+                };
+                
+                if (settingSuggestions[selectedRole]) {
+                    document.getElementById('setting').value = settingSuggestions[selectedRole];
+                }
+            });
+        });
+
+        function goToStep(stepNum) {
+            // Update step indicators
+            document.querySelectorAll('.step').forEach((step, index) => {
+                step.classList.remove('active', 'completed');
+                if (index < stepNum - 1) {
+                    step.classList.add('completed');
+                } else if (index === stepNum - 1) {
+                    step.classList.add('active');
+                }
+            });
+
+            // Show/hide sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(`step${stepNum}`).classList.add('active');
+
+            // Load data for specific steps
+            if (stepNum === 3) {
+                loadHREAssessment();
+            } else if (stepNum === 4) {
+                loadPrioritization();
+            }
+        }
+
+        function addRoutine() {
+            routineCount++;
+            const routineDiv = document.createElement('div');
+            routineDiv.className = 'routine-card';
+            routineDiv.innerHTML = `
+                <div class="routine-number">${routineCount}</div>
+                <h3>Routine ${routineCount}</h3>
+                <input type="text" placeholder="Name this routine (e.g., Morning dressing, Snack time)" 
+                       id="routine-name-${routineCount}" onchange="updateRoutineData(${routineCount})">
+                <textarea placeholder="Brief description: What happens during this routine?" 
+                          rows="2" id="routine-desc-${routineCount}" onchange="updateRoutineData(${routineCount})"></textarea>
+                
+                <div class="time-frequency">
+                    <div>
+                        <label>When does this typically occur?</label>
+                        <input type="text" placeholder="e.g., Morning, After lunch, Bedtime" 
+                               id="routine-time-${routineCount}" onchange="updateRoutineData(${routineCount})">
+                    </div>
+                    <div>
+                        <label>How often?</label>
+                        <select id="routine-freq-${routineCount}" onchange="updateRoutineData(${routineCount})">
+                            <option value="daily">Daily</option>
+                            <option value="multiple">Multiple times daily</option>
+                            <option value="weekly">Few times a week</option>
+                            <option value="occasional">Occasionally</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="margin-top: 15px;">
+                    <label>Routine characteristics:</label>
+                    <div class="dimensions-grid">
+                        <div class="grid-header">Flexibility</div>
+                        <div class="grid-cell" onclick="selectDimension(${routineCount}, 'flexibility', 'open')" 
+                             id="flex-open-${routineCount}">Open/Flexible</div>
+                        <div class="grid-cell" onclick="selectDimension(${routineCount}, 'flexibility', 'semi')" 
+                             id="flex-semi-${routineCount}">Semi-structured</div>
+                        <div class="grid-cell" onclick="selectDimension(${routineCount}, 'flexibility', 'structured')" 
+                             id="flex-structured-${routineCount}">Highly structured</div>
+                        
+                        <div class="grid-header">Group Size</div>
+                        <div class="grid-cell" onclick="selectDimension(${routineCount}, 'group', 'individual')" 
+                             id="group-individual-${routineCount}">1-on-1</div>
+                        <div class="grid-cell" onclick="selectDimension(${routineCount}, 'group', 'small')" 
+                             id="group-small-${routineCount}">Small group (2-5)</div>
+                        <div class="grid-cell" onclick="selectDimension(${routineCount}, 'group', 'large')" 
+                             id="group-large-${routineCount}">Large group (6+)</div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('routinesList').appendChild(routineDiv);
+            
+            // Initialize routine data
+            routinesData.push({
+                id: routineCount,
+                name: '',
+                description: '',
+                time: '',
+                frequency: 'daily',
+                flexibility: '',
+                groupSize: '',
+                hre: ''
+            });
+        }
+
+        function updateRoutineData(routineId) {
+            const routine = routinesData.find(r => r.id === routineId);
+            if (routine) {
+                routine.name = document.getElementById(`routine-name-${routineId}`).value;
+                routine.description = document.getElementById(`routine-desc-${routineId}`).value;
+                routine.time = document.getElementById(`routine-time-${routineId}`).value;
+                routine.frequency = document.getElementById(`routine-freq-${routineId}`).value;
+            }
+        }
+
+        function selectDimension(routineId, dimension, value) {
+            const routine = routinesData.find(r => r.id === routineId);
+            if (routine) {
+                if (dimension === 'flexibility') {
+                    // Clear previous selection
+                    ['open', 'semi', 'structured'].forEach(val => {
+                        const el = document.getElementById(`flex-${val}-${routineId}`);
+                        if (el) el.classList.remove('selected');
+                    });
+                    // Set new selection
+                    document.getElementById(`flex-${value}-${routineId}`).classList.add('selected');
+                    routine.flexibility = value;
+                } else if (dimension === 'group') {
+                    // Clear previous selection
+                    ['individual', 'small', 'large'].forEach(val => {
+                        const el = document.getElementById(`group-${val}-${routineId}`);
+                        if (el) el.classList.remove('selected');
+                    });
+                    // Set new selection
+                    document.getElementById(`group-${value}-${routineId}`).classList.add('selected');
+                    routine.groupSize = value;
+                }
+            }
+        }
+
+        function loadHREAssessment() {
+            const container = document.getElementById('hreAssessmentList');
+            container.innerHTML = '';
+            
+            routinesData.forEach(routine => {
+                if (routine.name) {
+                    const assessmentDiv = document.createElement('div');
+                    assessmentDiv.className = 'routine-card';
+                    assessmentDiv.innerHTML = `
+                        <h3>${routine.name}</h3>
+                        <p>${routine.description}</p>
+                        <div>
+                            <label>Is the child typically Happy, Relaxed, and Engaged during this routine?</label>
+                            <div class="hre-buttons">
+                                <button class="hre-btn yes" onclick="setHRE(${routine.id}, 'yes')">
+                                    Yes, usually HRE
+                                </button>
+                                <button class="hre-btn sometimes" onclick="setHRE(${routine.id}, 'sometimes')">
+                                    Sometimes HRE
+                                </button>
+                                <button class="hre-btn no" onclick="setHRE(${routine.id}, 'no')">
+                                    Not yet HRE
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(assessmentDiv);
+                    
+                    // Restore previous selection if exists
+                    if (routine.hre) {
+                        setHRE(routine.id, routine.hre);
+                    }
+                }
+            });
+        }
+
+        function setHRE(routineId, value) {
+            const routine = routinesData.find(r => r.id === routineId);
+            if (routine) {
+                routine.hre = value;
+                
+                // Update button states
+                const buttons = document.querySelectorAll(`#hreAssessmentList .routine-card:nth-child(${routinesData.indexOf(routine) + 1}) .hre-btn`);
+                buttons.forEach(btn => {
+                    btn.classList.remove('selected');
+                    if (btn.classList.contains(value)) {
+                        btn.classList.add('selected');
+                    }
+                });
+            }
+        }
+
+        function loadPrioritization() {
+            const highPriority = document.getElementById('highPriorityRoutines');
+            const mediumPriority = document.getElementById('mediumPriorityRoutines');
+            const lowPriority = document.getElementById('lowPriorityRoutines');
+            
+            highPriority.innerHTML = '';
+            mediumPriority.innerHTML = '';
+            lowPriority.innerHTML = '';
+            
+            routinesData.forEach(routine => {
+                if (routine.name && routine.hre) {
+                    const summaryItem = document.createElement('div');
+                    summaryItem.className = 'summary-item';
+                    summaryItem.onclick = () => selectForJAR(routine);
+                    
+                    let indicatorClass = '';
+                    let indicatorText = '';
+                    
+                    if (routine.hre === 'yes') {
+                        indicatorClass = 'green';
+                        indicatorText = 'Ready for JAR';
+                    } else if (routine.hre === 'sometimes') {
+                        indicatorClass = 'yellow';
+                        indicatorText = 'Build consistency';
+                    } else {
+                        indicatorClass = 'red';
+                        indicatorText = 'Build rapport first';
+                    }
+                    
+                    summaryItem.innerHTML = `
+                        <div>
+                            <div class="routine-name">${routine.name}</div>
+                            <div style="font-size: 0.9em; color: #666; margin-top: 5px;">
+                                ${routine.time} • ${routine.frequency} • ${routine.groupSize || 'Group size not set'}
+                            </div>
+                        </div>
+                        <div class="hre-indicator ${indicatorClass}">${indicatorText}</div>
+                    `;
+                    
+                    if (routine.hre === 'yes') {
+                        highPriority.appendChild(summaryItem);
+                    } else if (routine.hre === 'sometimes') {
+                        mediumPriority.appendChild(summaryItem);
+                    } else {
+                        lowPriority.appendChild(summaryItem);
+                    }
+                }
+            });
+            
+            // Add message if no routines in a category
+            if (highPriority.innerHTML === '') {
+                highPriority.innerHTML = '<p style="color: #666; font-style: italic;">No routines assessed as "Usually HRE" yet</p>';
+            }
+            if (mediumPriority.innerHTML === '') {
+                mediumPriority.innerHTML = '<p style="color: #666; font-style: italic;">No routines assessed as "Sometimes HRE" yet</p>';
+            }
+            if (lowPriority.innerHTML === '') {
+                lowPriority.innerHTML = '<p style="color: #666; font-style: italic;">No routines assessed as "Not yet HRE" yet</p>';
+            }
+        }
+
+        function selectForJAR(routine) {
+            if (confirm(`Would you like to create a JAR Practice Sheet for "${routine.name}"?`)) {
+                // Save routine data to localStorage for JAR tool
+                localStorage.setItem('selectedRoutineForJAR', JSON.stringify(routine));
+                alert(`"${routine.name}" has been selected. You can now open the JAR Practice Sheet tool to work on this routine.`);
+            }
+        }
+
+        function selectRoutineForJAR() {
+            const routinesWithHRE = routinesData.filter(r => r.name && r.hre === 'yes');
+            if (routinesWithHRE.length === 0) {
+                alert('Consider selecting a routine that already has HRE to start with. If none are ready, work on building rapport first.');
+                return;
+            }
+            
+            let routineOptions = 'Select a routine to work on with the JAR framework:\n\n';
+            routinesWithHRE.forEach((r, index) => {
+                routineOptions += `${index + 1}. ${r.name}\n`;
+            });
+            
+            const choice = prompt(routineOptions + '\nEnter the number of your choice:');
+            if (choice && routinesWithHRE[parseInt(choice) - 1]) {
+                selectForJAR(routinesWithHRE[parseInt(choice) - 1]);
+            }
+        }
+
+        function exportMap() {
+            const childName = document.getElementById('childName').value || 'Child';
+            const setting = document.getElementById('setting').value || 'Not specified';
+            
+            let exportText = `ROUTINE MAP\n`;
+            exportText += `===========\n\n`;
+            exportText += `Person Supported: ${childName}\n`;
+            exportText += `Your Role: ${selectedRole || 'Not specified'}\n`;
+            exportText += `Primary Setting: ${setting}\n`;
+            exportText += `Date: ${new Date().toLocaleDateString()}\n\n`;
+            
+            exportText += `ROUTINES IDENTIFIED\n`;
+            exportText += `------------------\n\n`;
+            
+            // Group by HRE status
+            const highPriorityRoutines = routinesData.filter(r => r.hre === 'yes');
+            const mediumPriorityRoutines = routinesData.filter(r => r.hre === 'sometimes');
+            const lowPriorityRoutines = routinesData.filter(r => r.hre === 'no');
+            
+            if (highPriorityRoutines.length > 0) {
+                exportText += `HIGH PRIORITY (Already HRE - Ready for JAR):\n`;
+                highPriorityRoutines.forEach(r => {
+                    exportText += `• ${r.name}\n`;
+                    exportText += `  Time: ${r.time} | Frequency: ${r.frequency}\n`;
+                    exportText += `  Flexibility: ${r.flexibility || 'Not set'} | Group Size: ${r.groupSize || 'Not set'}\n`;
+                    exportText += `  Description: ${r.description}\n\n`;
+                });
+            }
+            
+            if (mediumPriorityRoutines.length > 0) {
+                exportText += `\nMEDIUM PRIORITY (Sometimes HRE - Build consistency):\n`;
+                mediumPriorityRoutines.forEach(r => {
+                    exportText += `• ${r.name}\n`;
+                    exportText += `  Time: ${r.time} | Frequency: ${r.frequency}\n`;
+                    exportText += `  Flexibility: ${r.flexibility || 'Not set'} | Group Size: ${r.groupSize || 'Not set'}\n`;
+                    exportText += `  Description: ${r.description}\n\n`;
+                });
+            }
+            
+            if (lowPriorityRoutines.length > 0) {
+                exportText += `\nFOUNDATION NEEDED (Not yet HRE - Focus on rapport first):\n`;
+                lowPriorityRoutines.forEach(r => {
+                    exportText += `• ${r.name}\n`;
+                    exportText += `  Time: ${r.time} | Frequency: ${r.frequency}\n`;
+                    exportText += `  Flexibility: ${r.flexibility || 'Not set'} | Group Size: ${r.groupSize || 'Not set'}\n`;
+                    exportText += `  Description: ${r.description}\n\n`;
+                });
+            }
+            
+            exportText += `\nRECOMMENDATIONS:\n`;
+            exportText += `----------------\n`;
+            if (highPriorityRoutines.length > 0) {
+                exportText += `Start with one of your HIGH PRIORITY routines where the child is already HRE.\n`;
+                exportText += `These provide the best foundation for implementing the JAR framework.\n\n`;
+            } else if (mediumPriorityRoutines.length > 0) {
+                exportText += `Work on building consistency in your MEDIUM PRIORITY routines.\n`;
+                exportText += `Focus on rapport-building strategies to increase HRE.\n\n`;
+            } else {
+                exportText += `Focus on building rapport and finding HRE in your current routines.\n`;
+                exportText += `Consider what might make these routines more enjoyable for the child.\n\n`;
+            }
+            
+            // Download the file
+            const blob = new Blob([exportText], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Routine_Map_${childName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Auto-save functionality
+        function saveProgress() {
+            const data = {
+                role: selectedRole,
+                setting: document.getElementById('setting').value,
+                childName: document.getElementById('childName').value,
+                routines: routinesData
+            };
+            localStorage.setItem('routineMappingData', JSON.stringify(data));
+        }
+
+        function loadProgress() {
+            const saved = localStorage.getItem('routineMappingData');
+            if (saved) {
+                const data = JSON.parse(saved);
+                
+                // Restore basic settings
+                if (data.role) {
+                    document.querySelector(`input[name="role"][value="${data.role}"]`).checked = true;
+                    document.querySelector(`input[name="role"][value="${data.role}"]`).closest('.radio-item').classList.add('selected');
+                    selectedRole = data.role;
+                }
+                if (data.setting) {
+                    document.getElementById('setting').value = data.setting;
+                    selectedSetting = data.setting;
+                }
+                if (data.childName) {
+                    document.getElementById('childName').value = data.childName;
+                }
+                
+                // Restore routines
+                if (data.routines && data.routines.length > 0) {
+                    routinesData = data.routines;
+                    routineCount = data.routines.length;
+                    
+                    // Rebuild routine cards
+                    data.routines.forEach(routine => {
+                        addRoutineWithData(routine);
+                    });
+                }
+            }
+        }
+
+        function addRoutineWithData(routineData) {
+            const routineDiv = document.createElement('div');
+            routineDiv.className = 'routine-card';
+            routineDiv.innerHTML = `
+                <div class="routine-number">${routineData.id}</div>
+                <h3>Routine ${routineData.id}</h3>
+                <input type="text" placeholder="Name this routine (e.g., Morning dressing, Snack time)" 
+                       id="routine-name-${routineData.id}" value="${routineData.name || ''}" onchange="updateRoutineData(${routineData.id})">
+                <textarea placeholder="Brief description: What happens during this routine?" 
+                          rows="2" id="routine-desc-${routineData.id}" onchange="updateRoutineData(${routineData.id})">${routineData.description || ''}</textarea>
+                
+                <div class="time-frequency">
+                    <div>
+                        <label>When does this typically occur?</label>
+                        <input type="text" placeholder="e.g., Morning, After lunch, Bedtime" 
+                               id="routine-time-${routineData.id}" value="${routineData.time || ''}" onchange="updateRoutineData(${routineData.id})">
+                    </div>
+                    <div>
+                        <label>How often?</label>
+                        <select id="routine-freq-${routineData.id}" onchange="updateRoutineData(${routineData.id})">
+                            <option value="daily" ${routineData.frequency === 'daily' ? 'selected' : ''}>Daily</option>
+                            <option value="multiple" ${routineData.frequency === 'multiple' ? 'selected' : ''}>Multiple times daily</option>
+                            <option value="weekly" ${routineData.frequency === 'weekly' ? 'selected' : ''}>Few times a week</option>
+                            <option value="occasional" ${routineData.frequency === 'occasional' ? 'selected' : ''}>Occasionally</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="margin-top: 15px;">
+                    <label>Routine characteristics:</label>
+                    <div class="dimensions-grid">
+                        <div class="grid-header">Flexibility</div>
+                        <div class="grid-cell ${routineData.flexibility === 'open' ? 'selected' : ''}" 
+                             onclick="selectDimension(${routineData.id}, 'flexibility', 'open')" 
+                             id="flex-open-${routineData.id}">Open/Flexible</div>
+                        <div class="grid-cell ${routineData.flexibility === 'semi' ? 'selected' : ''}" 
+                             onclick="selectDimension(${routineData.id}, 'flexibility', 'semi')" 
+                             id="flex-semi-${routineData.id}">Semi-structured</div>
+                        <div class="grid-cell ${routineData.flexibility === 'structured' ? 'selected' : ''}" 
+                             onclick="selectDimension(${routineData.id}, 'flexibility', 'structured')" 
+                             id="flex-structured-${routineData.id}">Highly structured</div>
+                        
+                        <div class="grid-header">Group Size</div>
+                        <div class="grid-cell ${routineData.groupSize === 'individual' ? 'selected' : ''}" 
+                             onclick="selectDimension(${routineData.id}, 'group', 'individual')" 
+                             id="group-individual-${routineData.id}">1-on-1</div>
+                        <div class="grid-cell ${routineData.groupSize === 'small' ? 'selected' : ''}" 
+                             onclick="selectDimension(${routineData.id}, 'group', 'small')" 
+                             id="group-small-${routineData.id}">Small group (2-5)</div>
+                        <div class="grid-cell ${routineData.groupSize === 'large' ? 'selected' : ''}" 
+                             onclick="selectDimension(${routineData.id}, 'group', 'large')" 
+                             id="group-large-${routineData.id}">Large group (6+)</div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('routinesList').appendChild(routineDiv);
+        }
+
+        // Auto-save every 30 seconds
+        setInterval(saveProgress, 30000);
+
+        // Load any saved progress on page load
+        window.addEventListener('load', () => {
+            if (confirm('Would you like to load any previously saved routine mapping?')) {
+                loadProgress();
+            }
+        });
+
+        // Add at least one routine to start
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                if (routineCount === 0) {
+                    addRoutine();
+                }
+            }, 100);
+        });
+    </script>
+</body>
+</html>

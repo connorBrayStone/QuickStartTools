@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JAR Practice Sheet - Interactive Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .activity-info {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .activity-info input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 1.1em;
+            margin-top: 10px;
+            transition: border-color 0.3s;
+        }
+
+        .activity-info input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .jar-section {
+            margin-bottom: 30px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .section-header {
+            padding: 15px 20px;
+            font-weight: bold;
+            font-size: 1.2em;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .section-header:hover {
+            filter: brightness(1.1);
+        }
+
+        .setup-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .theme-header {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+        }
+
+        .elaborate-header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .closing-header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .section-content {
+            padding: 20px;
+            background: white;
+        }
+
+        .theme-container {
+            background: #f0fff4;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .theme-subsection {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 2px solid #e8f5e9;
+        }
+
+        .subsection-title {
+            font-weight: 600;
+            color: #2e7d32;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .question-block {
+            margin-bottom: 20px;
+        }
+
+        .question-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        .establishment-toggle {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .toggle-btn {
+            padding: 8px 16px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9em;
+        }
+
+        .toggle-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .toggle-btn.active-green {
+            background: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+        }
+
+        .toggle-btn.active-yellow {
+            background: #FFC107;
+            color: white;
+            border-color: #FFC107;
+        }
+
+        .toggle-btn.active-red {
+            background: #f44336;
+            color: white;
+            border-color: #f44336;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-family: inherit;
+            font-size: 1em;
+            resize: vertical;
+            min-height: 80px;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .teaching-opportunities {
+            background: #f0f7ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 5px;
+        }
+
+        .teaching-opportunities h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .jar-suggestion {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-style: italic;
+        }
+
+        .developmental-goals {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
+            color: white;
+            font-size: 1.1em;
+            padding: 15px 40px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .info-tooltip {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 20px;
+            font-size: 12px;
+            margin-left: 5px;
+            cursor: help;
+            position: relative;
+        }
+
+        .info-tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            white-space: nowrap;
+            font-size: 12px;
+            z-index: 1000;
+            max-width: 250px;
+            white-space: normal;
+        }
+
+        .hre-indicator {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .hre-happy {
+            background: #fff9c4;
+            color: #f57c00;
+        }
+
+        .hre-relaxed {
+            background: #e1f5fe;
+            color: #0277bd;
+        }
+
+        .hre-engaged {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .routine-indicator {
+            background: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            padding: 10px 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            font-size: 0.95em;
+        }
+
+        .routine-indicator strong {
+            color: #1976D2;
+        }
+
+        /* Summary Display Styles */
+        .summary-container {
+            display: none;
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            margin-top: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .summary-container.active {
+            display: block;
+        }
+
+        .summary-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .summary-header h2 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+
+        .summary-table th {
+            background: #f8f9fa;
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #dee2e6;
+            font-weight: 600;
+        }
+
+        .summary-table td {
+            padding: 12px;
+            border: 1px solid #dee2e6;
+            vertical-align: top;
+        }
+
+        .establishment-indicator {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .indicator-green {
+            background: #4CAF50;
+        }
+
+        .indicator-yellow {
+            background: #FFC107;
+        }
+
+        .indicator-red {
+            background: #f44336;
+        }
+
+        .summary-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+
+            .summary-table {
+                font-size: 0.9em;
+            }
+        }
+
+        .save-indicator {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @media print {
+            .btn, .action-buttons, .summary-actions {
+                display: none;
+            }
+            
+            .summary-container {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>JAR Practice Sheet</h1>
+            <p>Joint Activity Routines as a Foundation for Teaching</p>
+            <div id="currentRoutineDisplay"></div>
+        </div>
+
+        <div class="main-content" id="formSection">
+            <div id="routineIndicator" class="routine-indicator" style="display: none;">
+                Working on routine: <strong id="routineName"></strong>
+            </div>
+
+            <div class="activity-info">
+                <label for="activityName">
+                    <strong>Activity Name:</strong>
+                    <span class="info-tooltip" data-tooltip="Name the specific routine you're working on (e.g., handwashing, snack time, getting dressed)">?</span>
+                </label>
+                <input type="text" id="activityName" placeholder="e.g., Handwashing, Snack time, Getting dressed to go outside">
+            </div>
+
+            <!-- SETUP Section -->
+            <div class="jar-section">
+                <div class="section-header setup-header">
+                    SETUP - Building Rapport & Finding HRE
+                    <span class="hre-indicator hre-happy">Happy</span>
+                    <span class="hre-indicator hre-relaxed">Relaxed</span>
+                    <span class="hre-indicator hre-engaged">Engaged</span>
+                </div>
+                <div class="section-content">
+                    <div class="question-block">
+                        <div class="question-label">
+                            How does this routine typically get started? Does the child initiate this routine OR are they interested/motivated to participate when you suggest it?
+                            <span class="info-tooltip" data-tooltip="If yes, you're already on the right track! If no, work on finding what makes them HRE first.">?</span>
+                        </div>
+                        <textarea id="setup-looks" placeholder="Describe what this looks like... For example: 'When hands are sticky, child goes to the sink' or 'Child willingly follows when I suggest washing hands'"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Building the Theme Section -->
+            <div class="jar-section">
+                <div class="section-header theme-header">
+                    BUILD THE THEME OF THE ACTIVITY
+                </div>
+                <div class="section-content">
+                    <div class="theme-container">
+                        <!-- Initial Theme -->
+                        <div class="theme-subsection">
+                            <div class="subsection-title">INITIAL THEME - First successful back-and-forth interaction</div>
+                            
+                            <div class="question-block">
+                                <div class="question-label">How well-established is this initial theme?</div>
+                                <div class="establishment-toggle" data-section="theme">
+                                    <button type="button" class="toggle-btn" data-level="green">✓ Well-established (Green)</button>
+                                    <button type="button" class="toggle-btn" data-level="yellow">~ Somewhat established (Yellow)</button>
+                                    <button type="button" class="toggle-btn" data-level="red">✗ Not yet established (Red)</button>
+                                </div>
+                            </div>
+
+                            <div class="question-block">
+                                <div class="question-label">How would you describe this initial step in the routine?</div>
+                                <textarea id="theme-description" placeholder="e.g., 'Picking up coat and putting it on' or 'Pumping soap on hands'"></textarea>
+                            </div>
+
+                            <div class="question-block">
+                                <div class="question-label">What is YOUR active role in this step of the routine?</div>
+                                <textarea id="theme-adult-role" placeholder="What do you do? For example: 'I hold up the coat' or 'I pump the soap'"></textarea>
+                            </div>
+
+                            <div class="question-block">
+                                <div class="question-label">What is the CHILD's active role in this step of the routine?</div>
+                                <textarea id="theme-child-role" placeholder="What does the child do? For example: 'Child puts arms in sleeves' or 'Child rubs hands together'"></textarea>
+                            </div>
+
+                            <div class="question-block">
+                                <div class="question-label">Is there shared awareness of each other's roles?
+                                    <span class="info-tooltip" data-tooltip="This helps you reflect on whether you both understand what you're doing together">?</span>
+                                </div>
+                                <textarea id="theme-awareness" placeholder="Do you both understand what you're doing together? For example: 'Child watches me and then takes their turn' or 'We make eye contact and smile during the activity'"></textarea>
+                            </div>
+
+                            <div class="teaching-opportunities" id="theme-teaching">
+                                <h4>Teaching Opportunities</h4>
+                                <div id="theme-teaching-content"></div>
+                            </div>
+                        </div>
+
+                        <!-- Elaborate Theme -->
+                        <div class="theme-subsection">
+                            <div class="subsection-title">ELABORATE THE THEME - How the routine progresses</div>
+                            <div id="elaborate-steps">
+                                <div class="elaborate-step" data-step="1">
+                                    <h4 style="color: #e91e63;">Step 1 - Next progression</h4>
+                                    
+                                    <div class="question-block">
+                                        <div class="question-label">How well-established is this step?</div>
+                                        <div class="establishment-toggle" data-section="elaborate-1">
+                                            <button type="button" class="toggle-btn" data-level="green">✓ Well-established</button>
+                                            <button type="button" class="toggle-btn" data-level="yellow">~ Somewhat established</button>
+                                            <button type="button" class="toggle-btn" data-level="red">✗ Not yet established</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="question-block">
+                                        <div class="question-label">What is the next step in the routine? Briefly describe:</div>
+                                        <textarea class="step-description" placeholder="e.g., 'Zipping up coat' or 'Rinsing hands under water'"></textarea>
+                                    </div>
+
+                                    <div class="question-block">
+                                        <div class="question-label">How do your active roles change/progress in this step?</div>
+                                        
+                                        <div style="margin-top: 10px;">
+                                            <label style="font-weight: 500; color: #555;">What is YOUR active role in this step?</label>
+                                            <textarea class="adult-role" placeholder="What do you do in this step?"></textarea>
+                                        </div>
+
+                                        <div style="margin-top: 10px;">
+                                            <label style="font-weight: 500; color: #555;">What is the CHILD's active role in this step?</label>
+                                            <textarea class="child-role" placeholder="What does the child do in this step?"></textarea>
+                                        </div>
+
+                                        <div style="margin-top: 10px;">
+                                            <label style="font-weight: 500; color: #555;">Is there shared awareness of each other's roles?</label>
+                                            <textarea class="shared-awareness" placeholder="Describe the shared understanding in this step"></textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="teaching-opportunities">
+                                        <h4>Teaching Opportunities</h4>
+                                        <div class="elaborate-teaching-content"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-secondary" onclick="addElaborateStep()">+ Add Another Step</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CLOSING Section -->
+            <div class="jar-section">
+                <div class="section-header closing-header">
+                    CLOSING & TRANSITION - Ending and moving on
+                </div>
+                <div class="section-content">
+                    <div class="question-block">
+                        <div class="question-label">
+                            How does the activity end and transition to something else?
+                            <span class="info-tooltip" data-tooltip="Natural endings work best! For example: 'Hands are dry' or 'Snack is finished'">?</span>
+                        </div>
+                        <textarea id="closing-description" placeholder="Describe how this routine naturally ends and what comes next. For example: 'Hands are dry and we leave the bathroom' or 'Child finishes eating and we clean up together'"></textarea>
+                    </div>
+
+                    <div class="teaching-opportunities">
+                        <h4>Teaching Opportunities</h4>
+                        <div class="developmental-goals">
+                            <strong>Possible goals:</strong> Following instructions for next activity, Personal independence in cleanup, Communication about what comes next
+                        </div>
+                        <textarea id="closing-teaching" placeholder="What specific skills can you work on during closing/transition?"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button type="button" class="btn btn-submit" onclick="generateSummary()">Generate JAR Summary</button>
+            </div>
+
+            <div class="action-buttons" style="margin-top: 20px;">
+                <button type="button" class="btn btn-primary" onclick="saveWork()">Save Your Work</button>
+                <button type="button" class="btn btn-secondary" onclick="loadWork()">Load Previous Work</button>
+                <button type="button" class="btn btn-secondary" onclick="clearAll()">Start Fresh</button>
+            </div>
+        </div>
+
+        <!-- Summary Display Section -->
+        <div class="summary-container" id="summarySection">
+            <div class="summary-header">
+                <h2>JAR Practice Sheet Summary</h2>
+                <h3 id="summaryActivityName"></h3>
+            </div>
+
+            <table class="summary-table">
+                <thead>
+                    <tr>
+                        <th width="20%">Phase</th>
+                        <th width="40%">What does it look like?</th>
+                        <th width="40%">Teaching Opportunities</th>
+                    </tr>
+                </thead>
+                <tbody id="summaryTableBody">
+                    <!-- Content will be generated dynamically -->
+                </tbody>
+            </table>
+
+            <div class="summary-actions">
+                <button type="button" class="btn btn-secondary" onclick="editForm()">← Back to Edit</button>
+                <button type="button" class="btn btn-success" onclick="exportSummary()">Export Summary</button>
+                <button type="button" class="btn btn-primary" onclick="window.print()">Print Summary</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="save-indicator" id="saveIndicator">Work saved!</div>
+
+    <script>
+        let elaborateStepCount = 1;
+
+        // Get current routine ID from localStorage
+        function getCurrentRoutineId() {
+            const selectedRoutine = localStorage.getItem('selectedRoutineForJAR');
+            if (selectedRoutine) {
+                try {
+                    const routine = JSON.parse(selectedRoutine);
+                    return routine.id;
+                } catch (e) {
+                    console.error('Error parsing selected routine:', e);
+                }
+            }
+            return null;
+        }
+
+        function getActiveLevel(section) {
+            const sel = `[data-section="${section}"] .toggle-btn.active-green, [data-section="${section}"] .toggle-btn.active-yellow, [data-section="${section}"] .toggle-btn.active-red`;
+            const btn = document.querySelector(sel);
+            return btn ? btn.dataset.level : null;
+        }
+
+        // Initialize establishment toggles
+        document.querySelectorAll('.establishment-toggle').forEach(toggle => {
+            toggle.addEventListener('click', (e) => {
+                if (e.target.classList.contains('toggle-btn')) {
+                    toggle.querySelectorAll('.toggle-btn').forEach(btn => {
+                        btn.classList.remove('active-green', 'active-yellow', 'active-red');
+                    });
+                    
+                    const level = e.target.dataset.level;
+                    e.target.classList.add(`active-${level}`);
+                    updateTeachingOpportunities(toggle.dataset.section, level);
+                }
+            });
+        });
+
+        function updateTeachingOpportunities(section, level) {
+            let content = '';
+            let container;
+
+            if (section === 'theme') {
+                container = document.getElementById('theme-teaching-content');
+                if (!container) return;
+                
+                if (level === 'green') {
+                    content = `
+                        <div class="developmental-goals">
+                            <strong>Ready for specific developmental goals!</strong><br>
+                            Consider working on:<br>
+                            • Receptive language (following instructions)<br>
+                            • Expressive language (requesting, commenting)<br>
+                            • Personal independence skills<br>
+                            • Motor skills related to the activity<br>
+                            • Social interaction and joint attention
+                        </div>
+                        <textarea id="theme-teaching-input" placeholder="What specific developmental or functional goals will you target?"></textarea>
+                    `;
+                } else if (level === 'yellow') {
+                    content = `
+                        <div class="jar-suggestion">
+                            <strong>Continue building the theme:</strong><br>
+                            Focus on consolidating roles and increasing the child's active participation. Once more consistent, you can add specific teaching goals.
+                        </div>
+                        <textarea id="theme-teaching-input" placeholder="How will you strengthen the child's understanding of their role?"></textarea>
+                    `;
+                } else if (level === 'red') {
+                    content = `
+                        <div class="jar-suggestion">
+                            <strong>JAR-focused goals:</strong><br>
+                            Work on establishing clear roles first:<br>
+                            • Help child understand what you're doing together<br>
+                            • Build predictable back-and-forth interaction<br>
+                            • Increase child's active participation<br>
+                            • Ensure child remains HRE during this phase
+                        </div>
+                        <textarea id="theme-teaching-input" placeholder="What will you do to establish clearer roles and shared awareness?"></textarea>
+                    `;
+                }
+                container.innerHTML = content;
+            } else if (section.startsWith('elaborate-')) {
+                const stepNum = section.split('-')[1];
+                const step = document.querySelector(`[data-step="${stepNum}"]`);
+                if (step) {
+                    container = step.querySelector('.elaborate-teaching-content');
+                    if (!container) return;
+                    
+                    if (level === 'green') {
+                        container.innerHTML = `
+                            <div class="developmental-goals">
+                                <strong>Embed specific teaching:</strong> Add developmental goals like language, motor skills, or independence.
+                            </div>
+                            <textarea class="elaborate-teaching-input" placeholder="Specific skills to teach at this step..."></textarea>
+                        `;
+                    } else if (level === 'yellow') {
+                        container.innerHTML = `
+                            <div class="jar-suggestion">
+                                <strong>Consolidate this step:</strong> Focus on consistent participation before adding new teaching goals.
+                            </div>
+                            <textarea class="elaborate-teaching-input" placeholder="How to strengthen this step..."></textarea>
+                        `;
+                    } else {
+                        container.innerHTML = `
+                            <div class="jar-suggestion">
+                                <strong>Build the routine:</strong> Work on child's active participation and understanding of this step.
+                            </div>
+                            <textarea class="elaborate-teaching-input" placeholder="How to establish this step..."></textarea>
+                        `;
+                    }
+                }
+            }
+        }
+
+        function addElaborateStep() {
+            elaborateStepCount++;
+            const stepsContainer = document.getElementById('elaborate-steps');
+            const newStep = document.createElement('div');
+            newStep.className = 'elaborate-step';
+            newStep.setAttribute('data-step', elaborateStepCount);
+            newStep.innerHTML = `
+                <h4 style="color: #e91e63;">Step ${elaborateStepCount} - Next progression</h4>
+                
+                <div class="question-block">
+                    <div class="question-label">How well-established is this step?</div>
+                    <div class="establishment-toggle" data-section="elaborate-${elaborateStepCount}">
+                        <button type="button" class="toggle-btn" data-level="green">✓ Well-established</button>
+                        <button type="button" class="toggle-btn" data-level="yellow">~ Somewhat established</button>
+                        <button type="button" class="toggle-btn" data-level="red">✗ Not yet established</button>
+                    </div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-label">What is the next step in the routine? Briefly describe:</div>
+                    <textarea class="step-description" placeholder="e.g., 'Putting on hat' or 'Drying hands with towel'"></textarea>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-label">How do your active roles change/progress in this step?</div>
+                    
+                    <div style="margin-top: 10px;">
+                        <label style="font-weight: 500; color: #555;">What is YOUR active role in this step?</label>
+                        <textarea class="adult-role" placeholder="What do you do in this step?"></textarea>
+                    </div>
+
+                    <div style="margin-top: 10px;">
+                        <label style="font-weight: 500; color: #555;">What is the CHILD's active role in this step?</label>
+                        <textarea class="child-role" placeholder="What does the child do in this step?"></textarea>
+                    </div>
+
+                    <div style="margin-top: 10px;">
+                        <label style="font-weight: 500; color: #555;">Is there shared awareness of each other's roles?</label>
+                        <textarea class="shared-awareness" placeholder="Describe the shared understanding in this step"></textarea>
+                    </div>
+                </div>
+
+                <div class="teaching-opportunities">
+                    <h4>Teaching Opportunities</h4>
+                    <div class="elaborate-teaching-content"></div>
+                </div>
+            `;
+            
+            stepsContainer.appendChild(newStep);
+
+            // Add event listeners to new toggle
+            const newToggle = newStep.querySelector('.establishment-toggle');
+            newToggle.addEventListener('click', (e) => {
+                if (e.target.classList.contains('toggle-btn')) {
+                    newToggle.querySelectorAll('.toggle-btn').forEach(btn => {
+                        btn.classList.remove('active-green', 'active-yellow', 'active-red');
+                    });
+                    const level = e.target.dataset.level;
+                    e.target.classList.add(`active-${level}`);
+                    updateTeachingOpportunities(newToggle.dataset.section, level);
+                }
+            });
+        }
+
+        // MULTI-ROUTINE SAVE FUNCTION
+        function saveWork() {
+            const routineId = getCurrentRoutineId();
+            
+            const data = {};
+            // Basic fields
+            data.activityName = document.getElementById('activityName')?.value || '';
+            data.setupLooks = document.getElementById('setup-looks')?.value || '';
+            data.routineId = routineId; // Store which routine this belongs to
+            data.lastModified = new Date().toISOString();
+
+            // Theme initial
+            data.theme = {
+                description: document.getElementById('theme-description')?.value || '',
+                adultRole: document.getElementById('theme-adult-role')?.value || '',
+                childRole: document.getElementById('theme-child-role')?.value || '',
+                awareness: document.getElementById('theme-awareness')?.value || '',
+                level: getActiveLevel('theme'),
+                teaching: document.getElementById('theme-teaching-input')?.value || ''
+            };
+
+            // Elaborate steps
+            data.elaborate = [];
+            document.querySelectorAll('.elaborate-step').forEach((step, idx) => {
+                const num = step.getAttribute('data-step') || (idx + 1);
+                const level = getActiveLevel('elaborate-' + num);
+                data.elaborate.push({
+                    step: num,
+                    description: step.querySelector('.step-description')?.value || '',
+                    adultRole: step.querySelector('.adult-role')?.value || '',
+                    childRole: step.querySelector('.child-role')?.value || '',
+                    sharedAwareness: step.querySelector('.shared-awareness')?.value || '',
+                    teaching: step.querySelector('.elaborate-teaching-input')?.value || '',
+                    level: level
+                });
+            });
+
+            // Closing
+            data.closing = {
+                description: document.getElementById('closing-description')?.value || '',
+                teaching: document.getElementById('closing-teaching')?.value || ''
+            };
+
+            try {
+                // Load existing JAR sheets collection
+                let allJarSheets = {};
+                const existingData = localStorage.getItem('jarPracticeSheets_collection');
+                if (existingData) {
+                    allJarSheets = JSON.parse(existingData);
+                }
+                
+                // Save this sheet with routine ID as key
+                if (routineId) {
+                    allJarSheets[routineId] = data;
+                    localStorage.setItem('jarPracticeSheets_collection', JSON.stringify(allJarSheets));
+                    
+                    // Also save as current for backward compatibility
+                    localStorage.setItem('jarPracticeToolData', JSON.stringify(data));
+                    
+                    // Show save indicator
+                    const indicator = document.getElementById('saveIndicator');
+                    if (indicator) {
+                        indicator.style.display = 'block';
+                        indicator.textContent = `Saved JAR sheet for: ${data.activityName}`;
+                        setTimeout(() => {
+                            indicator.style.display = 'none';
+                        }, 2000);
+                    }
+                } else {
+                    // No routine selected, save as general
+                    localStorage.setItem('jarPracticeToolData', JSON.stringify(data));
+                    alert('Note: This JAR sheet is not linked to a specific routine. Select a routine from the hub first to link them.');
+                }
+            } catch (e) {
+                alert('Could not save: ' + e.message);
+            }
+        }
+
+        // MULTI-ROUTINE LOAD FUNCTION
+        function loadWork() {
+            const routineId = getCurrentRoutineId();
+            
+            try {
+                let data = null;
+                
+                // First try to load from the collection for this specific routine
+                if (routineId) {
+                    const allSheets = localStorage.getItem('jarPracticeSheets_collection');
+                    if (allSheets) {
+                        const collection = JSON.parse(allSheets);
+                        if (collection[routineId]) {
+                            data = collection[routineId];
+                            console.log(`Loading JAR sheet for routine ${routineId}`);
+                        }
+                    }
+                }
+                
+                // If no routine-specific data, check for general saved data
+                if (!data) {
+                    const generalData = localStorage.getItem('jarPracticeToolData');
+                    if (generalData) {
+                        data = JSON.parse(generalData);
+                        
+                        // Check if this general data belongs to the current routine
+                        if (routineId && data.routineId && data.routineId !== routineId) {
+                            // This data belongs to a different routine
+                            if (!confirm('You have unsaved JAR sheet data from another routine. Load it anyway?')) {
+                                return;
+                            }
+                        }
+                    }
+                }
+                
+                if (!data) {
+                    alert('No saved work found for this routine.');
+                    return;
+                }
+
+                // Clear and reset elaborate steps
+                const stepsContainer = document.getElementById('elaborate-steps');
+                stepsContainer.innerHTML = '';
+                elaborateStepCount = 0;
+
+                // Load the data into the form
+                loadDataIntoForm(data);
+                
+                // Show notification
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: #4CAF50;
+                    color: white;
+                    padding: 12px 20px;
+                    border-radius: 5px;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                    z-index: 1000;
+                `;
+                notification.textContent = `Loaded JAR sheet: ${data.activityName || 'Unnamed'}`;
+                document.body.appendChild(notification);
+                setTimeout(() => notification.remove(), 3000);
+                
+            } catch (e) {
+                alert('Could not load: ' + e.message);
+            }
+        }
+
+        // Helper function to load data into form
+        function loadDataIntoForm(data) {
+            // Activity & setup
+            if (data.activityName !== undefined) document.getElementById('activityName').value = data.activityName;
+            if (data.setupLooks !== undefined) document.getElementById('setup-looks').value = data.setupLooks;
+
+            // Theme
+            if (data.theme) {
+                document.getElementById('theme-description').value = data.theme.description || '';
+                document.getElementById('theme-adult-role').value = data.theme.adultRole || '';
+                document.getElementById('theme-child-role').value = data.theme.childRole || '';
+                document.getElementById('theme-awareness').value = data.theme.awareness || '';
+                if (data.theme.level) setToggle('theme', data.theme.level);
+                
+                // Wait for teaching content to be created
+                setTimeout(() => {
+                    const teachInput = document.getElementById('theme-teaching-input');
+                    if (teachInput && data.theme.teaching !== undefined) {
+                        teachInput.value = data.theme.teaching;
+                    }
+                }, 100);
+            }
+
+            // Elaborate steps
+            const steps = Array.isArray(data.elaborate) ? data.elaborate : [];
+            if (steps.length === 0) {
+                addElaborateStep();
+            } else {
+                steps.forEach((st, i) => {
+                    addElaborateStep();
+                    const num = st.step || (i + 1);
+                    const stepEl = document.querySelector(`.elaborate-step[data-step="${num}"]`) || 
+                                  document.querySelectorAll('.elaborate-step')[i];
+                    
+                    if (!stepEl) return;
+                    
+                    stepEl.querySelector('.step-description').value = st.description || '';
+                    stepEl.querySelector('.adult-role').value = st.adultRole || '';
+                    stepEl.querySelector('.child-role').value = st.childRole || '';
+                    const awareness = stepEl.querySelector('.shared-awareness');
+                    if (awareness) awareness.value = st.sharedAwareness || '';
+                    
+                    if (st.level) setToggle('elaborate-' + num, st.level);
+                    
+                    // Load teaching content after toggle is set
+                    setTimeout(() => {
+                        const teach = stepEl.querySelector('.elaborate-teaching-input');
+                        if (teach && st.teaching !== undefined) teach.value = st.teaching;
+                    }, 100);
+                });
+            }
+
+            // Closing
+            if (data.closing) {
+                document.getElementById('closing-description').value = data.closing.description || '';
+                document.getElementById('closing-teaching').value = data.closing.teaching || '';
+            }
+        }
+
+        // Helper function to set toggle state
+        function setToggle(section, level) {
+            const toggle = document.querySelector(`[data-section="${section}"]`);
+            if (!toggle) return;
+            
+            toggle.querySelectorAll('.toggle-btn').forEach(btn => {
+                btn.classList.remove('active-green', 'active-yellow', 'active-red');
+                if (btn.dataset.level === level) {
+                    btn.classList.add('active-' + level);
+                }
+            });
+            
+            updateTeachingOpportunities(section, level);
+        }
+
+        function generateSummary() {
+            const activityName = document.getElementById('activityName').value || 'Unnamed Activity';
+            document.getElementById('summaryActivityName').textContent = activityName;
+
+            let tableContent = '';
+
+            // SETUP row
+            const setupText = document.getElementById('setup-looks').value || 'Not filled';
+            tableContent += `
+                <tr>
+                    <td><strong>SETUP</strong><br><em style="font-size: 0.9em;">Finding HRE</em></td>
+                    <td>${setupText}</td>
+                    <td>Build rapport and ensure child is Happy, Relaxed, and Engaged</td>
+                </tr>
+            `;
+
+            // Initial Theme row
+            const themeLevel = getActiveLevel("theme");
+            const themeDescription = document.getElementById('theme-description').value || 'Not filled';
+            const themeAdultRole = document.getElementById('theme-adult-role').value;
+            const themeChildRole = document.getElementById('theme-child-role').value;
+            const themeTeaching = document.getElementById('theme-teaching-input')?.value || '';
+            
+            let themeIndicator = '';
+            if (themeLevel === 'green') {
+                themeIndicator = '<span class="establishment-indicator indicator-green"></span>';
+            } else if (themeLevel === 'yellow') {
+                themeIndicator = '<span class="establishment-indicator indicator-yellow"></span>';
+            } else if (themeLevel === 'red') {
+                themeIndicator = '<span class="establishment-indicator indicator-red"></span>';
+            }
+
+            tableContent += `
+                <tr>
+                    <td>
+                        <strong>INITIAL THEME</strong><br>
+                        ${themeIndicator}
+                        <em style="font-size: 0.9em;">${themeDescription}</em>
+                    </td>
+                    <td>
+                        <strong>Your role:</strong> ${themeAdultRole || 'Not filled'}<br>
+                        <strong>Child's role:</strong> ${themeChildRole || 'Not filled'}
+                    </td>
+                    <td>${themeTeaching || 'Not filled'}</td>
+                </tr>
+            `;
+
+            // Elaborate steps
+            document.querySelectorAll('.elaborate-step').forEach((step, index) => {
+                const stepNum = index + 1;
+                const stepLevel = step.querySelector('.toggle-btn.active-green, .toggle-btn.active-yellow, .toggle-btn.active-red')?.dataset.level;
+                const stepDescription = step.querySelector('.step-description').value;
+                const adultRole = step.querySelector('.adult-role').value;
+                const childRole = step.querySelector('.child-role').value;
+                const teachingOpp = step.querySelector('.elaborate-teaching-input')?.value || '';
+
+                let stepIndicator = '';
+                if (stepLevel === 'green') {
+                    stepIndicator = '<span class="establishment-indicator indicator-green"></span>';
+                } else if (stepLevel === 'yellow') {
+                    stepIndicator = '<span class="establishment-indicator indicator-yellow"></span>';
+                } else if (stepLevel === 'red') {
+                    stepIndicator = '<span class="establishment-indicator indicator-red"></span>';
+                }
+
+                tableContent += `
+                    <tr>
+                        <td>
+                            <strong>ELABORATE ${stepNum}</strong><br>
+                            ${stepIndicator}
+                            <em style="font-size: 0.9em;">${stepDescription || 'Not filled'}</em>
+                        </td>
+                        <td>
+                            <strong>Your role:</strong> ${adultRole || 'Not filled'}<br>
+                            <strong>Child's role:</strong> ${childRole || 'Not filled'}
+                        </td>
+                        <td>${teachingOpp || 'Not filled'}</td>
+                    </tr>
+                `;
+            });
+
+            // Closing row
+            const closingDescription = document.getElementById('closing-description').value || 'Not filled';
+            const closingTeaching = document.getElementById('closing-teaching').value || 'Not filled';
+            tableContent += `
+                <tr>
+                    <td><strong>CLOSING & TRANSITION</strong></td>
+                    <td>${closingDescription}</td>
+                    <td>${closingTeaching}</td>
+                </tr>
+            `;
+
+            document.getElementById('summaryTableBody').innerHTML = tableContent;
+            document.getElementById('formSection').style.display = 'none';
+            document.getElementById('summarySection').classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function editForm() {
+            document.getElementById('formSection').style.display = 'block';
+            document.getElementById('summarySection').classList.remove('active');
+        }
+
+        function exportSummary() {
+            const activityName = document.getElementById('activityName').value || 'Unnamed Activity';
+            const routineId = getCurrentRoutineId();
+            
+            let text = `JAR PRACTICE SHEET - SUMMARY\n`;
+            text += `============================\n\n`;
+            text += `Activity Name: ${activityName}\n`;
+            if (routineId) {
+                text += `Routine ID: ${routineId}\n`;
+            }
+            text += `Export Date: ${new Date().toLocaleString()}\n\n`;
+            
+            text += `SETUP - Finding HRE\n-------------------\n`;
+            text += document.getElementById('setup-looks').value + '\n\n';
+            
+            text += `BUILDING THE THEME OF THE ACTIVITY\n----------------------------------\n\n`;
+            
+            text += `INITIAL THEME: ${document.getElementById('theme-description').value}\n`;
+            const themeLevel = getActiveLevel("theme");
+            text += `Establishment Level: ${themeLevel ? themeLevel.toUpperCase() : 'Not set'}\n`;
+            text += `Your Role: ${document.getElementById('theme-adult-role').value}\n`;
+            text += `Child's Role: ${document.getElementById('theme-child-role').value}\n`;
+            text += `Shared Awareness: ${document.getElementById('theme-awareness').value}\n`;
+            text += `Teaching Opportunities: ${document.getElementById('theme-teaching-input')?.value || 'Not filled'}\n\n`;
+            
+            document.querySelectorAll('.elaborate-step').forEach((step, index) => {
+                text += `ELABORATE ${index + 1}: ${step.querySelector('.step-description').value}\n`;
+                const stepLevel = step.querySelector('.toggle-btn.active-green, .toggle-btn.active-yellow, .toggle-btn.active-red')?.dataset.level;
+                text += `Establishment Level: ${stepLevel ? stepLevel.toUpperCase() : 'Not set'}\n`;
+                text += `Your Role: ${step.querySelector('.adult-role').value}\n`;
+                text += `Child's Role: ${step.querySelector('.child-role').value}\n`;
+                text += `Shared Awareness: ${step.querySelector('.shared-awareness')?.value || 'Not filled'}\n`;
+                text += `Teaching Opportunities: ${step.querySelector('.elaborate-teaching-input')?.value || 'Not filled'}\n\n`;
+            });
+            
+            text += `CLOSING & TRANSITION\n-------------------\n`;
+            text += document.getElementById('closing-description').value + '\n';
+            text += `Teaching Opportunities: ${document.getElementById('closing-teaching').value}\n`;
+
+            // Create download link
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `JAR_Summary_${activityName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        function clearAll() {
+            if (!confirm('This will clear all fields. Are you sure?')) return;
+            
+            // Clear basic fields
+            ['activityName','setup-looks','theme-description','theme-adult-role','theme-child-role','theme-awareness','closing-description','closing-teaching'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+
+            // Clear teaching inputs if they exist
+            const themeTeaching = document.getElementById('theme-teaching-input');
+            if (themeTeaching) themeTeaching.value = '';
+
+            // Reset toggles
+            document.querySelectorAll('.establishment-toggle').forEach(toggle => {
+                toggle.querySelectorAll('.toggle-btn').forEach(btn => {
+                    btn.classList.remove('active-green','active-yellow','active-red');
+                });
+            });
+
+            // Clear teaching opportunities content
+            document.getElementById('theme-teaching-content').innerHTML = '';
+
+            // Reset elaborate steps to one
+            const stepsContainer = document.getElementById('elaborate-steps');
+            stepsContainer.innerHTML = '';
+            elaborateStepCount = 0;
+            addElaborateStep();
+
+            // Hide summary if showing
+            document.getElementById('formSection').style.display = 'block';
+            document.getElementById('summarySection').classList.remove('active');
+        }
+
+        // Function to apply prefill data
+        function applyPrefillData() {
+            const prefillData = localStorage.getItem('jarPracticeToolData_prefill');
+            if (prefillData) {
+                try {
+                    const data = JSON.parse(prefillData);
+                    
+                    const activityField = document.getElementById('activityName');
+                    const setupField = document.getElementById('setup-looks');
+                    
+                    if (activityField && !activityField.value && data.activityName) {
+                        activityField.value = data.activityName;
+                    }
+                    
+                    if (setupField && !setupField.value && data.setupLooks) {
+                        setupField.value = data.setupLooks;
+                    }
+                    
+                    localStorage.removeItem('jarPracticeToolData_prefill');
+                    
+                } catch (e) {
+                    console.error('Error loading prefill data:', e);
+                }
+            }
+        }
+
+        // Check which routine we're working on when page loads
+        window.addEventListener('load', () => {
+            const selectedRoutine = localStorage.getItem('selectedRoutineForJAR');
+            const prefillData = localStorage.getItem('jarPracticeToolData_prefill');
+            
+            if (selectedRoutine) {
+                try {
+                    const routine = JSON.parse(selectedRoutine);
+                    const routineId = routine.id;
+                    
+                    // Show routine indicator
+                    const indicator = document.getElementById('routineIndicator');
+                    const nameDisplay = document.getElementById('routineName');
+                    if (indicator && nameDisplay) {
+                        nameDisplay.textContent = routine.name || 'Unnamed Routine';
+                        indicator.style.display = 'block';
+                    }
+                    
+                    // Check if we have existing data for this routine
+                    const allSheets = localStorage.getItem('jarPracticeSheets_collection');
+                    let hasExistingSheet = false;
+                    
+                    if (allSheets) {
+                        const collection = JSON.parse(allSheets);
+                        hasExistingSheet = !!collection[routineId];
+                    }
+                    
+                    if (hasExistingSheet && !prefillData) {
+                        // We have a saved sheet for this routine
+                        if (confirm(`Load existing JAR sheet for "${routine.name}"?`)) {
+                            loadWork();
+                        }
+                    } else if (prefillData) {
+                        // New routine, apply prefill
+                        applyPrefillData();
+                    }
+                    
+                } catch (e) {
+                    console.error('Error loading routine info:', e);
+                }
+            } else {
+                // No routine selected - offer to load general saved data
+                const hasExistingData = localStorage.getItem('jarPracticeToolData');
+                if (hasExistingData && !prefillData) {
+                    const shouldLoad = confirm('You have previously saved JAR sheet data. Would you like to load it?');
+                    if (shouldLoad) {
+                        loadWork();
+                    }
+                }
+            }
+        });
+
+        // Auto-save every 60 seconds
+        setInterval(() => {
+            if (document.getElementById('activityName').value || 
+                document.getElementById('setup-looks').value) {
+                saveWork();
+            }
+        }, 60000);
+    </script>
+</body>
+</html>
