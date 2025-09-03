@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Referral Information Formatter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .input-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .input-section h2 {
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-section h2::before {
+            content: "📋";
+        }
+
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 15ението;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Courier New', monospace;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .convert-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            flex: 1;
+        }
+
+        .convert-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .clear-btn {
+            background: #f5f5f5;
+            color: #666;
+        }
+
+        .clear-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .print-btn {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .print-btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .output-section {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .output-section.show {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .document-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .document-header h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .document-header .date {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .section {
+            margin-bottom: 35px;
+        }
+
+        .section-title {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .info-item {
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #555;
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            color: #333;
+            font-size: 15px;
+            word-break: break-word;
+        }
+
+        .info-value.empty {
+            color: #999;
+            font-style: italic;
+        }
+
+        .alert {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .container {
+                max-width: 100%;
+            }
+
+            .input-section,
+            .header,
+            .button-group {
+                display: none;
+            }
+
+            .output-section {
+                box-shadow: none;
+                padding: 20px;
+            }
+
+            .section-title {
+                background: #f0f0f0 !important;
+                color: #333 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .info-item {
+                border-left-color: #666 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Referral Information Formatter</h1>
+            <p>Convert Excel row data into a formatted PDF document</p>
+        </div>
+
+        <div class="input-section">
+            <h2>Paste Excel Row Data</h2>
+            <p style="margin-bottom: 15px; color: #666;">
+                Copy the entire row from your Excel file (including all cells) and paste it below. 
+                The data should be tab-separated when copied from Excel.
+            </p>
+            <textarea id="excelData" placeholder="Paste your Excel row data here..."></textarea>
+            
+            <div class="button-group">
+                <button class="convert-btn" onclick="convertData()">
+                    <span>🔄</span> Convert to Document
+                </button>
+                <button class="clear-btn" onclick="clearData()">
+                    <span>🗑️</span> Clear
+                </button>
+            </div>
+        </div>
+
+        <div id="alert" class="alert">
+            <strong>⚠️ Note:</strong> Some fields appear to be empty or missing. Please review the formatted document below.
+        </div>
+
+        <div id="output" class="output-section">
+            <div class="button-group" style="margin-bottom: 30px;">
+                <button class="print-btn" onclick="window.print()">
+                    <span>🖨️</span> Save as PDF / Print
+                </button>
+            </div>
+
+            <div id="documentContent">
+                <!-- Content will be generated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const fieldMapping = [
+            'ID',
+            'Start time',
+            'Completion time',
+            'Email',
+            'QS Location',
+            "Child's first and last name",
+            "Child's date of birth",
+            'Child pronouns',
+            'Which of the following best describes the/your child?',
+            'What type of Autism diagnosis does the/your child has?',
+            '1st parent/guardian full name',
+            '1st parent/guardian email address',
+            '1st parent/guardian phone number',
+            '2nd parent/guardian full name (Optional)',
+            '2nd parent/guardian email',
+            '2nd parent/guardian phone number',
+            'Home address',
+            'Best method of contact',
+            'Best time of day to contact you by phone',
+            'Are you fluent in English?',
+            'Language(s) spoken at home other than English',
+            'Is referral being made on behalf of parent(s)/caregiver(s)/family',
+            'Name of person completing the form',
+            'Relationship to child',
+            'Are you the parent/guardian of the child?',
+            'Is there any additional information you want to share?',
+            'Email of the person completing the form',
+            'Phone number of the person completing the form',
+            'Question',
+            'Email of the person completing the form',
+            'Email of the person completing the form2',
+            'In which of the following 4 zones is your home address located, within Nova Scotia? If unsure, it is possible to reference the following detailed map of the boundary areas for each of the 4 zone...'
+        ];
+
+        function convertData() {
+            const input = document.getElementById('excelData').value.trim();
+            
+            if (!input) {
+                alert('Please paste data from your Excel file first.');
+                return;
+            }
+
+            // Split by tab (Excel default) or try comma if no tabs found
+            let values = input.split('\t');
+            if (values.length === 1) {
+                values = input.split(',');
+            }
+
+            // Create data object
+            const data = {};
+            fieldMapping.forEach((field, index) => {
+                data[field] = values[index] || '';
+            });
+
+            // Generate formatted document
+            generateDocument(data);
+
+            // Show output section
+            document.getElementById('output').classList.add('show');
+
+            // Scroll to output
+            document.getElementById('output').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function generateDocument(data) {
+            // Parse the start time to get referral date
+            let referralDate = 'Date not available';
+            if (data["Start time"]) {
+                try {
+                    const date = new Date(data["Start time"]);
+                    if (!isNaN(date.getTime())) {
+                        referralDate = date.toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        });
+                    } else {
+                        // If parsing fails, use the raw value
+                        referralDate = data["Start time"];
+                    }
+                } catch (e) {
+                    referralDate = data["Start time"];
+                }
+            }
+
+            let html = `
+                <div class="document-header">
+                    <h1>Referral Information Form</h1>
+                    <div class="date">Referral Received on ${referralDate}</div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Child Information</div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Child's Name</div>
+                            <div class="info-value ${!data["Child's first and last name"] ? 'empty' : ''}">${data["Child's first and last name"] || 'Not provided'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Date of Birth</div>
+                            <div class="info-value ${!data["Child's date of birth"] ? 'empty' : ''}">${data["Child's date of birth"] || 'Not provided'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Pronouns</div>
+                            <div class="info-value ${!data["Child pronouns"] ? 'empty' : ''}">${data["Child pronouns"] || 'Not provided'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Ethnicity</div>
+                            <div class="info-value ${!data["Which of the following best describes the/your child?"] ? 'empty' : ''}">${data["Which of the following best describes the/your child?"] || 'Not provided'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Autism Diagnosis Type</div>
+                            <div class="info-value ${!data["What type of Autism diagnosis does the/your child has?"] ? 'empty' : ''}">${data["What type of Autism diagnosis does the/your child has?"] || 'Not provided'}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Parent/Guardian Information</div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">1st Parent/Guardian Name</div>
+                            <div class="info-value ${!data["1st parent/guardian full name"] ? 'empty' : ''}">${data["1st parent/guardian full name"] || 'Not provided'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">1st Parent/Guardian Email</div>
+                            <div class="info-value ${!data["1st parent/guardian email address"] ? 'empty' : ''}">${data["1st parent/guardian email address"] || 'Not provided'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">1st Parent/Guardian Phone</div>
+                            <div class="info-value ${!data["1st parent/guardian phone number"] ? 'empty' : ''}">${data["1st parent/guardian phone number"] || 'Not provided'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">2nd Parent/Guardian Name (Optional)</div>
+                            <div class="info-value ${!data["2nd parent/guardian full name (Optional)"] ? 'empty' : ''}">${data["2nd parent/guardian full name (Optional)"] || 'Not provided'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">2nd Parent/Guardian Email</div>
+                            <div class="info-value ${!data["2nd parent/guardian email"] ? 'empty' : ''}">${data["2nd parent/guardian email"] || 'Not provided'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">2nd Parent/Guardian Phone</div>
+                            <div class="info-value ${!data["2nd parent/guardian phone number"] ? 'empty' : ''}">${data["2nd parent/guardian phone number"] || 'Not provided'}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Contact Information</div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Home Address</div>
+                            <div class="info-value ${!data["Home address"] ? 'empty' : ''}">${data["Home address"] || 'Not provided'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Zone Location</div>
+                            <div class="info-value ${!data["QS Location"] ? 'empty' : ''}">${data["QS Location"] || 'Not provided'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Best Method of Contact</div>
+                            <div class="info-value ${!data["Best method of contact"] ? 'empty' : ''}">${data["Best method of contact"] || 'Not provided'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Best Time to Call</div>
+                            <div class="info-value ${!data["Best time of day to contact you by phone"] ? 'empty' : ''}">${data["Best time of day to contact you by phone"] || 'Not provided'}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Language Information</div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Fluent in English?</div>
+                            <div class="info-value ${!data["Are you fluent in English?"] ? 'empty' : ''}">${data["Are you fluent in English?"] || 'Not provided'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Other Languages Spoken at Home</div>
+                            <div class="info-value ${!data["Language(s) spoken at home other than English"] ? 'empty' : ''}">${data["Language(s) spoken at home other than English"] || 'Not provided'}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Referral Details</div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Form ID</div>
+                            <div class="info-value ${!data["ID"] ? 'empty' : ''}">${data["ID"] || 'Not provided'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Start Time</div>
+                            <div class="info-value ${!data["Start time"] ? 'empty' : ''}">${data["Start time"] || 'Not provided'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Completion Time</div>
+                            <div class="info-value ${!data["Completion time"] ? 'empty' : ''}">${data["Completion time"] || 'Not provided'}</div>
+                        </div>
+                    </div>
+                </div>
+
+                ${data["Is there any additional information you want to share?"] ? `
+                <div class="section">
+                    <div class="section-title">Additional Information</div>
+                    <div class="info-item">
+                        <div class="info-value">${data["Is there any additional information you want to share?"]}</div>
+                    </div>
+                </div>
+                ` : ''}
+            `;
+
+            document.getElementById('documentContent').innerHTML = html;
+        }
+
+        function clearData() {
+            document.getElementById('excelData').value = '';
+            document.getElementById('output').classList.remove('show');
+            document.getElementById('alert').classList.remove('show');
+        }
+
+        // Add keyboard shortcut for converting (Ctrl/Cmd + Enter)
+        document.getElementById('excelData').addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                convertData();
+            }
+        });
+    </script>
+</body>
+</html>
