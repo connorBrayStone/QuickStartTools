@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Referral Information Formatter</title>
+    <title>QuickStart NS Referral Information Formatter</title>
     <style>
         * {
             margin: 0;
@@ -63,12 +63,13 @@
         textarea {
             width: 100%;
             height: 150px;
-            padding: 15ението;
+            padding: 15px;
             border: 2px solid #e0e0e0;
             border-radius: 8px;
             font-size: 14px;
             font-family: 'Courier New', monospace;
             transition: border-color 0.3s;
+            resize: vertical;
         }
 
         textarea:focus {
@@ -160,10 +161,12 @@
         .document-header .date {
             color: #666;
             font-size: 14px;
+            margin: 5px 0;
         }
 
         .section {
             margin-bottom: 35px;
+            page-break-inside: avoid;
         }
 
         .section-title {
@@ -189,6 +192,10 @@
             border-left: 4px solid #667eea;
         }
 
+        .info-item.full-width {
+            grid-column: 1 / -1;
+        }
+
         .info-label {
             font-weight: 600;
             color: #555;
@@ -201,6 +208,7 @@
             color: #333;
             font-size: 15px;
             word-break: break-word;
+            white-space: pre-wrap;
         }
 
         .info-value.empty {
@@ -221,6 +229,15 @@
             display: block;
         }
 
+        .instructions {
+            background: #e8f4fd;
+            border: 1px solid #2196F3;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            color: #1976D2;
+        }
+
         @media print {
             body {
                 background: white;
@@ -233,8 +250,10 @@
 
             .input-section,
             .header,
-            .button-group {
-                display: none;
+            .button-group,
+            .alert,
+            .instructions {
+                display: none !important;
             }
 
             .output-section {
@@ -254,22 +273,32 @@
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
+
+            .document-header {
+                border-bottom-color: #666 !important;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>Referral Information Formatter</h1>
+            <h1>QuickStart NS Referral Information Formatter</h1>
             <p>Convert Excel row data into a formatted PDF document</p>
         </div>
 
         <div class="input-section">
             <h2>Paste Excel Row Data</h2>
-            <p style="margin-bottom: 15px; color: #666;">
-                Copy the entire row from your Excel file (including all cells) and paste it below. 
-                The data should be tab-separated when copied from Excel.
-            </p>
+            <div class="instructions">
+                <strong>Instructions:</strong>
+                <ol style="margin-left: 20px; margin-top: 10px;">
+                    <li>Open your Excel file with referral data</li>
+                    <li>Select the entire row (click on the row number)</li>
+                    <li>Copy the row (Ctrl+C or Cmd+C)</li>
+                    <li>Paste it in the box below (Ctrl+V or Cmd+V)</li>
+                    <li>Click "Convert to Document"</li>
+                </ol>
+            </div>
             <textarea id="excelData" placeholder="Paste your Excel row data here..."></textarea>
             
             <div class="button-group">
@@ -283,13 +312,16 @@
         </div>
 
         <div id="alert" class="alert">
-            <strong>⚠️ Note:</strong> Some fields appear to be empty or missing. Please review the formatted document below.
+            <strong>⚠️ Note:</strong> Some critical fields appear to be empty. Please review the formatted document below.
         </div>
 
         <div id="output" class="output-section">
             <div class="button-group" style="margin-bottom: 30px;">
                 <button class="print-btn" onclick="window.print()">
                     <span>🖨️</span> Save as PDF / Print
+                </button>
+                <button class="clear-btn" onclick="clearData()">
+                    <span>↑</span> Start New Conversion
                 </button>
             </div>
 
@@ -300,39 +332,41 @@
     </div>
 
     <script>
+        // Updated field mapping based on new Excel structure
+        // Column indices match the Excel file exactly
         const fieldMapping = [
-            'ID',
-            'Start time',
-            'Completion time',
-            'Email',
-            'QS Location',
-            "Child's first and last name",
-            "Child's date of birth",
-            'Child pronouns',
-            'Which of the following best describes the/your child?',
-            'What type of Autism diagnosis does the/your child has?',
-            '1st parent/guardian full name',
-            '1st parent/guardian email address',
-            '1st parent/guardian phone number',
-            '2nd parent/guardian full name (Optional)',
-            '2nd parent/guardian email',
-            '2nd parent/guardian phone number',
-            'Home address',
-            'Best method of contact',
-            'Best time of day to contact you by phone',
-            'Are you fluent in English?',
-            'Language(s) spoken at home other than English',
-            'Is referral being made on behalf of parent(s)/caregiver(s)/family',
-            'Name of person completing the form',
-            'Relationship to child',
-            'Are you the parent/guardian of the child?',
-            'Is there any additional information you want to share?',
-            'Email of the person completing the form',
-            'Phone number of the person completing the form',
-            'Question',
-            'Email of the person completing the form',
-            'Email of the person completing the form2',
-            'In which of the following 4 zones is your home address located, within Nova Scotia? If unsure, it is possible to reference the following detailed map of the boundary areas for each of the 4 zone...'
+            'Id',                                                                    // A (0)
+            'Start time',                                                           // B (1)
+            'Completion time',                                                      // C (2)
+            'Email',                                                                // D (3)
+            'Name',                                                                 // E (4) - Always empty, linked to MS Forms
+            'Are you the parent/guardian of the child?',                          // F (5)
+            'Referral on behalf confirmation',                                     // G (6)
+            'Name of person completing the form',                                  // H (7)
+            'Email of the person completing the form',                             // I (8)
+            'Relationship to child',                                               // J (9)
+            'Age of child at referral',                                           // K (10)
+            'Consent for CICC sharing',                                           // L (11)
+            "Child's first and last name",                                        // M (12)
+            "Child's date of birth",                                              // N (13)
+            "Child's health card number",                                         // O (14)
+            'Child pronouns',                                                      // P (15)
+            'Ethnicity',                                                           // Q (16) - Will capture but not display
+            'What type of Autism diagnosis does the/your child have?',           // R (17)
+            '1st parent/guardian full name',                                      // S (18)
+            '1st parent/guardian phone number',                                   // T (19)
+            '1st parent/guardian email address',                                  // U (20)
+            '2nd parent/guardian full name (Optional)',                           // V (21)
+            '2nd parent/guardian phone number',                                   // W (22)
+            '2nd parent/guardian email',                                          // X (23)
+            'Home address',                                                        // Y (24)
+            'Zone location',                                                       // Z (25)
+            'Best method of contact',                                             // AA (26)
+            'Best time of day to contact you by phone',                           // AB (27)
+            'Are you fluent in English?',                                         // AC (28)
+            'Language(s) spoken at home other than English',                      // AD (29)
+            'Is there any additional information you want to share',              // AE (30)
+            'Contact info for referral completion'                                // AF (31)
         ];
 
         function convertData() {
@@ -343,8 +377,10 @@
                 return;
             }
 
-            // Split by tab (Excel default) or try comma if no tabs found
+            // Split by tab (Excel default)
             let values = input.split('\t');
+            
+            // If no tabs found, try comma
             if (values.length === 1) {
                 values = input.split(',');
             }
@@ -361,35 +397,77 @@
             // Show output section
             document.getElementById('output').classList.add('show');
 
+            // Check for empty critical fields
+            checkForEmptyFields(data);
+
             // Scroll to output
             document.getElementById('output').scrollIntoView({ behavior: 'smooth' });
         }
 
-        function generateDocument(data) {
-            // Parse the start time to get referral date
-            let referralDate = 'Date not available';
-            if (data["Start time"]) {
-                try {
-                    const date = new Date(data["Start time"]);
-                    if (!isNaN(date.getTime())) {
-                        referralDate = date.toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                        });
-                    } else {
-                        // If parsing fails, use the raw value
-                        referralDate = data["Start time"];
-                    }
-                } catch (e) {
-                    referralDate = data["Start time"];
-                }
+        function clearData() {
+            document.getElementById('excelData').value = '';
+            document.getElementById('output').classList.remove('show');
+            document.getElementById('alert').classList.remove('show');
+            document.getElementById('documentContent').innerHTML = '';
+            
+            // Scroll back to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function checkForEmptyFields(data) {
+            const criticalFields = [
+                "Child's first and last name",
+                "Child's date of birth",
+                "Child's health card number",
+                '1st parent/guardian full name',
+                '1st parent/guardian phone number',
+                '1st parent/guardian email address',
+                'Home address'
+            ];
+
+            const hasEmptyFields = criticalFields.some(field => !data[field] || data[field].trim() === '');
+            
+            if (hasEmptyFields) {
+                document.getElementById('alert').classList.add('show');
+            } else {
+                document.getElementById('alert').classList.remove('show');
             }
+        }
+
+        function formatDate(dateValue) {
+            if (!dateValue) return 'Not provided';
+            
+            try {
+                // Remove any timezone info for cleaner parsing
+                const cleanDate = dateValue.replace(/GMT[+-]\d{4}.*$/, '').trim();
+                const date = new Date(cleanDate);
+                
+                if (!isNaN(date.getTime())) {
+                    return date.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                }
+            } catch (e) {
+                // If parsing fails, return the original value
+            }
+            return dateValue;
+        }
+
+        function generateDocument(data) {
+            const referralDate = formatDate(data["Start time"]);
+            const completionDate = formatDate(data["Completion time"]);
+            const childDOB = formatDate(data["Child's date of birth"]);
+            
+            // Check if this is a third-party referral
+            const isThirdPartyReferral = data["Are you the parent/guardian of the child?"] === 'No';
 
             let html = `
                 <div class="document-header">
-                    <h1>Referral Information Form</h1>
-                    <div class="date">Referral Received on ${referralDate}</div>
+                    <h1>QuickStart Nova Scotia - Referral Information</h1>
+                    <div class="date">Referral Received: ${referralDate}</div>
+                    ${data["Id"] ? `<div class="date">Referral ID: ${data["Id"]}</div>` : ''}
                 </div>
 
                 <div class="section">
@@ -401,70 +479,88 @@
                         </div>
                         <div class="info-item">
                             <div class="info-label">Date of Birth</div>
-                            <div class="info-value ${!data["Child's date of birth"] ? 'empty' : ''}">${data["Child's date of birth"] || 'Not provided'}</div>
+                            <div class="info-value ${!data["Child's date of birth"] ? 'empty' : ''}">${childDOB}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Health Card Number</div>
+                            <div class="info-value ${!data["Child's health card number"] ? 'empty' : ''}">${data["Child's health card number"] || 'Not provided'}</div>
                         </div>
                         <div class="info-item">
                             <div class="info-label">Pronouns</div>
                             <div class="info-value ${!data["Child pronouns"] ? 'empty' : ''}">${data["Child pronouns"] || 'Not provided'}</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">Ethnicity</div>
-                            <div class="info-value ${!data["Which of the following best describes the/your child?"] ? 'empty' : ''}">${data["Which of the following best describes the/your child?"] || 'Not provided'}</div>
+                            <div class="info-label">Age at Referral</div>
+                            <div class="info-value ${!data["Age of child at referral"] ? 'empty' : ''}">${data["Age of child at referral"] || 'Not provided'}</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">Autism Diagnosis Type</div>
-                            <div class="info-value ${!data["What type of Autism diagnosis does the/your child has?"] ? 'empty' : ''}">${data["What type of Autism diagnosis does the/your child has?"] || 'Not provided'}</div>
+                            <div class="info-label">Autism Diagnosis Status</div>
+                            <div class="info-value ${!data["What type of Autism diagnosis does the/your child have?"] ? 'empty' : ''}">${data["What type of Autism diagnosis does the/your child have?"] || 'Not provided'}</div>
                         </div>
                     </div>
                 </div>
 
                 <div class="section">
-                    <div class="section-title">Parent/Guardian Information</div>
+                    <div class="section-title">Primary Parent/Guardian Information</div>
                     <div class="info-grid">
                         <div class="info-item">
-                            <div class="info-label">1st Parent/Guardian Name</div>
+                            <div class="info-label">Full Name</div>
                             <div class="info-value ${!data["1st parent/guardian full name"] ? 'empty' : ''}">${data["1st parent/guardian full name"] || 'Not provided'}</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">1st Parent/Guardian Email</div>
-                            <div class="info-value ${!data["1st parent/guardian email address"] ? 'empty' : ''}">${data["1st parent/guardian email address"] || 'Not provided'}</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">1st Parent/Guardian Phone</div>
+                            <div class="info-label">Phone Number</div>
                             <div class="info-value ${!data["1st parent/guardian phone number"] ? 'empty' : ''}">${data["1st parent/guardian phone number"] || 'Not provided'}</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">2nd Parent/Guardian Name (Optional)</div>
-                            <div class="info-value ${!data["2nd parent/guardian full name (Optional)"] ? 'empty' : ''}">${data["2nd parent/guardian full name (Optional)"] || 'Not provided'}</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">2nd Parent/Guardian Email</div>
-                            <div class="info-value ${!data["2nd parent/guardian email"] ? 'empty' : ''}">${data["2nd parent/guardian email"] || 'Not provided'}</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">2nd Parent/Guardian Phone</div>
-                            <div class="info-value ${!data["2nd parent/guardian phone number"] ? 'empty' : ''}">${data["2nd parent/guardian phone number"] || 'Not provided'}</div>
+                            <div class="info-label">Email Address</div>
+                            <div class="info-value ${!data["1st parent/guardian email address"] ? 'empty' : ''}">${data["1st parent/guardian email address"] || 'Not provided'}</div>
                         </div>
                     </div>
                 </div>
+            `;
 
+            // Add secondary parent/guardian section only if any info is provided
+            if (data["2nd parent/guardian full name (Optional)"] || 
+                data["2nd parent/guardian phone number"] || 
+                data["2nd parent/guardian email"]) {
+                html += `
+                <div class="section">
+                    <div class="section-title">Secondary Parent/Guardian Information (Optional)</div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Full Name</div>
+                            <div class="info-value ${!data["2nd parent/guardian full name (Optional)"] ? 'empty' : ''}">${data["2nd parent/guardian full name (Optional)"] || 'Not provided'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Phone Number</div>
+                            <div class="info-value ${!data["2nd parent/guardian phone number"] ? 'empty' : ''}">${data["2nd parent/guardian phone number"] || 'Not provided'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Email Address</div>
+                            <div class="info-value ${!data["2nd parent/guardian email"] ? 'empty' : ''}">${data["2nd parent/guardian email"] || 'Not provided'}</div>
+                        </div>
+                    </div>
+                </div>`;
+            }
+
+            html += `
                 <div class="section">
                     <div class="section-title">Contact Information</div>
                     <div class="info-grid">
-                        <div class="info-item">
+                        <div class="info-item full-width">
                             <div class="info-label">Home Address</div>
                             <div class="info-value ${!data["Home address"] ? 'empty' : ''}">${data["Home address"] || 'Not provided'}</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">Zone Location</div>
-                            <div class="info-value ${!data["QS Location"] ? 'empty' : ''}">${data["QS Location"] || 'Not provided'}</div>
+                            <div class="info-label">Nova Scotia Zone</div>
+                            <div class="info-value ${!data["Zone location"] ? 'empty' : ''}">${data["Zone location"] || 'Not provided'}</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">Best Method of Contact</div>
+                            <div class="info-label">Preferred Contact Method</div>
                             <div class="info-value ${!data["Best method of contact"] ? 'empty' : ''}">${data["Best method of contact"] || 'Not provided'}</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">Best Time to Call</div>
+                            <div class="info-label">Best Time for Phone Contact</div>
                             <div class="info-value ${!data["Best time of day to contact you by phone"] ? 'empty' : ''}">${data["Best time of day to contact you by phone"] || 'Not provided'}</div>
                         </div>
                     </div>
@@ -474,57 +570,105 @@
                     <div class="section-title">Language Information</div>
                     <div class="info-grid">
                         <div class="info-item">
-                            <div class="info-label">Fluent in English?</div>
+                            <div class="info-label">Fluent in English</div>
                             <div class="info-value ${!data["Are you fluent in English?"] ? 'empty' : ''}">${data["Are you fluent in English?"] || 'Not provided'}</div>
                         </div>
                         <div class="info-item">
                             <div class="info-label">Other Languages Spoken at Home</div>
-                            <div class="info-value ${!data["Language(s) spoken at home other than English"] ? 'empty' : ''}">${data["Language(s) spoken at home other than English"] || 'Not provided'}</div>
+                            <div class="info-value ${!data["Language(s) spoken at home other than English"] ? 'empty' : ''}">${data["Language(s) spoken at home other than English"] || 'None specified'}</div>
                         </div>
                     </div>
                 </div>
+            `;
 
+            // Add third-party referral section if applicable
+            if (isThirdPartyReferral) {
+                html += `
                 <div class="section">
-                    <div class="section-title">Referral Details</div>
+                    <div class="section-title">Referral Source Information</div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Referral Submitted By</div>
+                            <div class="info-value">Third Party</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Name of Person Completing Form</div>
+                            <div class="info-value ${!data["Name of person completing the form"] ? 'empty' : ''}">${data["Name of person completing the form"] || 'Not provided'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Email of Person Completing Form</div>
+                            <div class="info-value ${!data["Email of the person completing the form"] ? 'empty' : ''}">${data["Email of the person completing the form"] || 'Not provided'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Relationship to Child/Family</div>
+                            <div class="info-value ${!data["Relationship to child"] ? 'empty' : ''}">${data["Relationship to child"] || 'Not provided'}</div>
+                        </div>
+                        <div class="info-item full-width">
+                            <div class="info-label">Family Consent Confirmed</div>
+                            <div class="info-value ${!data["Referral on behalf confirmation"] ? 'empty' : ''}">${data["Referral on behalf confirmation"] || 'Not provided'}</div>
+                        </div>
+                    </div>
+                </div>`;
+            }
+
+            html += `
+                <div class="section">
+                    <div class="section-title">Program Eligibility</div>
+                    <div class="info-grid">
+                        <div class="info-item full-width">
+                            <div class="info-label">Consent for IWK Clinical Intake and Care Coordination (CICC) Team</div>
+                            <div class="info-value ${!data["Consent for CICC sharing"] ? 'empty' : ''}">${data["Consent for CICC sharing"] || 'Not provided'}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Add additional information section if provided
+            if (data["Is there any additional information you want to share"] && 
+                data["Is there any additional information you want to share"].trim() !== '') {
+                html += `
+                <div class="section">
+                    <div class="section-title">Additional Information</div>
+                    <div class="info-item full-width">
+                        <div class="info-value">${data["Is there any additional information you want to share"]}</div>
+                    </div>
+                </div>`;
+            }
+
+            html += `
+                <div class="section">
+                    <div class="section-title">Administrative Information</div>
                     <div class="info-grid">
                         <div class="info-item">
                             <div class="info-label">Form ID</div>
-                            <div class="info-value ${!data["ID"] ? 'empty' : ''}">${data["ID"] || 'Not provided'}</div>
+                            <div class="info-value">${data["Id"] || 'Not provided'}</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">Start Time</div>
-                            <div class="info-value ${!data["Start time"] ? 'empty' : ''}">${data["Start time"] || 'Not provided'}</div>
+                            <div class="info-label">Form Started</div>
+                            <div class="info-value">${referralDate}</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">Completion Time</div>
-                            <div class="info-value ${!data["Completion time"] ? 'empty' : ''}">${data["Completion time"] || 'Not provided'}</div>
+                            <div class="info-label">Form Completed</div>
+                            <div class="info-value">${completionDate}</div>
                         </div>
                     </div>
                 </div>
-
-                ${data["Is there any additional information you want to share?"] ? `
-                <div class="section">
-                    <div class="section-title">Additional Information</div>
-                    <div class="info-item">
-                        <div class="info-value">${data["Is there any additional information you want to share?"]}</div>
-                    </div>
-                </div>
-                ` : ''}
             `;
 
             document.getElementById('documentContent').innerHTML = html;
-        }
-
-        function clearData() {
-            document.getElementById('excelData').value = '';
-            document.getElementById('output').classList.remove('show');
-            document.getElementById('alert').classList.remove('show');
         }
 
         // Add keyboard shortcut for converting (Ctrl/Cmd + Enter)
         document.getElementById('excelData').addEventListener('keydown', function(e) {
             if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
                 convertData();
+            }
+        });
+
+        // Prevent form submission on Enter key
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+                e.preventDefault();
             }
         });
     </script>
