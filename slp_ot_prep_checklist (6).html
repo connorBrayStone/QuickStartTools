@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SLP/OT Pre-Session Preparation Checklist</title>
+    <style>
+        @media print {
+            .no-print { display: none; }
+            body { margin: 0.4in; }
+            h1 { font-size: 20px; margin-bottom: 15px; padding-bottom: 8px; }
+            h2 { font-size: 16px; padding: 6px 10px; margin-top: 15px; margin-bottom: 10px; }
+            h3 { font-size: 14px; margin-top: 12px; margin-bottom: 8px; }
+            .session-info { padding: 8px; margin-bottom: 15px; }
+            .checklist-section { margin-bottom: 15px; }
+            .checkbox-item { margin-bottom: 6px; }
+            .info-box { padding: 8px; margin: 8px 0; font-size: 13px; }
+            .info-box ul { margin: 3px 0; }
+            .info-box li { margin-bottom: 2px; }
+            .checkbox-text { font-size: 14px; line-height: 1.3; }
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 8.5in;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.4;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
+        h2 {
+            background-color: #3498db;
+            color: white;
+            padding: 8px 12px;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        h3 {
+            color: #2c3e50;
+            margin-top: 15px;
+            margin-bottom: 10px;
+            font-size: 16px;
+            text-decoration: underline;
+        }
+        
+        .checklist-section {
+            margin-bottom: 20px;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 8px;
+            padding-left: 10px;
+        }
+        
+        .checkbox {
+            min-width: 18px;
+            height: 18px;
+            margin-right: 10px;
+            margin-top: 2px;
+            flex-shrink: 0;
+            cursor: pointer;
+            accent-color: #3498db;
+        }
+        
+        .checkbox-text {
+            flex: 1;
+        }
+        
+        .info-box {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        
+        .session-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .session-info div {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .session-info input[type="text"] {
+            padding: 5px;
+            border: 1px solid #bdc3c7;
+            border-radius: 3px;
+            width: 90%;
+        }
+        
+        .session-info label {
+            font-weight: bold;
+            margin-right: 10px;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .session-selector {
+            background-color: #3498db;
+            color: white;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        
+        .session-selector label {
+            font-weight: bold;
+            font-size: 16px;
+            display: block;
+            margin-bottom: 8px;
+        }
+        
+        .session-selector select {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        
+        .session-content {
+            display: none;
+        }
+        
+        .session-content.active {
+            display: block;
+        }
+        
+        .save-load-section {
+            background-color: #2ecc71;
+            color: white;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        
+        .save-load-section button {
+            background-color: white;
+            color: #2ecc71;
+            border: none;
+            padding: 10px 20px;
+            margin-right: 10px;
+            margin-top: 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .save-load-section button:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .saved-sessions {
+            margin-top: 15px;
+        }
+        
+        .saved-session-item {
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 3px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .saved-session-item button {
+            background-color: #e74c3c;
+            color: white;
+            margin: 0 0 0 10px;
+        }
+        
+        .saved-session-item button:hover {
+            background-color: #c0392b;
+        }
+        
+        .load-btn {
+            background-color: #3498db !important;
+            color: white !important;
+        }
+        
+        .load-btn:hover {
+            background-color: #2980b9 !important;
+        }
+    </style>
+</head>
+<body>
+    <h1>SLP/OT Pre-Session Preparation Checklist</h1>
+    
+    <div class="session-info">
+        <div>
+            <label for="childName">Child Name:</label>
+            <input type="text" id="childName" placeholder="Enter child's name">
+        </div>
+        <div>
+            <label for="sessionDate">Date:</label>
+            <input type="text" id="sessionDate" placeholder="MM/DD/YYYY">
+        </div>
+    </div>
+
+    <div class="save-load-section no-print">
+        <div>
+            <strong style="font-size: 16px;">Save & Load Progress</strong>
+            <p style="margin: 10px 0 0 0; font-size: 14px;">Your progress is saved locally in your browser. You can work on multiple children/sessions.</p>
+        </div>
+        <button onclick="saveProgress()">💾 Save Current Progress</button>
+        <button onclick="clearCurrent()">🔄 Clear & Start New</button>
+        
+        <div id="savedSessionsList" class="saved-sessions"></div>
+    </div>
+
+    <div class="session-selector no-print">
+        <label for="sessionType">Select Session Type:</label>
+        <select id="sessionType" onchange="showSession(this.value)">
+            <option value="">-- Choose Session Type --</option>
+            <option value="session1">Session 1: First Overall Session with Family</option>
+            <option value="session2">Session 2: First Individual Session (2nd Overall)</option>
+            <option value="session3">Session 3+: Second Individual Session & Beyond</option>
+        </select>
+    </div>
+
+    <!-- SESSION 1: First Overall Session with Family -->
+    <div id="session1" class="session-content">
+        <h2>SESSION 1: First Overall Session with Family</h2>
+        
+        <div class="checklist-section">
+            <h3>Review Child ShareVision Profile</h3>
+            <div class="checkbox-item">
+                <input type="checkbox" class="checkbox">
+                <div class="checkbox-text">General profile page</div>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" class="checkbox">
+                <div class="checkbox-text">Intake notes (including the COPM)</div>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" class="checkbox">
+                <div class="checkbox-text">Community Partners and Programs</div>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" class="checkbox">
+                <div class="checkbox-text">Program documentation (check for consent forms)</div>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" class="checkbox">
+                <div class="checkbox-text">Home-based Safety checklist (if home-based session)</div>
+            </div>
+        </div>
+
+        <div class="checklist-section">
+            <h3>Review Child Consent Forms</h3>
+            <div class="checkbox-item">
+                <input type="checkbox" class="checkbox">
+                <div class="checkbox-text">Check "Individual Documents" tab in ShareVision</div>
+            </div>
+            <div class="info-box">
+                <strong>If consent forms NOT uploaded to SV:</strong>
+                <ul style="margin: 5px 0; padding-left: 20px;">
+                    <li>Check Intake Notes for additional guidance</li>
+                    <li>Follow guidance in intake notes re: completion of consent forms</li>
+                    <li>If no guidance provided: connect with zone supervisor & plan to bring blank copies</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="checklist-section">
+            <h3>Gather All Needed Materials</h3>
+            <div class="checkbox-item">
+                <input type="checkbox" class="checkbox">
+                <div class="checkbox-text">A copy of the parent binder</div>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" class="checkbox">
+                <div class="checkbox-text">Copies of consent forms (if needed)</div>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" class="checkbox">
+                <div class="checkbox-text">ESDM Curricular Checklist</div>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" class="checkbox">
+                <div class="checkbox-text">OT/SLP Supplementary handout</div>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" class="checkbox">
+                <div class="checkbox-text">OT/SLP suggestions handout (should be in parent binder & left with family)</div>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" class="checkbox">
+                <div class="checkbox-text">Toys/materials for session</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- SESSION 2: First Individual Session -->
+    <div id="session2" class="session-content">
+        <h2>SESSION 2: First Individual Session (2nd Overall)</h2>
+        
+        <div class="checklist-section">
+            <h3>Review Child ShareVision Profile</h3>
+            <div class="checkbox-item">
+                <input type="checkbox" class="checkbox">
+                <div class="checkbox-text">General profile page</div>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" class="checkbox">
+                <div class="checkbox-text">Intake notes (including the COPM)</div>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" class="checkbox">
+                <div class="checkbox-text">SOAP Notes</div>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" class="checkbox">
+                <div class="checkbox-text">Community Partners and Programs</div>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" class="checkbox">
+                <div class="checkbox-text">Program documentation (check for consent forms)</div>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" class="checkbox">
+                <div class="checkbox-text">Home-based Safety checklist (if home-based session)</div>
+            </div>
+        </div>
+
+        <div class="checklist-section">
+            <h3>Review Child Consent Forms</h3>
+            <div class="checkbox-item">
+                <input type="checkbox" class="checkbox">
+                <div class="checkbox-text">Check "Individual Documents" tab in ShareVision</div>
+            </div>
+            <div class="info-box">
+                <strong>If consent forms NOT uploaded to SV:</strong>
+                <ul style="margin: 5px 0; padding-left: 20px;">
+                    <li>Check Intake Notes for additional guidance</li>
+                    <li>Follow guidance in intake notes re: completion of consent forms</li>
+                    <li>If no guidance provided: connect with zone supervisor & plan to bring blank copies</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="checklist-section">
+            <h3>Gather All Needed Materials</h3>
+            <div class="checkbox-item">
+                <input type="checkbox" class="checkbox">
+                <div class="checkbox-text">Copies of consent forms (if needed)</div>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" class="checkbox">
+                <div class="checkbox-text">ESDM Curricular Checklist</div>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" class="checkbox">
+                <div class="checkbox-text">OT/SLP Supplementary handout</div>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" class="checkbox">
+                <div class="checkbox-text">OT/SLP suggestions handout (should be in parent binder & left with family)</div>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" class="checkbox">
+                <div class="checkbox-text">Toys/materials for session</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- SESSION 3+: Second Individual Session & Beyond -->
+    <div id="session3" class="session-content">
+        <h2>SESSION 3+: Second Individual Session & Beyond</h2>
+        
+        <div class="checklist-section">
+            <h3>Review Child ShareVision Profile</h3>
+            <div class="checkbox-item">
+                <input type="checkbox" class="checkbox">
+                <div class="checkbox-text">SOAP Notes</div>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" class="checkbox">
+                <div class="checkbox-text">Community Partners and Programs</div>
+            </div>
+        </div>
+
+        <div class="checklist-section">
+            <h3>Gather All Needed Materials</h3>
+            <div class="checkbox-item">
+                <input type="checkbox" class="checkbox">
+                <div class="checkbox-text">ESDM Curricular Checklist</div>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" class="checkbox">
+                <div class="checkbox-text">OT/SLP Supplementary handout</div>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" class="checkbox">
+                <div class="checkbox-text">OT/SLP suggestions handout (should be in parent binder & left with family)</div>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" class="checkbox">
+                <div class="checkbox-text">Toys/materials for session</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- POST-SESSION TASKS (appears for all session types) -->
+    <div id="postSession" class="session-content">
+        <h2 style="background-color: #e67e22;">POST-SESSION TASKS</h2>
+        
+        <div class="checklist-section">
+            <h3>Session Recommendations</h3>
+            <div class="checkbox-item">
+                <input type="checkbox" class="checkbox">
+                <div class="checkbox-text"><strong>Preferred:</strong> Provided recommendations on suggestion sheet (in-person at end of session)
+                    <div style="margin-left: 0; margin-top: 5px; font-size: 13px; color: #555;">
+                        <em>Timeline: In the moment | Reminder: Take a photo of suggestion sheet for attachment to SOAP note</em>
+                    </div>
+                </div>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" class="checkbox">
+                <div class="checkbox-text"><strong>Alternative:</strong> Send email of recommendations to family
+                    <div style="margin-left: 0; margin-top: 5px; font-size: 13px; color: #555;">
+                        <em>Timeline: 2-3 working days (for family's quick use before next team member's session) | NOTE: Aim to provide recommendations on suggestion sheet in-person if possible</em>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="checklist-section">
+            <h3>ESDM Checklist & Supplementary Handout</h3>
+            <div class="checkbox-item">
+                <input type="checkbox" class="checkbox">
+                <div class="checkbox-text">Update the ESDM checklist - observations and notes
+                    <div style="margin-left: 0; margin-top: 5px; font-size: 13px; color: #555;">
+                        <em>Timeline: Same day or next day | NOTE: If in Eastern, Western, or Northern Zone, the digital copy of the checklist needs to be updated</em>
+                    </div>
+                </div>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" class="checkbox">
+                <div class="checkbox-text">Complete the OT/SLP Supplementary handout
+                    <div style="margin-left: 0; margin-top: 5px; font-size: 13px; color: #555;">
+                        <em>Timeline: Same day or next day</em>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="checklist-section">
+            <h3>Update ShareVision</h3>
+            <div class="checkbox-item">
+                <input type="checkbox" class="checkbox">
+                <div class="checkbox-text">Complete attendance tracker
+                    <div style="margin-left: 0; margin-top: 5px; font-size: 13px; color: #555;">
+                        <em>Timeline: Before next team member's session | Best to do along with SOAP note</em>
+                    </div>
+                </div>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" class="checkbox">
+                <div class="checkbox-text">Complete SOAP Note
+                    <div style="margin-left: 0; margin-top: 5px; font-size: 13px; color: #555;">
+                        <em>Timeline: Within 1 week (before next team member session) | NOTE: Upload the OT/SLP Supplementary handout as an attachment</em>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="checklist-section">
+            <h3>Referrals / Phone or Email Contacts</h3>
+            <div class="checkbox-item">
+                <input type="checkbox" class="checkbox">
+                <div class="checkbox-text">Complete required actions on any recommended referrals
+                    <div style="margin-left: 0; margin-top: 5px; font-size: 13px; color: #555;">
+                        <em>Timeline: 1-2 weeks | NOTE: This includes updating the "Community Partners and Programs" tab in SV</em>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="checklist-section">
+            <h3>Mileage</h3>
+            <div class="checkbox-item">
+                <input type="checkbox" class="checkbox">
+                <div class="checkbox-text">Update travel expense form (if travel with claimable mileage)
+                    <div style="margin-left: 0; margin-top: 5px; font-size: 13px; color: #555;">
+                        <em>Timeline: To claim travel expenses, the form minimally needs to be completed & submitted to supervisor & finance monthly - by the 3rd business day of the following month</em>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load saved sessions on page load
+        window.onload = function() {
+            displaySavedSessions();
+        };
+
+        function showSession(sessionId) {
+            // Hide all session content
+            document.querySelectorAll('.session-content').forEach(function(content) {
+                content.classList.remove('active');
+            });
+            
+            // Show selected session content
+            if (sessionId) {
+                document.getElementById(sessionId).classList.add('active');
+                // Always show post-session tasks when any session is selected
+                document.getElementById('postSession').classList.add('active');
+            }
+        }
+
+        function saveProgress() {
+            const childName = document.getElementById('childName').value;
+            const sessionDate = document.getElementById('sessionDate').value;
+            const sessionType = document.getElementById('sessionType').value;
+            
+            if (!childName || !sessionDate || !sessionType) {
+                alert('Please fill in Child Name, Date, and select a Session Type before saving.');
+                return;
+            }
+            
+            // Collect all checkbox states
+            const checkboxes = {};
+            document.querySelectorAll('.checkbox').forEach(function(checkbox, index) {
+                checkboxes[index] = checkbox.checked;
+            });
+            
+            // Create session object
+            const sessionData = {
+                childName: childName,
+                sessionDate: sessionDate,
+                sessionType: sessionType,
+                checkboxes: checkboxes,
+                savedAt: new Date().toISOString()
+            };
+            
+            // Get existing sessions
+            const sessions = JSON.parse(localStorage.getItem('slpOtSessions') || '[]');
+            
+            // Check if updating existing session
+            const existingIndex = sessions.findIndex(s => 
+                s.childName === childName && s.sessionDate === sessionDate && s.sessionType === sessionType
+            );
+            
+            if (existingIndex >= 0) {
+                sessions[existingIndex] = sessionData;
+                alert('Progress updated for ' + childName + ' (' + sessionDate + ')');
+            } else {
+                sessions.push(sessionData);
+                alert('Progress saved for ' + childName + ' (' + sessionDate + ')');
+            }
+            
+            localStorage.setItem('slpOtSessions', JSON.stringify(sessions));
+            displaySavedSessions();
+        }
+
+        function loadSession(index) {
+            const sessions = JSON.parse(localStorage.getItem('slpOtSessions') || '[]');
+            const sessionData = sessions[index];
+            
+            if (!sessionData) return;
+            
+            // Load basic info
+            document.getElementById('childName').value = sessionData.childName;
+            document.getElementById('sessionDate').value = sessionData.sessionDate;
+            document.getElementById('sessionType').value = sessionData.sessionType;
+            
+            // Show the session
+            showSession(sessionData.sessionType);
+            
+            // Load checkbox states (with a small delay to ensure content is visible)
+            setTimeout(function() {
+                document.querySelectorAll('.checkbox').forEach(function(checkbox, i) {
+                    if (sessionData.checkboxes[i] !== undefined) {
+                        checkbox.checked = sessionData.checkboxes[i];
+                    }
+                });
+            }, 100);
+            
+            alert('Loaded session for ' + sessionData.childName);
+        }
+
+        function deleteSession(index) {
+            const sessions = JSON.parse(localStorage.getItem('slpOtSessions') || '[]');
+            const sessionData = sessions[index];
+            
+            if (confirm('Delete saved progress for ' + sessionData.childName + ' (' + sessionData.sessionDate + ')?')) {
+                sessions.splice(index, 1);
+                localStorage.setItem('slpOtSessions', JSON.stringify(sessions));
+                displaySavedSessions();
+            }
+        }
+
+        function clearCurrent() {
+            if (confirm('Clear all current progress and start fresh?')) {
+                document.getElementById('childName').value = '';
+                document.getElementById('sessionDate').value = '';
+                document.getElementById('sessionType').value = '';
+                document.querySelectorAll('.checkbox').forEach(function(checkbox) {
+                    checkbox.checked = false;
+                });
+                document.querySelectorAll('.session-content').forEach(function(content) {
+                    content.classList.remove('active');
+                });
+            }
+        }
+
+        function displaySavedSessions() {
+            const sessions = JSON.parse(localStorage.getItem('slpOtSessions') || '[]');
+            const container = document.getElementById('savedSessionsList');
+            
+            if (sessions.length === 0) {
+                container.innerHTML = '<p style="margin-top: 10px; font-size: 14px;">No saved sessions yet.</p>';
+                return;
+            }
+            
+            const sessionTypeNames = {
+                'session1': 'Session 1',
+                'session2': 'Session 2',
+                'session3': 'Session 3+'
+            };
+            
+            let html = '<p style="margin-top: 15px; margin-bottom: 10px; font-weight: bold;">Saved Sessions:</p>';
+            sessions.forEach(function(session, index) {
+                const savedDate = new Date(session.savedAt).toLocaleDateString();
+                html += '<div class="saved-session-item">';
+                html += '<div><strong>' + session.childName + '</strong> - ' + session.sessionDate + ' (' + sessionTypeNames[session.sessionType] + ')<br><small>Saved: ' + savedDate + '</small></div>';
+                html += '<div>';
+                html += '<button class="load-btn" onclick="loadSession(' + index + ')">Load</button>';
+                html += '<button onclick="deleteSession(' + index + ')">Delete</button>';
+                html += '</div>';
+                html += '</div>';
+            });
+            
+            container.innerHTML = html;
+        }
+    </script>
+</body>
+</html>
