@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SLP/OT Fidelity Checklist - QuickStart NS</title>
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            
+            body {
+                margin: 0.3in;
+                padding: 0;
+            }
+            
+            .container {
+                padding: 10px;
+                box-shadow: none;
+            }
+            
+            h1 {
+                font-size: 18px;
+                margin-bottom: 10px;
+                padding-bottom: 5px;
+                border-bottom: 3px solid #2563eb;
+            }
+            
+            .info-box {
+                padding: 6px;
+                margin-bottom: 8px;
+                font-size: 10px;
+            }
+            
+            .info-box p {
+                margin: 1px 0;
+                font-size: 10px;
+            }
+            
+            .button-group {
+                display: none;
+                margin: 0;
+            }
+            
+            .form-row {
+                margin-bottom: 8px;
+                font-size: 11px;
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 8px;
+            }
+            
+            .form-group {
+                margin-bottom: 0;
+            }
+            
+            .form-group label {
+                font-size: 10px;
+                margin-bottom: 1px;
+                font-weight: bold;
+            }
+            
+            .form-group input,
+            .form-group select {
+                padding: 2px 4px;
+                font-size: 11px;
+                border: 1px solid #333;
+                background: white;
+            }
+            
+            .section {
+                margin-bottom: 12px;
+                page-break-inside: avoid;
+            }
+            
+            .section-header {
+                padding: 6px 10px;
+                font-size: 14px;
+            }
+            
+            .section-title {
+                font-size: 14px;
+            }
+            
+            .section-score {
+                font-size: 14px;
+            }
+            
+            .item {
+                padding: 8px 10px;
+                page-break-inside: avoid;
+            }
+            
+            .item-row {
+                margin-bottom: 6px;
+            }
+            
+            .item-text {
+                font-size: 12px;
+                line-height: 1.3;
+                padding-right: 10px;
+            }
+            
+            .item-radios {
+                gap: 10px;
+            }
+            
+            .radio-option {
+                gap: 3px;
+            }
+            
+            .radio-option label {
+                font-size: 11px;
+            }
+            
+            .comment-remove {
+                display: none;
+            }
+            
+            .item-comment.comment-hidden {
+                display: none !important;
+            }
+            
+            .item textarea {
+                min-height: 40px;
+                padding: 4px;
+                font-size: 11px;
+                border: 1px solid #333;
+            }
+            
+            .item textarea::placeholder {
+                color: transparent;
+            }
+            
+            .feedback-section {
+                background: white;
+                border: 2px solid #2563eb;
+                padding: 10px !important;
+                margin: 8px 0 !important;
+                page-break-inside: avoid;
+            }
+            
+            .feedback-section h3 {
+                font-size: 12px !important;
+                margin-bottom: 5px !important;
+                padding-bottom: 3px !important;
+                border-bottom: 1px solid #2563eb;
+            }
+            
+            .feedback-group {
+                margin-bottom: 6px !important;
+            }
+            
+            .feedback-label {
+                font-size: 10px !important;
+                margin-bottom: 2px !important;
+                padding: 0 !important;
+            }
+            
+            .feedback-section textarea {
+                padding: 3px !important;
+                font-size: 9px !important;
+                border: 1px solid #333;
+            }
+            
+            .total-score-box {
+                padding: 15px;
+                margin-top: 15px;
+            }
+            
+            .total-score-box h3 {
+                font-size: 16px;
+                margin-bottom: 5px;
+            }
+            
+            .total-score-value {
+                font-size: 32px;
+                margin: 5px 0;
+            }
+            
+            .total-score-target {
+                font-size: 12px;
+            }
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #1a1a1a;
+            border-bottom: 4px solid #2563eb;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .info-box {
+            background-color: #eff6ff;
+            border-left: 4px solid #2563eb;
+            padding: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .info-box p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .button-group {
+            margin-bottom: 25px;
+        }
+        
+        .button-group button {
+            padding: 10px 20px;
+            margin-right: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .btn-save { background-color: #16a34a; color: white; }
+        .btn-print { background-color: #2563eb; color: white; }
+        .btn-clear { background-color: #6b7280; color: white; }
+        
+        .section {
+            margin-bottom: 30px;
+        }
+        
+        .section-header {
+            background-color: #2563eb;
+            color: white;
+            padding: 12px 15px;
+            border-radius: 5px 5px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .section-score {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .section-content {
+            border: 1px solid #ccc;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+        }
+        
+        .item {
+            padding: 15px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+        
+        .item:last-child {
+            border-bottom: none;
+        }
+        
+        .item-row {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+        
+        .item-text {
+            flex: 1;
+            padding-right: 15px;
+            line-height: 1.5;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        
+        .item-radios {
+            display: flex;
+            gap: 15px;
+            flex-shrink: 0;
+        }
+        
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+        }
+        
+        .radio-option input {
+            cursor: pointer;
+        }
+        
+        .radio-option label {
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .radio-yes { color: #16a34a; }
+        .radio-emerging { color: #f59e0b; }
+        .radio-no { color: #dc2626; }
+        .radio-na { color: #6b7280; }
+        
+        .item-comment {
+            margin-top: 8px;
+            position: relative;
+        }
+        
+        .comment-remove {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: #dc2626;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            width: 20px;
+            height: 20px;
+            font-size: 14px;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+        
+        .comment-remove:hover {
+            background-color: #b91c1c;
+        }
+        
+        .item textarea {
+            width: 100%;
+            padding: 8px;
+            padding-top: 30px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            color: #555;
+            font-weight: normal;
+            resize: vertical;
+        }
+        
+        .comment-hidden {
+            display: none;
+        }
+        
+        .total-score-box {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .total-score-box h3 {
+            margin: 0 0 10px 0;
+            font-size: 22px;
+        }
+        
+        .total-score-value {
+            font-size: 48px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .total-score-target {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .saved-list {
+            margin-top: 30px;
+        }
+        
+        .saved-item {
+            background: #f5f5f5;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .saved-info {
+            flex: 1;
+        }
+        
+        .saved-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .saved-details {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .saved-buttons button {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 5px;
+            font-size: 13px;
+        }
+        
+        .btn-load-saved { background-color: #2563eb; color: white; }
+        .btn-delete-saved { background-color: #dc2626; color: white; }
+        
+        .feedback-section {
+            background: #f0f9ff;
+            border: 2px solid #3b82f6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        
+        .feedback-section h3 {
+            color: #1e40af;
+            font-size: 18px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #3b82f6;
+            padding-bottom: 8px;
+        }
+        
+        .feedback-group {
+            margin-bottom: 15px;
+        }
+        
+        .feedback-label {
+            display: block;
+            font-weight: bold;
+            color: #1e40af;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .feedback-section textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #3b82f6;
+            border-radius: 4px;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 60px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>SLP/OT Fidelity Checklist - QuickStart NS</h1>
+        
+        <div class="info-box">
+            <p><strong>Purpose:</strong> Measure how closely a clinician attains accurate implementation of the ESDM model within Consultation and Assessment sessions. Target: 80% fidelity.</p>
+            <p><strong>Scoring:</strong> YES = Demonstrated | EMERGING = Partially Demonstrated | NO = Not Demonstrated | NA = Not Applicable/No Opportunity</p>
+            <p style="font-size: 12px; color: #666;"><em>Fidelity percentage = (YES) / (YES + EMERGING + NO) x 100. NA items excluded from calculation.</em></p>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Clinician Name</label>
+                <input type="text" id="clinicianName" placeholder="Enter name">
+            </div>
+            <div class="form-group">
+                <label>Date</label>
+                <input type="date" id="date">
+            </div>
+            <div class="form-group">
+                <label>Session Type</label>
+                <select id="sessionType">
+                    <option value="">Select...</option>
+                    <option value="Session 1">Session 1 (First Overall)</option>
+                    <option value="Session 2">Session 2 (First Individual)</option>
+                    <option value="Session 3+">Session 3+ (Second Individual and Beyond)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="button-group no-print">
+            <button class="btn-save" onclick="saveSession()">Save Progress</button>
+            <button class="btn-print" onclick="window.print()">Print Filled Version</button>
+            <button class="btn-clear" onclick="openBlankPrintable()">Open Blank Printable</button>
+            <button class="btn-clear" onclick="clearAll()">Clear and Start New</button>
+        </div>
+
+        <div class="feedback-section">
+            <h3>Actionable Feedback Summary</h3>
+            <div class="feedback-group">
+                <label class="feedback-label">Keep Doing (Strengths observed):</label>
+                <textarea id="feedback-keep" rows="3" placeholder="Note specific strengths and which section(s) they relate to (e.g., 'Section A: Excellent active listening skills...')"></textarea>
+            </div>
+            <div class="feedback-group">
+                <label class="feedback-label">Consider Doing (Areas for growth):</label>
+                <textarea id="feedback-consider" rows="3" placeholder="Note specific suggestions for improvement and which section(s) they relate to (e.g., 'Section B: Consider balancing SSRs and object activities more evenly...')"></textarea>
+            </div>
+        </div>
+
+        <div class="total-score-box">
+            <h3>Total Fidelity Score</h3>
+            <div class="total-score-value" id="totalScore">0%</div>
+            <div class="total-score-target">Target: 80% or higher</div>
+        </div>
+
+        <div id="sectionsContainer" style="margin-top: 30px;"></div>
+
+        <div id="savedList" class="saved-list no-print" style="display: none;">
+            <h3>Saved Sessions</h3>
+            <div id="savedItems"></div>
+        </div>
+    </div>
+
+    <script>
+        var data = {
+            scores: {},
+            comments: {},
+            feedbackKeep: '',
+            feedbackConsider: ''
+        };
+
+        var sectionData = [
+            {
+                id: 'greeting',
+                title: 'A) Greeting and Session Setup',
+                items: [
+                    'Greets caregiver(s) and child warmly',
+                    'Introduces self, professional scope as an OT/SLP, and role within QuickStart NS team structure (includes disclosure of other relevant positions)',
+                    'Provides parent binder and book and explains their purpose (Session 1 only)',
+                    'Reviews phases of the PC program and expectations within current assessment phase',
+                    'Invites caregiver to share prior experiences (if any), concerns, and priorities for OT/SLP consultation',
+                    'Demonstrates active listening (caregiver leads conversation, clinician does not interrupt, shows positive indicators of interest)',
+                    'Inquires about other service provider involvement, referrals, and waiting lists',
+                    'Provides consent forms if not yet submitted (Session 1 only)'
+                ]
+            },
+            {
+                id: 'assessment',
+                title: 'B) Child Assessment',
+                items: [
+                    'Environment is prepared with variety of toys/activities supporting different interests, skills, play modalities, and arousal levels (activity zones created, flow activities included)',
+                    'Even balance of discussion-based consultation with the caregiver along with attempts to set up joint engagement with the child throughout the session',
+                    'During attempts to set up joint engagement with the child, demonstrates application of foundational ESDM strategies (in correspondence with ESDM fidelity categories) to support joint engagement within JARs (Joint activity routines)',
+                    'Even balance of sensory social routines (SSRs) and object-based activities attempted throughout session',
+                    'Records scores on ESDM Checklist with appropriate mix of direct observation and parent report (parent report approximately 50% or more in domain sections where direct observation limited)',
+                    'Documents additional observations and uses Supplemental Materials/Potential Goals sheets to convey information to team',
+                    'Encourages parent involvement to demonstrate areas on ESDM checklist (though not required)',
+                    'Demonstrates knowledge of OT/SLP-specific consultation topics identified by family as priority'
+                ]
+            },
+            {
+                id: 'recommendations',
+                title: 'C) Suggestions, Recommendations, and Information Sharing',
+                items: [
+                    'References information previously gathered by other clinicians (OT, S-LP, Parent Coach, Clinical Supervisor)',
+                    'Provides 3-4 actionable suggestions that caregiver can implement immediately, tied to family concerns and goals',
+                    'Models strategies in session when recommending caregiver try them in following week',
+                    'Discusses referrals to additional services as appropriate (suggested/made by family, Parent Coach, or clinician)',
+                    'Provides written recommendations on QuickStart NS Suggestions Sheet and relevant handouts/information posters (records in SOAP note Plan section)',
+                    'Gains caregiver buy-in through reciprocal, non-judgmental conversation that demonstrates cultural sensitivity and respects child-rearing beliefs',
+                    'Uses multimodal communication (verbal, written, demonstration/modeling) well-fitted to family learning style and needs with adequate talking time',
+                    'Assesses understanding with open-ended questions; main points are clear and not lost in excessive talk',
+                    'Summarizes plan going forward: who they will see next, what next session will look like, how clinician will follow case throughout QuickStart participation'
+                ]
+            }
+        ];
+
+        function openBlankPrintable() {
+            var printWindow = window.open('', '_blank');
+            printWindow.document.write(generateBlankPrintable());
+            printWindow.document.close();
+        }
+        
+        function generateBlankPrintable() {
+            var html = '<!DOCTYPE html><html><head><meta charset="UTF-8">';
+            html += '<title>SLP/OT Fidelity Checklist - Blank</title>';
+            html += '<style>';
+            html += 'body { font-family: Arial, sans-serif; margin: 0.25in; font-size: 11px; }';
+            html += 'h1 { font-size: 16px; border-bottom: 3px solid #2563eb; padding-bottom: 5px; margin-bottom: 10px; }';
+            html += '.info { background: #eff6ff; border-left: 4px solid #2563eb; padding: 8px; margin-bottom: 10px; font-size: 9px; }';
+            html += '.form-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 15px; }';
+            html += '.form-group label { font-weight: bold; font-size: 10px; display: block; margin-bottom: 3px; }';
+            html += '.form-group input { width: 100%; border: 1px solid #333; padding: 4px; font-size: 10px; }';
+            html += '.section { margin-bottom: 15px; page-break-inside: avoid; }';
+            html += '.section-header { background: #2563eb; color: white; padding: 6px 10px; font-weight: bold; font-size: 13px; margin-bottom: 5px; }';
+            html += '.item { padding: 8px; border-bottom: 1px solid #ddd; }';
+            html += '.item-text { font-weight: 600; margin-bottom: 5px; font-size: 11px; line-height: 1.3; }';
+            html += '.radios { display: flex; gap: 15px; margin-bottom: 5px; }';
+            html += '.radio-option { font-size: 10px; }';
+            html += '.comment-space { border: 1px solid #333; min-height: 35px; margin-top: 5px; }';
+            html += '.total { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; padding: 10px; text-align: center; margin-top: 10px; }';
+            html += '.total h3 { font-size: 12px; margin: 0 0 3px 0; }';
+            html += '.total-score { font-size: 24px; font-weight: bold; margin: 3px 0; }';
+            html += '</style></head><body>';
+            
+            html += '<h1>SLP/OT Fidelity Checklist - QuickStart NS</h1>';
+            html += '<div class="info">';
+            html += '<p><strong>Purpose:</strong> Measure how closely a clinician attains accurate implementation of the ESDM model within Consultation and Assessment sessions. Target: 80% fidelity.</p>';
+            html += '<p><strong>Scoring:</strong> YES = Demonstrated | EMERGING = Partially Demonstrated | NO = Not Demonstrated | NA = Not Applicable/No Opportunity</p>';
+            html += '<p style="font-size: 8px;">Fidelity percentage = (YES) / (YES + EMERGING + NO) x 100. NA items excluded from calculation.</p>';
+            html += '</div>';
+            
+            html += '<div class="form-row">';
+            html += '<div class="form-group"><label>Clinician Name</label><input type="text"></div>';
+            html += '<div class="form-group"><label>Date</label><input type="text"></div>';
+            html += '<div class="form-group"><label>Session Type</label><input type="text"></div>';
+            html += '</div>';
+            
+            html += '<div style="background: #f0f9ff; border: 2px solid #2563eb; padding: 12px; margin: 12px 0; page-break-inside: avoid;">';
+            html += '<h3 style="color: #1e40af; font-size: 13px; margin: 0 0 8px 0; border-bottom: 2px solid #2563eb; padding-bottom: 4px;">Actionable Feedback Summary</h3>';
+            html += '<div style="margin-bottom: 12px;">';
+            html += '<strong style="display: block; color: #1e40af; font-size: 11px; margin-bottom: 4px;">Keep Doing (Strengths observed):</strong>';
+            html += '<div style="border: 1px solid #333; min-height: 160px; padding: 8px;"></div>';
+            html += '</div>';
+            html += '<div>';
+            html += '<strong style="display: block; color: #1e40af; font-size: 11px; margin-bottom: 4px;">Consider Doing (Areas for growth):</strong>';
+            html += '<div style="border: 1px solid #333; min-height: 160px; padding: 8px;"></div>';
+            html += '</div>';
+            html += '</div>';
+            
+            html += '<div style="background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; padding: 10px; text-align: center; margin: 10px 0;">';
+            html += '<h3 style="font-size: 12px; margin: 0 0 3px 0;">Total Fidelity Score</h3>';
+            html += '<div style="font-size: 24px; font-weight: bold; margin: 3px 0;">_____%</div>';
+            html += '<p style="font-size: 11px; margin: 3px 0;">Target: 80% or higher</p>';
+            html += '</div>';
+            
+            for (var i = 0; i < sectionData.length; i++) {
+                var section = sectionData[i];
+                html += '<div class="section">';
+                html += '<div class="section-header">' + section.title + '</div>';
+                
+                for (var j = 0; j < section.items.length; j++) {
+                    html += '<div class="item">';
+                    html += '<div class="item-text">' + section.items[j] + '</div>';
+                    html += '<div class="radios">';
+                    html += '<span class="radio-option">☐ YES</span>';
+                    html += '<span class="radio-option">☐ EMERGING</span>';
+                    html += '<span class="radio-option">☐ NO</span>';
+                    html += '<span class="radio-option">☐ NA</span>';
+                    html += '</div>';
+                    html += '<div class="comment-space"></div>';
+                    html += '</div>';
+                }
+                
+                html += '</div>';
+            }
+            
+            html += '</body></html>';
+            return html;
+        }
+
+        function initialize() {
+            var container = document.getElementById('sectionsContainer');
+            var html = '';
+            
+            for (var i = 0; i < sectionData.length; i++) {
+                var section = sectionData[i];
+                html += '<div class="section">';
+                html += '<div class="section-header">';
+                html += '<span class="section-title">' + section.title + '</span>';
+                html += '<span class="section-score" id="score-' + section.id + '">0%</span>';
+                html += '</div>';
+                html += '<div class="section-content">';
+                
+                for (var j = 0; j < section.items.length; j++) {
+                    var itemId = section.id + '-' + j;
+                    html += '<div class="item">';
+                    html += '<div class="item-row">';
+                    html += '<div class="item-text">' + section.items[j] + '</div>';
+                    html += '<div class="item-radios">';
+                    html += '<div class="radio-option">';
+                    html += '<input type="radio" id="' + itemId + '-yes" name="' + itemId + '" value="yes" onchange="handleScore(\'' + itemId + '\', \'yes\')">';
+                    html += '<label for="' + itemId + '-yes" class="radio-yes">YES</label>';
+                    html += '</div>';
+                    html += '<div class="radio-option">';
+                    html += '<input type="radio" id="' + itemId + '-emerging" name="' + itemId + '" value="emerging" onchange="handleScore(\'' + itemId + '\', \'emerging\')">';
+                    html += '<label for="' + itemId + '-emerging" class="radio-emerging">EMERGING</label>';
+                    html += '</div>';
+                    html += '<div class="radio-option">';
+                    html += '<input type="radio" id="' + itemId + '-no" name="' + itemId + '" value="no" onchange="handleScore(\'' + itemId + '\', \'no\')">';
+                    html += '<label for="' + itemId + '-no" class="radio-no">NO</label>';
+                    html += '</div>';
+                    html += '<div class="radio-option">';
+                    html += '<input type="radio" id="' + itemId + '-na" name="' + itemId + '" value="na" onchange="handleScore(\'' + itemId + '\', \'na\')">';
+                    html += '<label for="' + itemId + '-na" class="radio-na">NA</label>';
+                    html += '</div>';
+                    html += '</div>';
+                    html += '</div>';
+                    html += '<div class="item-comment" id="commentSection-' + itemId + '">';
+                    html += '<button class="comment-remove no-print" onclick="removeComment(\'' + itemId + '\')" title="Remove comment box">×</button>';
+                    html += '<textarea id="comment-' + itemId + '" rows="2" placeholder="Comments (optional)" onchange="handleComment(\'' + itemId + '\', this.value)"></textarea>';
+                    html += '</div>';
+                    html += '</div>';
+                }
+                
+                html += '</div>';
+                html += '</div>';
+            }
+            
+            container.innerHTML = html;
+            loadSaved();
+            
+            // Add event listeners for feedback fields
+            document.getElementById('feedback-keep').addEventListener('change', function() {
+                data.feedbackKeep = this.value;
+            });
+            document.getElementById('feedback-consider').addEventListener('change', function() {
+                data.feedbackConsider = this.value;
+            });
+        }
+
+        function handleScore(itemId, value) {
+            data.scores[itemId] = value;
+            calculateScores();
+        }
+
+        function handleComment(itemId, value) {
+            data.comments[itemId] = value;
+        }
+        
+        function removeComment(itemId) {
+            var section = document.getElementById('commentSection-' + itemId);
+            section.classList.add('comment-hidden');
+        }
+
+        function calculateScores() {
+            for (var i = 0; i < sectionData.length; i++) {
+                var section = sectionData[i];
+                var yesCount = 0;
+                var emergingCount = 0;
+                var noCount = 0;
+                
+                for (var j = 0; j < section.items.length; j++) {
+                    var itemId = section.id + '-' + j;
+                    if (data.scores[itemId] === 'yes') yesCount++;
+                    if (data.scores[itemId] === 'emerging') emergingCount++;
+                    if (data.scores[itemId] === 'no') noCount++;
+                }
+                
+                var total = yesCount + emergingCount + noCount;
+                var percent = total > 0 ? Math.round((yesCount / total) * 100) : 0;
+                document.getElementById('score-' + section.id).textContent = percent + '%';
+            }
+            
+            var totalYes = 0;
+            var totalEmerging = 0;
+            var totalNo = 0;
+            var keys = Object.keys(data.scores);
+            for (var i = 0; i < keys.length; i++) {
+                if (data.scores[keys[i]] === 'yes') totalYes++;
+                if (data.scores[keys[i]] === 'emerging') totalEmerging++;
+                if (data.scores[keys[i]] === 'no') totalNo++;
+            }
+            
+            var grandTotal = totalYes + totalEmerging + totalNo;
+            var grandPercent = grandTotal > 0 ? Math.round((totalYes / grandTotal) * 100) : 0;
+            document.getElementById('totalScore').textContent = grandPercent + '%';
+        }
+
+        function saveSession() {
+            var name = document.getElementById('clinicianName').value;
+            var date = document.getElementById('date').value;
+            var type = document.getElementById('sessionType').value;
+            
+            if (!name || !date || !type) {
+                alert('Please fill in Clinician Name, Date, and Session Type.');
+                return;
+            }
+            
+            var session = {
+                id: new Date().getTime(),
+                name: name,
+                date: date,
+                type: type,
+                scores: JSON.parse(JSON.stringify(data.scores)),
+                comments: JSON.parse(JSON.stringify(data.comments)),
+                feedbackKeep: data.feedbackKeep,
+                feedbackConsider: data.feedbackConsider,
+                total: document.getElementById('totalScore').textContent
+            };
+            
+            var saved = JSON.parse(localStorage.getItem('fidelitySessions') || '[]');
+            saved.push(session);
+            localStorage.setItem('fidelitySessions', JSON.stringify(saved));
+            
+            alert('Session saved successfully!');
+            loadSaved();
+        }
+
+        function loadSaved() {
+            var saved = JSON.parse(localStorage.getItem('fidelitySessions') || '[]');
+            var container = document.getElementById('savedList');
+            var items = document.getElementById('savedItems');
+            
+            if (saved.length === 0) {
+                container.style.display = 'none';
+                return;
+            }
+            
+            container.style.display = 'block';
+            var html = '';
+            
+            for (var i = 0; i < saved.length; i++) {
+                var s = saved[i];
+                html += '<div class="saved-item">';
+                html += '<div class="saved-info">';
+                html += '<div class="saved-name">' + s.name + ' - ' + s.date + '</div>';
+                html += '<div class="saved-details">' + s.type + ' | Score: ' + s.total + '</div>';
+                html += '</div>';
+                html += '<div class="saved-buttons">';
+                html += '<button class="btn-load-saved" onclick="loadSession(' + s.id + ')">Load</button>';
+                html += '<button class="btn-delete-saved" onclick="deleteSession(' + s.id + ')">Delete</button>';
+                html += '</div>';
+                html += '</div>';
+            }
+            
+            items.innerHTML = html;
+        }
+
+        function loadSession(id) {
+            var saved = JSON.parse(localStorage.getItem('fidelitySessions') || '[]');
+            var session = null;
+            
+            for (var i = 0; i < saved.length; i++) {
+                if (saved[i].id === id) {
+                    session = saved[i];
+                    break;
+                }
+            }
+            
+            if (!session) return;
+            
+            document.getElementById('clinicianName').value = session.name;
+            document.getElementById('date').value = session.date;
+            document.getElementById('sessionType').value = session.type;
+            
+            data.scores = JSON.parse(JSON.stringify(session.scores));
+            data.comments = JSON.parse(JSON.stringify(session.comments));
+            
+            var keys = Object.keys(data.scores);
+            for (var i = 0; i < keys.length; i++) {
+                var itemId = keys[i];
+                var value = data.scores[itemId];
+                var radio = document.getElementById(itemId + '-' + value);
+                if (radio) radio.checked = true;
+            }
+            
+            keys = Object.keys(data.comments);
+            for (var i = 0; i < keys.length; i++) {
+                var itemId = keys[i];
+                var textarea = document.getElementById('comment-' + itemId);
+                if (textarea) textarea.value = data.comments[itemId];
+            }
+            
+            calculateScores();
+        }
+
+        function deleteSession(id) {
+            if (!confirm('Delete this session?')) return;
+            
+            var saved = JSON.parse(localStorage.getItem('fidelitySessions') || '[]');
+            var filtered = [];
+            
+            for (var i = 0; i < saved.length; i++) {
+                if (saved[i].id !== id) {
+                    filtered.push(saved[i]);
+                }
+            }
+            
+            localStorage.setItem('fidelitySessions', JSON.stringify(filtered));
+            loadSaved();
+        }
+
+        function clearAll() {
+            if (!confirm('Clear all data and start fresh?')) return;
+            
+            document.getElementById('clinicianName').value = '';
+            document.getElementById('date').value = '';
+            document.getElementById('sessionType').value = '';
+            
+            data.scores = {};
+            data.comments = {};
+            
+            var radios = document.querySelectorAll('input[type="radio"]');
+            for (var i = 0; i < radios.length; i++) {
+                radios[i].checked = false;
+            }
+            
+            var textareas = document.querySelectorAll('textarea');
+            for (var i = 0; i < textareas.length; i++) {
+                textareas[i].value = '';
+            }
+            
+            calculateScores();
+        }
+
+        initialize();
+    </script>
+</body>
+</html>
