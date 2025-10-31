@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANS Vacation & Sick Time Accrual Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 900px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #718096;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .input-section {
+            background: #f7fafc;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group:last-child {
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            color: #2d3748;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input[type="date"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        input[type="date"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .toggle-section {
+            background: #fff5f5;
+            border: 2px solid #feb2b2;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+
+        .toggle-header {
+            color: #c53030;
+            font-weight: 700;
+            margin-bottom: 12px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+
+        .toggle-header::before {
+            content: "⚠️";
+            margin-right: 8px;
+            font-size: 18px;
+        }
+
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #cbd5e0;
+            transition: .4s;
+            border-radius: 30px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #667eea;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(30px);
+        }
+
+        .toggle-label {
+            color: #2d3748;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .toggle-explanation {
+            color: #718096;
+            font-size: 13px;
+            margin-top: 10px;
+            line-height: 1.5;
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .calculate-btn:active {
+            transform: translateY(0);
+        }
+
+        .results {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .results.show {
+            display: block;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .result-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            opacity: 0.95;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .result-item {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 20px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+
+        .result-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .result-value {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .result-subtext {
+            font-size: 13px;
+            margin-top: 5px;
+            opacity: 0.9;
+        }
+
+        .info-card {
+            background: #edf2f7;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .info-title {
+            color: #2d3748;
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #cbd5e0;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #4a5568;
+            font-weight: 600;
+        }
+
+        .info-value {
+            color: #2d3748;
+            font-weight: 700;
+        }
+
+        .tier-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.25);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .next-tier-card {
+            background: #f0fff4;
+            border: 2px solid #9ae6b4;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+
+        .next-tier-title {
+            color: #22543d;
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .next-tier-info {
+            color: #2f855a;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .highlight {
+            background: rgba(255, 215, 0, 0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .reference-table {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-top: 30px;
+        }
+
+        .table-header {
+            background: #4a5568;
+            color: white;
+            padding: 15px;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: #edf2f7;
+            color: #2d3748;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        td {
+            color: #4a5568;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background: #f7fafc;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ANS Vacation & Sick Time Accrual Calculator</h1>
+        <p class="subtitle">Calculate your monthly accrual rates and next tier advancement</p>
+
+        <div class="input-section">
+            <div class="input-group">
+                <label for="hireDate">Employee Hire Date</label>
+                <input type="date" id="hireDate" required>
+            </div>
+
+            <div class="toggle-section">
+                <div class="toggle-header">Interpretation Method</div>
+                <div class="toggle-container">
+                    <span class="toggle-label">Years Fully Completed</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="interpretationToggle">
+                        <span class="slider"></span>
+                    </label>
+                    <span class="toggle-label">Year In</span>
+                </div>
+                <div class="toggle-explanation">
+                    <strong>⚠️ CRITICAL: These interpretations produce DIFFERENT results - a 365-day difference!</strong><br><br>
+                    <strong>Years Fully Completed:</strong> "0-4 Years" = You've completed 0, 1, 2, 3, or 4 full years. You advance to the 5-9 tier on day <strong>1,826</strong> (after completing 5 full years).<br><br>
+                    <strong>Year In:</strong> "5-9 Years" tier = When you're IN years 5, 6, 7, 8, or 9. You advance to the 5-9 tier on day <strong>1,461</strong> (when entering your 5th year, after completing 4 years).<br><br>
+                    <em>Example: Hired Oct 29, 2021 → On Oct 30, 2025 (day 1,462):<br>
+                    "Year In" = IN 5-9 tier (13.33 hrs/month vacation) ✓<br>
+                    "Years Completed" = Still in 0-4 tier (10 hrs/month vacation) - 364 days until advancement</em>
+                </div>
+            </div>
+
+            <button class="calculate-btn" onclick="calculate()">Calculate Accrual Rates</button>
+        </div>
+
+        <div class="results" id="results">
+            <div class="result-card">
+                <div class="tier-badge" id="tierBadge">Current Tier</div>
+                <div class="result-title">Your Current Monthly Accrual Rates</div>
+                <div class="result-grid">
+                    <div class="result-item">
+                        <div class="result-label">Vacation Accrual</div>
+                        <div class="result-value" id="vacationHours">--</div>
+                        <div class="result-subtext">hours per month</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-label">Sick Time Accrual</div>
+                        <div class="result-value" id="sickHours">--</div>
+                        <div class="result-subtext">hours per month</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-title">Employment Details</div>
+                <div class="info-row">
+                    <span class="info-label">Hire Date:</span>
+                    <span class="info-value" id="displayHireDate">--</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Time Employed:</span>
+                    <span class="info-value" id="timeEmployed">--</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Current Tier:</span>
+                    <span class="info-value" id="currentTier">--</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Annual Vacation Days:</span>
+                    <span class="info-value" id="annualVacation">--</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Annual Sick Days:</span>
+                    <span class="info-value" id="annualSick">--</span>
+                </div>
+            </div>
+
+            <div class="next-tier-card" id="nextTierCard">
+                <div class="next-tier-title">📅 Next Tier Advancement</div>
+                <div class="next-tier-info" id="nextTierInfo">--</div>
+            </div>
+        </div>
+
+        <div class="reference-table">
+            <div class="table-header">Full-Time Employee Accrual Scale Reference</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Hire Range</th>
+                        <th>Vacation Days/Year</th>
+                        <th>Vacation Hours/Month</th>
+                        <th>Sick Days/Year</th>
+                        <th>Sick Hours/Month</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>0-4 Years</td>
+                        <td>15 Days (3 Weeks)</td>
+                        <td>10 hours</td>
+                        <td>7 Days</td>
+                        <td>4.67 hours</td>
+                    </tr>
+                    <tr>
+                        <td>5-9 Years</td>
+                        <td>20 Days (4 Weeks)</td>
+                        <td>13.33 hours</td>
+                        <td>9 Days</td>
+                        <td>6 hours</td>
+                    </tr>
+                    <tr>
+                        <td>10+ Years</td>
+                        <td>25 Days (5 Weeks)</td>
+                        <td>16.67 hours</td>
+                        <td>10 Days</td>
+                        <td>6.67 hours</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Accrual tiers based on ANS Employee Handbook
+        const accrualTiers = [
+            {
+                minYears: 0,
+                maxYears: 4,
+                vacationDays: 15,
+                sickDays: 7,
+                label: "0-4 Years"
+            },
+            {
+                minYears: 5,
+                maxYears: 9,
+                vacationDays: 20,
+                sickDays: 9,
+                label: "5-9 Years"
+            },
+            {
+                minYears: 10,
+                maxYears: Infinity,
+                vacationDays: 25,
+                sickDays: 10,
+                label: "10+ Years"
+            }
+        ];
+
+        function getOrdinalSuffix(num) {
+            const j = num % 10;
+            const k = num % 100;
+            if (j === 1 && k !== 11) return num + "st";
+            if (j === 2 && k !== 12) return num + "nd";
+            if (j === 3 && k !== 13) return num + "rd";
+            return num + "th";
+        }
+
+        function calculate() {
+            const hireDateInput = document.getElementById('hireDate').value;
+            if (!hireDateInput) {
+                alert('Please enter a hire date');
+                return;
+            }
+
+            const hireDate = new Date(hireDateInput);
+            const today = new Date();
+            const useYearIn = document.getElementById('interpretationToggle').checked;
+
+            // Calculate time difference
+            const diffTime = today - hireDate;
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            const years = Math.floor(diffDays / 365);
+            const months = Math.floor((diffDays % 365) / 30);
+
+            // Calculate tier assignment based on interpretation
+            // This is NOT just a wording difference - it affects WHEN you advance tiers!
+            
+            const completedYears = years;
+            const yearIn = completedYears + 1;
+            
+            let effectiveYears;
+            
+            if (useYearIn) {
+                // "Year In" interpretation: The tier number matches which year you're IN
+                // "0-4 Years" tier = When you're in years 1, 2, 3, or 4
+                // "5-9 Years" tier = When you're in years 5, 6, 7, 8, or 9  
+                // So you advance to 5-9 tier on day 1461 (entering 5th year, after completing 4 years)
+                if (yearIn >= 1 && yearIn <= 4) {
+                    effectiveYears = 2; // Use 2 to match 0-4 tier
+                } else if (yearIn >= 5 && yearIn <= 9) {
+                    effectiveYears = 7; // Use 7 to match 5-9 tier
+                } else {
+                    effectiveYears = 10; // 10+ tier
+                }
+            } else {
+                // "Years Completed" interpretation: "0-4 Years" means 0-4 completed years
+                // You're in the "5-9 Years" tier when you've completed 5-9 years
+                // Which means after completing 5 full years (day 1826+)
+                effectiveYears = completedYears;
+            }
+
+            // Find current tier
+            const currentTier = accrualTiers.find(tier => 
+                effectiveYears >= tier.minYears && effectiveYears <= tier.maxYears
+            );
+
+            // Calculate monthly accrual (assuming 8-hour workdays)
+            const vacationHoursPerMonth = (currentTier.vacationDays * 8) / 12;
+            const sickHoursPerMonth = (currentTier.sickDays * 8) / 12;
+
+            // Display results
+            document.getElementById('tierBadge').textContent = currentTier.label;
+            document.getElementById('vacationHours').textContent = vacationHoursPerMonth.toFixed(2);
+            document.getElementById('sickHours').textContent = sickHoursPerMonth.toFixed(2);
+            
+            document.getElementById('displayHireDate').textContent = hireDate.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            // Display time employed with interpretation-aware description
+            const timeEmployedBase = `${completedYears} year${completedYears !== 1 ? 's' : ''}, ${months} month${months !== 1 ? 's' : ''}`;
+            const timeEmployedDisplay = useYearIn 
+                ? `${timeEmployedBase} (in your ${yearIn}${getOrdinalSuffix(yearIn)} year)` 
+                : `${timeEmployedBase} completed`;
+            
+            document.getElementById('timeEmployed').textContent = timeEmployedDisplay;
+            document.getElementById('currentTier').textContent = currentTier.label;
+            document.getElementById('annualVacation').textContent = `${currentTier.vacationDays} days`;
+            document.getElementById('annualSick').textContent = `${currentTier.sickDays} days`;
+
+            // Calculate next tier advancement
+            // CRITICAL: The interpretations advance at DIFFERENT times!
+            let nextTierInfo = '';
+            
+            if (useYearIn) {
+                // Year In: advance when entering year 5 (for 5-9 tier) or year 10 (for 10+ tier)
+                if (yearIn < 5) {
+                    const nextTier = accrualTiers[1];
+                    const daysUntilThreshold = (4 * 365 + 1) - diffDays; // Day 1461 = entering 5th year
+                    const nextDate = new Date(hireDate);
+                    nextDate.setDate(nextDate.getDate() + (4 * 365 + 1));
+                    
+                    nextTierInfo = `You will advance to the <span class="highlight">${nextTier.label}</span> tier on <span class="highlight">${nextDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span> (when you enter your 5th year, in approximately ${daysUntilThreshold} days).<br><br>`;
+                    nextTierInfo += `At that time, your accrual rates will increase to:<br>`;
+                    nextTierInfo += `• Vacation: <strong>${((nextTier.vacationDays * 8) / 12).toFixed(2)} hours/month</strong> (${nextTier.vacationDays} days/year)<br>`;
+                    nextTierInfo += `• Sick Time: <strong>${((nextTier.sickDays * 8) / 12).toFixed(2)} hours/month</strong> (${nextTier.sickDays} days/year)`;
+                } else if (yearIn < 10) {
+                    const nextTier = accrualTiers[2];
+                    const daysUntilThreshold = (9 * 365 + 1) - diffDays; // Day 3286 = entering 10th year
+                    const nextDate = new Date(hireDate);
+                    nextDate.setDate(nextDate.getDate() + (9 * 365 + 1));
+                    
+                    nextTierInfo = `You will advance to the <span class="highlight">${nextTier.label}</span> tier on <span class="highlight">${nextDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span> (when you enter your 10th year, in approximately ${daysUntilThreshold} days).<br><br>`;
+                    nextTierInfo += `At that time, your accrual rates will increase to:<br>`;
+                    nextTierInfo += `• Vacation: <strong>${((nextTier.vacationDays * 8) / 12).toFixed(2)} hours/month</strong> (${nextTier.vacationDays} days/year)<br>`;
+                    nextTierInfo += `• Sick Time: <strong>${((nextTier.sickDays * 8) / 12).toFixed(2)} hours/month</strong> (${nextTier.sickDays} days/year)`;
+                } else {
+                    nextTierInfo = `🎉 Congratulations! You are at the <span class="highlight">maximum tier</span> with the highest accrual rates available.`;
+                }
+            } else {
+                // Years Completed: advance when completing 5 years (for 5-9 tier) or 10 years (for 10+ tier)
+                if (completedYears < 5) {
+                    const nextTier = accrualTiers[1];
+                    const daysUntilThreshold = (5 * 365 + 1) - diffDays; // Day 1826 = completed 5 years
+                    const nextDate = new Date(hireDate);
+                    nextDate.setDate(nextDate.getDate() + (5 * 365 + 1));
+                    
+                    nextTierInfo = `You will advance to the <span class="highlight">${nextTier.label}</span> tier on <span class="highlight">${nextDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span> (when you complete 5 years, in approximately ${daysUntilThreshold} days).<br><br>`;
+                    nextTierInfo += `At that time, your accrual rates will increase to:<br>`;
+                    nextTierInfo += `• Vacation: <strong>${((nextTier.vacationDays * 8) / 12).toFixed(2)} hours/month</strong> (${nextTier.vacationDays} days/year)<br>`;
+                    nextTierInfo += `• Sick Time: <strong>${((nextTier.sickDays * 8) / 12).toFixed(2)} hours/month</strong> (${nextTier.sickDays} days/year)`;
+                } else if (completedYears < 10) {
+                    const nextTier = accrualTiers[2];
+                    const daysUntilThreshold = (10 * 365 + 1) - diffDays; // Day 3651 = completed 10 years
+                    const nextDate = new Date(hireDate);
+                    nextDate.setDate(nextDate.getDate() + (10 * 365 + 1));
+                    
+                    nextTierInfo = `You will advance to the <span class="highlight">${nextTier.label}</span> tier on <span class="highlight">${nextDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span> (when you complete 10 years, in approximately ${daysUntilThreshold} days).<br><br>`;
+                    nextTierInfo += `At that time, your accrual rates will increase to:<br>`;
+                    nextTierInfo += `• Vacation: <strong>${((nextTier.vacationDays * 8) / 12).toFixed(2)} hours/month</strong> (${nextTier.vacationDays} days/year)<br>`;
+                    nextTierInfo += `• Sick Time: <strong>${((nextTier.sickDays * 8) / 12).toFixed(2)} hours/month</strong> (${nextTier.sickDays} days/year)`;
+                } else {
+                    nextTierInfo = `🎉 Congratulations! You are at the <span class="highlight">maximum tier</span> with the highest accrual rates available.`;
+                }
+            }
+
+            document.getElementById('nextTierInfo').innerHTML = nextTierInfo;
+            document.getElementById('results').classList.add('show');
+        }
+
+        // Set max date to today
+        document.getElementById('hireDate').max = new Date().toISOString().split('T')[0];
+    </script>
+</body>
+</html>
