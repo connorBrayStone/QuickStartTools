@@ -608,7 +608,7 @@
             // Display time employed with interpretation-aware description
             const timeEmployedBase = `${completedYears} year${completedYears !== 1 ? 's' : ''}, ${months} month${months !== 1 ? 's' : ''}`;
             const timeEmployedDisplay = useYearIn 
-                ? `${timeEmployedBase} (in your ${yearIn}${getOrdinalSuffix(yearIn)} year)` 
+                ? `${timeEmployedBase} (in your ${getOrdinalSuffix(yearIn)} year)` 
                 : `${timeEmployedBase} completed`;
             
             document.getElementById('timeEmployed').textContent = timeEmployedDisplay;
