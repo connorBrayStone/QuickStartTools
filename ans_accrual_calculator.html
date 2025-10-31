@@ -456,6 +456,11 @@
                 </div>
             </div>
 
+            <div class="next-tier-card" id="currentTierCard" style="background: #e6fffa; border: 2px solid #81e6d9;">
+                <div class="next-tier-title" style="color: #234e52;">📍 Current Tier Information</div>
+                <div class="next-tier-info" id="currentTierInfo" style="color: #2c7a7b;">--</div>
+            </div>
+
             <div class="next-tier-card" id="nextTierCard">
                 <div class="next-tier-title">📅 Next Tier Advancement</div>
                 <div class="next-tier-info" id="nextTierInfo">--</div>
@@ -611,6 +616,47 @@
             document.getElementById('annualVacation').textContent = `${currentTier.vacationDays} days`;
             document.getElementById('annualSick').textContent = `${currentTier.sickDays} days`;
 
+            // Calculate current tier advancement info
+            let currentTierAdvancementInfo = '';
+            
+            if (useYearIn) {
+                // Year In interpretation
+                if (yearIn >= 1 && yearIn <= 4) {
+                    // In 0-4 tier (years 1-4)
+                    currentTierAdvancementInfo = `You have been in the <span class="highlight">0-4 Years</span> tier since your <strong>hire date</strong> (${hireDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}).`;
+                } else if (yearIn >= 5 && yearIn <= 9) {
+                    // In 5-9 tier (years 5-9)
+                    const advancementDate = new Date(hireDate);
+                    advancementDate.setDate(advancementDate.getDate() + (4 * 365 + 1));
+                    const daysInCurrentTier = diffDays - (4 * 365 + 1);
+                    currentTierAdvancementInfo = `You advanced to the <span class="highlight">5-9 Years</span> tier on <strong>${advancementDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</strong> (when you entered your 5th year).<br>You have been in this tier for <strong>${daysInCurrentTier} days</strong>.`;
+                } else {
+                    // In 10+ tier
+                    const advancementDate = new Date(hireDate);
+                    advancementDate.setDate(advancementDate.getDate() + (9 * 365 + 1));
+                    const daysInCurrentTier = diffDays - (9 * 365 + 1);
+                    currentTierAdvancementInfo = `You advanced to the <span class="highlight">10+ Years</span> tier on <strong>${advancementDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</strong> (when you entered your 10th year).<br>You have been in this tier for <strong>${daysInCurrentTier} days</strong>.`;
+                }
+            } else {
+                // Years Completed interpretation
+                if (completedYears <= 4) {
+                    // In 0-4 tier
+                    currentTierAdvancementInfo = `You have been in the <span class="highlight">0-4 Years</span> tier since your <strong>hire date</strong> (${hireDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}).`;
+                } else if (completedYears <= 9) {
+                    // In 5-9 tier
+                    const advancementDate = new Date(hireDate);
+                    advancementDate.setDate(advancementDate.getDate() + (5 * 365 + 1));
+                    const daysInCurrentTier = diffDays - (5 * 365 + 1);
+                    currentTierAdvancementInfo = `You advanced to the <span class="highlight">5-9 Years</span> tier on <strong>${advancementDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</strong> (when you completed 5 years).<br>You have been in this tier for <strong>${daysInCurrentTier} days</strong>.`;
+                } else {
+                    // In 10+ tier
+                    const advancementDate = new Date(hireDate);
+                    advancementDate.setDate(advancementDate.getDate() + (10 * 365 + 1));
+                    const daysInCurrentTier = diffDays - (10 * 365 + 1);
+                    currentTierAdvancementInfo = `You advanced to the <span class="highlight">10+ Years</span> tier on <strong>${advancementDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</strong> (when you completed 10 years).<br>You have been in this tier for <strong>${daysInCurrentTier} days</strong>.`;
+                }
+            }
+
             // Calculate next tier advancement
             // CRITICAL: The interpretations advance at DIFFERENT times!
             let nextTierInfo = '';
@@ -667,6 +713,7 @@
                 }
             }
 
+            document.getElementById('currentTierInfo').innerHTML = currentTierAdvancementInfo;
             document.getElementById('nextTierInfo').innerHTML = nextTierInfo;
             document.getElementById('results').classList.add('show');
         }
