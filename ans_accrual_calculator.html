@@ -548,8 +548,14 @@
                 return;
             }
 
-            const hireDate = new Date(hireDateInput);
+            // Parse date in local timezone to avoid timezone shift issues
+            const [year, month, day] = hireDateInput.split('-').map(Number);
+            const hireDate = new Date(year, month - 1, day); // month is 0-indexed
+            
             const today = new Date();
+            // Set today to start of day for consistent calculations
+            today.setHours(0, 0, 0, 0);
+            
             const useYearIn = document.getElementById('interpretationToggle').checked;
 
             // Calculate time difference
