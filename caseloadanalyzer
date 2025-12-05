@@ -1,0 +1,2102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parent Coach Caseload Analysis</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .input-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .input-section h2 {
+            color: #667eea;
+            font-size: 20px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .family-input {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .family-input.esdm {
+            border-left-color: #f093fb;
+        }
+        
+        .input-row {
+            display: grid;
+            grid-template-columns: 120px 100px 1fr 1fr 1fr 1fr 60px;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .input-row label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #495057;
+        }
+        
+        .input-row input[type="text"],
+        .input-row input[type="date"],
+        .input-row select {
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+        
+        .input-row input:focus,
+        .input-row select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .remove-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background 0.2s;
+        }
+        
+        .remove-btn:hover {
+            background: #c82333;
+        }
+        
+        .add-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            margin-right: 10px;
+        }
+        
+        .add-btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+        
+        .analyze-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 14px 32px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            display: block;
+            margin: 20px auto;
+        }
+        
+        .analyze-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
+        }
+        
+        .results {
+            margin-top: 30px;
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .chart-container h3 {
+            color: #495057;
+            font-size: 18px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .stat-card .label {
+            font-size: 13px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+        
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: 700;
+        }
+        
+        .week-detail {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            display: grid;
+            grid-template-columns: 120px 80px 1fr;
+            gap: 15px;
+            align-items: center;
+            font-size: 14px;
+        }
+        
+        .week-detail.high-load {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .week-detail.very-high-load {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+        }
+        
+        .week-detail .date {
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .week-detail .count {
+            font-weight: 700;
+            font-size: 18px;
+            color: #667eea;
+        }
+        
+        .week-detail.high-load .count {
+            color: #f59e0b;
+        }
+        
+        .week-detail.very-high-load .count {
+            color: #dc3545;
+        }
+        
+        .week-detail .families {
+            color: #6c757d;
+            font-size: 13px;
+        }
+        
+        .threshold-info {
+            background: #e7f3ff;
+            border-left: 4px solid #0066cc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #495057;
+        }
+        
+        .threshold-info strong {
+            color: #0066cc;
+        }
+        
+        .toggle-container {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 2px solid #e9ecef;
+        }
+        
+        .toggle-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #495057;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 52px;
+            height: 28px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 28px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: #667eea;
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+        
+        .toggle-status {
+            font-size: 13px;
+            color: #6c757d;
+            font-style: italic;
+        }
+        
+        .utility-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .utility-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .utility-btn:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+        
+        .utility-btn.import {
+            background: #28a745;
+        }
+        
+        .utility-btn.import:hover {
+            background: #218838;
+        }
+        
+        .utility-btn.save {
+            background: #007bff;
+        }
+        
+        .utility-btn.save:hover {
+            background: #0056b3;
+        }
+        
+        .utility-btn.load {
+            background: #17a2b8;
+        }
+        
+        .utility-btn.load:hover {
+            background: #138496;
+        }
+        
+        .utility-btn.clear {
+            background: #dc3545;
+        }
+        
+        .utility-btn.clear:hover {
+            background: #c82333;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.6);
+            animation: fadeIn 0.3s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 12px;
+            width: 80%;
+            max-width: 800px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            animation: slideIn 0.3s;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-header h2 {
+            color: #667eea;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        .close {
+            color: #aaa;
+            font-size: 32px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s;
+            line-height: 1;
+        }
+        
+        .close:hover {
+            color: #000;
+        }
+        
+        .modal textarea {
+            width: 100%;
+            min-height: 300px;
+            padding: 15px;
+            border: 2px solid #ced4da;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            resize: vertical;
+        }
+        
+        .modal textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .modal-footer {
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .modal-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .modal-btn.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .modal-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .modal-btn.secondary {
+            background: #e9ecef;
+            color: #495057;
+        }
+        
+        .modal-btn.secondary:hover {
+            background: #dee2e6;
+        }
+        
+        .import-instructions {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        
+        .import-instructions strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 8px;
+        }
+        
+        .import-instructions code {
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .timeline-container {
+            margin-top: 30px;
+        }
+        
+        .timeline-row {
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            gap: 15px;
+            margin-bottom: 12px;
+            align-items: center;
+        }
+        
+        .timeline-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .timeline-label .service-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            margin-left: 8px;
+            font-weight: 500;
+        }
+        
+        .timeline-label .service-badge.pc {
+            background: #e7f3ff;
+            color: #0066cc;
+        }
+        
+        .timeline-label .service-badge.esdm {
+            background: #fce7f3;
+            color: #be185d;
+        }
+        
+        .timeline-bar {
+            display: flex;
+            height: 28px;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .timeline-segment {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 500;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            position: relative;
+        }
+        
+        .timeline-segment.slp-ot {
+            background: #9ca3af;
+        }
+        
+        .timeline-segment.pc-weekly {
+            background: #22c55e;
+        }
+        
+        .timeline-segment.esdm-direct {
+            background: #3b82f6;
+        }
+        
+        .timeline-segment.esdm-pc {
+            background: #10b981;
+        }
+        
+        .timeline-segment.followup {
+            background: #fbbf24;
+        }
+        
+        .timeline-segment:hover {
+            filter: brightness(1.1);
+        }
+        
+        .timeline-legend {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 12px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .legend-color {
+            width: 24px;
+            height: 16px;
+            border-radius: 4px;
+        }
+        
+        .fiscal-year-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .fiscal-year-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .fiscal-year-card h4 {
+            font-size: 14px;
+            color: #495057;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .fiscal-year-card .count {
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        
+        .fiscal-year-card .breakdown {
+            font-size: 12px;
+            color: #6c757d;
+        }
+        
+        .fiscal-year-card .breakdown span {
+            display: inline-block;
+            margin-right: 12px;
+        }
+        
+        .scrollable-timeline {
+            overflow-x: auto;
+            overflow-y: visible;
+            margin-top: 20px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            background: white;
+        }
+        
+        .timeline-grid {
+            display: grid;
+            min-width: max-content;
+            grid-template-columns: 150px repeat(auto-fill, 50px);
+            font-size: 11px;
+        }
+        
+        .timeline-header {
+            position: sticky;
+            left: 0;
+            top: 0;
+            background: white;
+            z-index: 20;
+            font-weight: 600;
+            padding: 8px;
+            border-bottom: 2px solid #dee2e6;
+            border-right: 1px solid #dee2e6;
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .timeline-week-header {
+            position: sticky;
+            top: 0;
+            padding: 8px 4px;
+            border-bottom: 2px solid #dee2e6;
+            border-right: 1px solid #f0f0f0;
+            text-align: center;
+            font-weight: 600;
+            background: #f8f9fa;
+            z-index: 10;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .timeline-week-header.current-week {
+            background: #e3f2fd;
+            border-left: 3px solid #2196f3;
+            border-right: 3px solid #2196f3;
+            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+        }
+        
+        .timeline-cell.current-week-cell {
+            border-left: 3px solid #2196f3;
+            border-right: 3px solid #2196f3;
+            background-color: rgba(33, 150, 243, 0.08);
+        }
+        
+        .timeline-family-label {
+            position: sticky;
+            left: 0;
+            background: white;
+            z-index: 15;
+            padding: 8px;
+            border-bottom: 1px solid #e9ecef;
+            border-right: 1px solid #dee2e6;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 2px 0 4px rgba(0,0,0,0.1);
+        }
+        
+        .timeline-cell {
+            border-bottom: 1px solid #e9ecef;
+            border-right: 1px solid #f0f0f0;
+            min-height: 32px;
+        }
+        
+        .timeline-cell.slp-ot {
+            background: #9ca3af;
+        }
+        
+        .timeline-cell.pc-weekly {
+            background: #22c55e;
+        }
+        
+        .timeline-cell.esdm-direct {
+            background: #3b82f6;
+        }
+        
+        .timeline-cell.esdm-break {
+            background: #d1d5db;
+        }
+        
+        .timeline-cell.esdm-pc {
+            background: #10b981;
+        }
+        
+        .timeline-cell.followup {
+            background: #fbbf24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Parent Coach Caseload Analysis Tool</h1>
+            <p>Analyze weekly session loads across PC families and ESDM program families</p>
+        </div>
+        
+        <div class="content">
+            <div class="input-section">
+                <h2>Family Caseload Input</h2>
+                <div class="threshold-info">
+                    <strong>Expected Load:</strong> 6-7 weekly sessions (PC families in sessions 1-17 or ESDM families with 2 sessions/week) + 1-2 monthly follow-up sessions = ~8 sessions/week average
+                </div>
+                
+                <div class="toggle-container">
+                    <span class="toggle-label">Include Follow-up Sessions:</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="includeFollowups" checked onchange="toggleFollowups()">
+                        <span class="slider"></span>
+                    </label>
+                    <span class="toggle-status" id="toggleStatus">ON (0.25 sessions/week during follow-up phase)</span>
+                </div>
+                
+                <div id="familyInputs"></div>
+                
+                <div class="utility-buttons">
+                    <button class="utility-btn import" onclick="openImportModal()">📋 Bulk Import from Excel</button>
+                    <button class="utility-btn save" onclick="saveData()">💾 Save Data</button>
+                    <button class="utility-btn load" onclick="loadData()">📂 Load Data</button>
+                    <button class="utility-btn" onclick="sortFamilies()">🔄 Sort by Start Date</button>
+                    <button class="utility-btn clear" onclick="clearAll()">🗑️ Clear All</button>
+                </div>
+                
+                <button class="add-btn" onclick="addFamily('PC')">+ Add PC Family</button>
+                <button class="add-btn" onclick="addFamily('ESDM')">+ Add ESDM Family</button>
+            </div>
+            
+            <div class="input-section" style="margin-top: 20px;">
+                <h2>Analysis Settings</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                    <div>
+                        <label style="display: block; margin-bottom: 8px; font-weight: 500; color: #495057;">Analysis Start Date (optional):</label>
+                        <input type="date" id="analysisStartDate" style="width: 100%; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 6px; font-size: 14px;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 8px; font-weight: 500; color: #495057;">Analysis End Date (optional):</label>
+                        <input type="date" id="analysisEndDate" style="width: 100%; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 6px; font-size: 14px;">
+                    </div>
+                </div>
+                <p style="font-size: 13px; color: #6c757d; font-style: italic;">Leave blank to analyze the full date range of your caseload data</p>
+            </div>
+            
+            <button class="analyze-btn" onclick="analyzeCaseload()">📊 Analyze Caseload</button>
+            
+            <div class="results" id="results" style="display: none;">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="label">Peak Weekly Sessions</div>
+                        <div class="value" id="peakSessions">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="label">Average Weekly Sessions</div>
+                        <div class="value" id="avgSessions">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="label">Weeks Over 8 Sessions</div>
+                        <div class="value" id="overloadWeeks">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="label">Weeks Over 10 Sessions</div>
+                        <div class="value" id="criticalWeeks">0</div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <h3>Families by Fiscal Year (April 1 - March 31)</h3>
+                    <div id="fiscalYearSummary"></div>
+                </div>
+                
+                <div class="chart-container">
+                    <h3>Family Timeline View (Week-by-Week)</h3>
+                    <div class="timeline-legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #9ca3af;"></div>
+                            <span>Sessions 1-3: SLP/OT Consultations</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #22c55e;"></div>
+                            <span>Sessions 4-17: PC Weekly Sessions</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #3b82f6;"></div>
+                            <span>ESDM: Direct Sessions (13 weeks, 2x weekly)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #10b981;"></div>
+                            <span>ESDM: Abbreviated PC (4 weeks, 2x weekly)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #fbbf24;"></div>
+                            <span>Sessions 18-19: Follow-ups (PC only)</span>
+                        </div>
+                    </div>
+                    <p style="font-size: 13px; color: #6c757d; margin-top: 10px; font-style: italic;">
+                        Scroll horizontally to see timeline across weeks →
+                    </p>
+                    <div class="scrollable-timeline">
+                        <div id="familyTimelines" class="timeline-grid"></div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <h3>Weekly Detail Breakdown (Last 6 + Next 6 Weeks)</h3>
+                    <p style="font-size: 13px; color: #6c757d; margin-bottom: 15px; font-style: italic;">
+                        Shows the 6 weeks before and 6 weeks after the current week, regardless of date range filter
+                    </p>
+                    <div id="weeklyBreakdown"></div>
+                </div>
+                
+                <div class="chart-container">
+                    <h3>Weekly Session Load Over Time</h3>
+                    <canvas id="sessionChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Import Modal -->
+    <div id="importModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Bulk Import from Excel</h2>
+                <span class="close" onclick="closeImportModal()">&times;</span>
+            </div>
+            <div class="import-instructions">
+                <strong>Instructions:</strong>
+                Copy the rows from your Excel spreadsheet and paste them below.<br><br>
+                
+                <strong>What the tool looks for:</strong><br>
+                • A column with "PC" or "ESDM"<br>
+                • A column with the child ID (like "SaCa-N" or "AnST")<br>
+                • Date columns (in formats like "Mon 09/Jun/25" or "2025-06-09")<br><br>
+                
+                <strong>Tips:</strong><br>
+                • Select and copy directly from Excel - tabs will be preserved<br>
+                • The tool will automatically detect which columns are which<br>
+                • Duplicate ESDM rows are handled automatically<br>
+                • You'll see detailed error messages if something doesn't parse correctly
+            </div>
+            <textarea id="importData" placeholder="Paste your Excel data here...&#10;Example:&#10;PC	SaCa-N	2025-09-09	2025-11-14	2025-11-15	2026-01-14&#10;ESDM	AnST	2025-07-21	2026-01-14	2026-01-15	2026-01-13"></textarea>
+            <div class="modal-footer">
+                <button class="modal-btn secondary" onclick="closeImportModal()">Cancel</button>
+                <button class="modal-btn primary" onclick="processImport()">Import Data</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let familyCount = 0;
+        let chart = null;
+        let currentAnalysisData = null;
+        
+        function toggleFollowups() {
+            const includeFollowups = document.getElementById('includeFollowups').checked;
+            const statusText = document.getElementById('toggleStatus');
+            
+            if (includeFollowups) {
+                statusText.textContent = 'ON (0.25 sessions/week during follow-up phase)';
+            } else {
+                statusText.textContent = 'OFF (only weekly sessions counted)';
+            }
+            
+            // Re-run analysis if we have data
+            if (currentAnalysisData) {
+                analyzeCaseload();
+            }
+        }
+        
+        // Start with empty data - user can import or add manually
+        window.onload = function() {
+            // Tool starts empty - ready for import or manual entry
+        };
+        
+        function addFamilyWithData(service, childId, pcStart, pcEnd, followupStart, followupEnd, isCentral = false) {
+            const container = document.getElementById('familyInputs');
+            const div = document.createElement('div');
+            div.className = `family-input ${service === 'ESDM' ? 'esdm' : ''}`;
+            div.id = `family-${familyCount}`;
+            
+            const currentId = familyCount;
+            
+            if (service === 'ESDM') {
+                // For ESDM families loaded from old data, we need to split the dates
+                // Assume first 13 weeks are Direct ESDM, week 14 is break, weeks 15-18 are PC
+                const directStart = pcStart;
+                const directEnd = followupStart ? new Date(new Date(directStart).getTime() + (13 * 7 * 24 * 60 * 60 * 1000)) : pcEnd;
+                const pcStartDate = followupStart ? new Date(new Date(directStart).getTime() + (14 * 7 * 24 * 60 * 60 * 1000)) : '';
+                const pcEndDate = followupStart ? pcEnd : '';
+                
+                div.innerHTML = `
+                    <div class="input-row">
+                        <label>Child ID:</label>
+                        <select class="service-select" onchange="updateServiceType(${currentId}); updateCalculatedDates(${currentId})">
+                            <option value="PC">PC</option>
+                            <option value="ESDM" selected>ESDM</option>
+                        </select>
+                        <input type="text" placeholder="Child ID" value="${childId}" class="child-id">
+                        <label style="font-size: 12px; grid-column: span 2;">${isCentral ? '(Central Zone)' : ''}</label>
+                        <button class="remove-btn" onclick="removeFamily(${currentId})">×</button>
+                    </div>
+                    <div class="input-row">
+                        <label>Direct ESDM Start:</label>
+                        <span></span>
+                        <input type="date" class="esdm-direct-start" value="${directStart}" onchange="updateCalculatedDatesESDM(${currentId})">
+                        <label>Direct ESDM End:</label>
+                        <input type="date" class="esdm-direct-end" value="${typeof directEnd === 'string' ? directEnd : formatDate(directEnd)}">
+                    </div>
+                    <div class="input-row">
+                        <label>Abbreviated PC Start:</label>
+                        <span></span>
+                        <input type="date" class="esdm-pc-start" value="${pcStartDate ? formatDate(pcStartDate) : ''}">
+                        <label>Abbreviated PC End:</label>
+                        <input type="date" class="esdm-pc-end" value="${pcEndDate || ''}">
+                    </div>
+                `;
+            } else {
+                div.innerHTML = `
+                    <div class="input-row">
+                        <label>Child ID:</label>
+                        <select class="service-select" onchange="updateServiceType(${currentId}); updateCalculatedDates(${currentId})">
+                            <option value="PC" selected>PC</option>
+                            <option value="ESDM">ESDM</option>
+                        </select>
+                        <input type="text" placeholder="Child ID" value="${childId}" class="child-id">
+                        <label style="font-size: 12px; grid-column: span 2;">${isCentral ? '(Central Zone)' : ''}</label>
+                        <button class="remove-btn" onclick="removeFamily(${currentId})">×</button>
+                    </div>
+                    <div class="input-row">
+                        <label>PC Start:</label>
+                        <span></span>
+                        <input type="date" class="pc-start" value="${pcStart}" onchange="updateCalculatedDates(${currentId})">
+                        <label>PC End:</label>
+                        <input type="date" class="pc-end" value="${pcEnd}">
+                    </div>
+                    <div class="input-row">
+                        <label>Follow-up Start:</label>
+                        <span></span>
+                        <input type="date" class="followup-start" value="${followupStart || ''}">
+                        <label>Follow-up End:</label>
+                        <input type="date" class="followup-end" value="${followupEnd || ''}">
+                    </div>
+                `;
+            }
+            
+            container.appendChild(div);
+            familyCount++;
+        }
+        
+        function addFamily(service) {
+            const container = document.getElementById('familyInputs');
+            const div = document.createElement('div');
+            div.className = `family-input ${service === 'ESDM' ? 'esdm' : ''}`;
+            div.id = `family-${familyCount}`;
+            
+            const currentId = familyCount;
+            
+            if (service === 'ESDM') {
+                div.innerHTML = `
+                    <div class="input-row">
+                        <label>Child ID:</label>
+                        <select class="service-select" onchange="updateServiceType(${currentId}); updateCalculatedDates(${currentId})">
+                            <option value="PC">PC</option>
+                            <option value="ESDM" selected>ESDM</option>
+                        </select>
+                        <input type="text" placeholder="Child ID" class="child-id">
+                        <span></span>
+                        <span></span>
+                        <button class="remove-btn" onclick="removeFamily(${currentId})">×</button>
+                    </div>
+                    <div class="input-row">
+                        <label>Direct ESDM Start:</label>
+                        <span></span>
+                        <input type="date" class="esdm-direct-start" onchange="updateCalculatedDatesESDM(${currentId})">
+                        <label>Direct ESDM End:</label>
+                        <input type="date" class="esdm-direct-end">
+                    </div>
+                    <div class="input-row">
+                        <label>Abbreviated PC Start:</label>
+                        <span></span>
+                        <input type="date" class="esdm-pc-start">
+                        <label>Abbreviated PC End:</label>
+                        <input type="date" class="esdm-pc-end">
+                    </div>
+                `;
+            } else {
+                div.innerHTML = `
+                    <div class="input-row">
+                        <label>Child ID:</label>
+                        <select class="service-select" onchange="updateServiceType(${currentId}); updateCalculatedDates(${currentId})">
+                            <option value="PC" selected>PC</option>
+                            <option value="ESDM">ESDM</option>
+                        </select>
+                        <input type="text" placeholder="Child ID" class="child-id">
+                        <span></span>
+                        <span></span>
+                        <button class="remove-btn" onclick="removeFamily(${currentId})">×</button>
+                    </div>
+                    <div class="input-row">
+                        <label>PC Start:</label>
+                        <span></span>
+                        <input type="date" class="pc-start" onchange="updateCalculatedDates(${currentId})">
+                        <label>PC End:</label>
+                        <input type="date" class="pc-end">
+                    </div>
+                    <div class="input-row">
+                        <label>Follow-up Start:</label>
+                        <span></span>
+                        <input type="date" class="followup-start">
+                        <label>Follow-up End:</label>
+                        <input type="date" class="followup-end">
+                    </div>
+                `;
+            }
+            
+            container.appendChild(div);
+            familyCount++;
+        }
+        
+        function updateServiceType(id) {
+            const family = document.getElementById(`family-${id}`);
+            const service = family.querySelector('.service-select').value;
+            if (service === 'ESDM') {
+                family.classList.add('esdm');
+            } else {
+                family.classList.remove('esdm');
+            }
+            
+            // Update labels based on service type
+            const labels = family.querySelectorAll('label');
+            if (service === 'ESDM') {
+                labels[1].textContent = 'ESDM Start:';
+                labels[2].textContent = 'ESDM End:';
+            } else {
+                labels[1].textContent = 'PC Start:';
+                labels[2].textContent = 'PC End:';
+            }
+            
+            // Recalculate dates if start date exists
+            updateCalculatedDates(id);
+        }
+        
+        function removeFamily(id) {
+            document.getElementById(`family-${id}`).remove();
+        }
+        
+        function openImportModal() {
+            document.getElementById('importModal').style.display = 'block';
+        }
+        
+        function closeImportModal() {
+            document.getElementById('importModal').style.display = 'none';
+            document.getElementById('importData').value = '';
+        }
+        
+        function parseExcelDate(dateStr) {
+            if (!dateStr) return '';
+            
+            // Already in YYYY-MM-DD format
+            if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+                return dateStr;
+            }
+            
+            // Format: "31-Mar-2025" or "31-Mar-25"
+            if (dateStr.includes('-') && /[A-Za-z]/.test(dateStr)) {
+                const parts = dateStr.split('-');
+                if (parts.length === 3) {
+                    const day = parts[0].padStart(2, '0');
+                    const monthStr = parts[1];
+                    let year = parts[2];
+                    
+                    // Handle 2-digit year
+                    if (year.length === 2) {
+                        year = '20' + year;
+                    }
+                    
+                    const monthMap = {
+                        'Jan': '01', 'Feb': '02', 'Mar': '03', 'Apr': '04',
+                        'May': '05', 'Jun': '06', 'Jul': '07', 'Aug': '08',
+                        'Sep': '09', 'Oct': '10', 'Nov': '11', 'Dec': '12'
+                    };
+                    
+                    const month = monthMap[monthStr] || monthMap[monthStr.substring(0, 3)];
+                    
+                    if (month) {
+                        return `${year}-${month}-${day}`;
+                    }
+                }
+            }
+            
+            // Format: "Mon 09/Jun/25" or similar
+            if (dateStr.includes('/')) {
+                const parts = dateStr.split(' ');
+                const datePart = parts[parts.length - 1]; // Get the last part (09/Jun/25)
+                const [day, month, year] = datePart.split('/');
+                
+                const monthMap = {
+                    'Jan': '01', 'Feb': '02', 'Mar': '03', 'Apr': '04',
+                    'May': '05', 'Jun': '06', 'Jul': '07', 'Aug': '08',
+                    'Sep': '09', 'Oct': '10', 'Nov': '11', 'Dec': '12'
+                };
+                
+                const monthNum = monthMap[month] || month;
+                const fullYear = year.length === 2 ? '20' + year : year;
+                
+                return `${fullYear}-${monthNum.padStart(2, '0')}-${day.padStart(2, '0')}`;
+            }
+            
+            // Try parsing as a Date object
+            const date = new Date(dateStr);
+            if (!isNaN(date.getTime())) {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+            
+            return '';
+        }
+        
+        function processImport() {
+            const data = document.getElementById('importData').value;
+            if (!data.trim()) {
+                alert('Please paste some data first');
+                return;
+            }
+            
+            const lines = data.trim().split('\n');
+            let imported = 0;
+            let skipped = 0;
+            let errorDetails = [];
+            const seenESDM = new Set(); // Track ESDM families to avoid duplicates
+            
+            lines.forEach((line, index) => {
+                const lineNum = index + 1;
+                
+                // Skip empty lines
+                if (!line.trim()) {
+                    return;
+                }
+                
+                // Split by tab first, then by multiple spaces if no tabs
+                let parts = line.split('\t').map(p => p.trim()).filter(p => p);
+                if (parts.length === 1) {
+                    // No tabs found, try splitting by multiple spaces
+                    parts = line.split(/\s{2,}/).map(p => p.trim()).filter(p => p);
+                }
+                
+                console.log(`Line ${lineNum}:`, parts); // Debug
+                
+                // Need at least: Service, Child ID, PC Start, PC End
+                if (parts.length < 4) {
+                    errorDetails.push(`Line ${lineNum}: Not enough columns (found ${parts.length}, need at least 4)`);
+                    skipped++;
+                    return;
+                }
+                
+                // Extract columns - flexible based on your Excel structure
+                let service, childId, pcStart, pcEnd, followupStart, followupEnd;
+                
+                // Try to find service column (PC or ESDM)
+                const serviceIdx = parts.findIndex(p => ['PC', 'ESDM'].includes(p.toUpperCase()));
+                if (serviceIdx === -1) {
+                    errorDetails.push(`Line ${lineNum}: No valid service type found (need PC or ESDM)`);
+                    skipped++;
+                    return;
+                }
+                
+                service = parts[serviceIdx].toUpperCase();
+                
+                // Assume child ID is right after service, or look for a name-like pattern
+                childId = parts[serviceIdx + 1] || parts.find(p => /^[A-Z][a-z]/.test(p));
+                
+                // Find date columns (look for date patterns)
+                const dateParts = parts.filter(p => {
+                    // Match formats: 31-Mar-2025, 2025-06-09, Mon 09/Jun/25
+                    return /\d{1,4}[-\/]\w{3}[-\/]\d{2,4}/.test(p) || 
+                           /^\d{4}-\d{2}-\d{2}$/.test(p) ||
+                           /^(Mon|Tue|Wed|Thu|Fri|Sat|Sun)/.test(p);
+                });
+                
+                if (dateParts.length < 2) {
+                    errorDetails.push(`Line ${lineNum}: Not enough date columns found`);
+                    skipped++;
+                    return;
+                }
+                
+                // Parse dates
+                pcStart = parseExcelDate(dateParts[0]);
+                pcEnd = parseExcelDate(dateParts[1]);
+                followupStart = dateParts[2] ? parseExcelDate(dateParts[2]) : '';
+                followupEnd = dateParts[3] ? parseExcelDate(dateParts[3]) : '';
+                
+                if (!pcStart || !pcEnd) {
+                    errorDetails.push(`Line ${lineNum}: Could not parse dates (${dateParts[0]} -> ${pcStart}, ${dateParts[1]} -> ${pcEnd})`);
+                    skipped++;
+                    return;
+                }
+                
+                // For ESDM families, only import once (skip duplicate rows)
+                if (service === 'ESDM') {
+                    if (seenESDM.has(childId)) {
+                        skipped++;
+                        return;
+                    }
+                    seenESDM.add(childId);
+                }
+                
+                // Add the family
+                addFamilyWithData(
+                    service,
+                    childId,
+                    pcStart,
+                    pcEnd,
+                    followupStart || '',
+                    followupEnd || ''
+                );
+                imported++;
+            });
+            
+            closeImportModal();
+            
+            let message = `Import complete!\n\nImported: ${imported} families\nSkipped: ${skipped} rows`;
+            
+            if (errorDetails.length > 0 && errorDetails.length <= 5) {
+                message += '\n\nErrors:\n' + errorDetails.join('\n');
+            } else if (errorDetails.length > 5) {
+                message += '\n\nShowing first 5 errors:\n' + errorDetails.slice(0, 5).join('\n');
+            }
+            
+            alert(message);
+        }
+        
+        function saveData() {
+            const families = document.querySelectorAll('.family-input');
+            const data = [];
+            
+            families.forEach(family => {
+                const service = family.querySelector('.service-select').value;
+                const childId = family.querySelector('.child-id').value;
+                
+                if (service === 'ESDM') {
+                    const directStart = family.querySelector('.esdm-direct-start')?.value;
+                    const directEnd = family.querySelector('.esdm-direct-end')?.value;
+                    const pcStart = family.querySelector('.esdm-pc-start')?.value;
+                    const pcEnd = family.querySelector('.esdm-pc-end')?.value;
+                    
+                    if (childId && directStart) {
+                        data.push({
+                            service,
+                            childId,
+                            directStart,
+                            directEnd,
+                            pcStart,
+                            pcEnd
+                        });
+                    }
+                } else {
+                    const pcStart = family.querySelector('.pc-start')?.value;
+                    const pcEnd = family.querySelector('.pc-end')?.value;
+                    const followupStart = family.querySelector('.followup-start')?.value;
+                    const followupEnd = family.querySelector('.followup-end')?.value;
+                    
+                    if (childId && pcStart && pcEnd) {
+                        data.push({
+                            service,
+                            childId,
+                            pcStart,
+                            pcEnd,
+                            followupStart,
+                            followupEnd
+                        });
+                    }
+                }
+            });
+            
+            if (data.length === 0) {
+                alert('No data to save');
+                return;
+            }
+            
+            const json = JSON.stringify(data, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `caseload_data_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        function loadData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        
+                        // Clear existing families
+                        document.getElementById('familyInputs').innerHTML = '';
+                        familyCount = 0;
+                        
+                        // Load new data
+                        data.forEach(family => {
+                            if (family.service === 'ESDM') {
+                                addFamilyWithData(
+                                    'ESDM',
+                                    family.childId,
+                                    family.directStart || family.pcStart, // Handle old format
+                                    family.directEnd || family.pcEnd,
+                                    family.pcStart,
+                                    family.pcEnd
+                                );
+                            } else {
+                                addFamilyWithData(
+                                    family.service,
+                                    family.childId,
+                                    family.pcStart,
+                                    family.pcEnd,
+                                    family.followupStart || '',
+                                    family.followupEnd || ''
+                                );
+                            }
+                        });
+                        
+                        alert(`Loaded ${data.length} families successfully!`);
+                    } catch (error) {
+                        alert('Error loading file: ' + error.message);
+                    }
+                };
+                reader.readAsText(file);
+            };
+            
+            input.click();
+        }
+        
+        function clearAll() {
+            if (confirm('Are you sure you want to clear all family data? This cannot be undone.')) {
+                document.getElementById('familyInputs').innerHTML = '';
+                familyCount = 0;
+                document.getElementById('results').style.display = 'none';
+                currentAnalysisData = null;
+            }
+        }
+        
+        function sortFamilies() {
+            const container = document.getElementById('familyInputs');
+            const families = Array.from(document.querySelectorAll('.family-input'));
+            
+            if (families.length === 0) {
+                alert('No families to sort');
+                return;
+            }
+            
+            // Extract family data
+            const familyData = families.map(family => {
+                const service = family.querySelector('.service-select').value;
+                let data = {
+                    element: family,
+                    service: service,
+                    childId: family.querySelector('.child-id').value
+                };
+                
+                if (service === 'ESDM') {
+                    data.directStart = family.querySelector('.esdm-direct-start')?.value || '';
+                    data.directEnd = family.querySelector('.esdm-direct-end')?.value || '';
+                    data.pcStart = family.querySelector('.esdm-pc-start')?.value || '';
+                    data.pcEnd = family.querySelector('.esdm-pc-end')?.value || '';
+                    data.sortDate = data.directStart;
+                } else {
+                    data.pcStart = family.querySelector('.pc-start')?.value || '';
+                    data.pcEnd = family.querySelector('.pc-end')?.value || '';
+                    data.followupStart = family.querySelector('.followup-start')?.value || '';
+                    data.followupEnd = family.querySelector('.followup-end')?.value || '';
+                    data.sortDate = data.pcStart;
+                }
+                
+                return data;
+            });
+            
+            // Sort by start date (earliest to latest)
+            familyData.sort((a, b) => {
+                if (!a.sortDate) return 1;  // Move empty dates to end
+                if (!b.sortDate) return -1;
+                return new Date(a.sortDate) - new Date(b.sortDate);
+            });
+            
+            // Clear container and re-add in sorted order
+            container.innerHTML = '';
+            familyCount = 0;
+            
+            familyData.forEach(family => {
+                // Check if this family has a "Central Zone" label
+                const isCentral = family.element.innerHTML.includes('(Central Zone)');
+                
+                if (family.service === 'ESDM') {
+                    addFamilyWithData('ESDM', family.childId, family.directStart, family.directEnd, family.pcStart, family.pcEnd, isCentral);
+                } else {
+                    addFamilyWithData('PC', family.childId, family.pcStart, family.pcEnd, family.followupStart, family.followupEnd, isCentral);
+                }
+            });
+            
+            alert('Families sorted by start date (earliest to latest)');
+        }
+        
+        // Close modal if clicking outside of it
+        window.onclick = function(event) {
+            const modal = document.getElementById('importModal');
+            if (event.target == modal) {
+                closeImportModal();
+            }
+        }
+        
+        function parseDate(dateString) {
+            return new Date(dateString);
+        }
+        
+        function addWeeks(date, weeks) {
+            const result = new Date(date);
+            result.setDate(result.getDate() + (weeks * 7));
+            return result;
+        }
+        
+        function calculateProgramDates(startDate, serviceType) {
+            if (!startDate) return { pcEnd: '', followupStart: '', followupEnd: '' };
+            
+            const start = new Date(startDate);
+            
+            // PC Program: 17 weeks total (3 SLP/OT + 14 PC), then 2-month follow-up
+            const pcEnd = addWeeks(start, 17);
+            const followupStart = new Date(pcEnd);
+            followupStart.setDate(followupStart.getDate() + 1);
+            const followupEnd = new Date(followupStart);
+            followupEnd.setMonth(followupEnd.getMonth() + 2);
+            
+            return {
+                pcEnd: formatDate(pcEnd),
+                followupStart: formatDate(followupStart),
+                followupEnd: formatDate(followupEnd)
+            };
+        }
+        
+        function updateCalculatedDatesESDM(familyId) {
+            const family = document.getElementById(`family-${familyId}`);
+            if (!family) return;
+            
+            const directStart = family.querySelector('.esdm-direct-start').value;
+            
+            if (directStart) {
+                const start = new Date(directStart);
+                // Direct ESDM: 13 weeks
+                const directEnd = addWeeks(start, 13);
+                // 1 week break
+                const pcStart = addWeeks(start, 14);
+                // 4 weeks of abbreviated PC (8 sessions, twice weekly)
+                const pcEnd = addWeeks(pcStart, 4);
+                
+                family.querySelector('.esdm-direct-end').value = formatDate(directEnd);
+                family.querySelector('.esdm-pc-start').value = formatDate(pcStart);
+                family.querySelector('.esdm-pc-end').value = formatDate(pcEnd);
+            }
+        }
+        
+        function updateCalculatedDates(familyId) {
+            const family = document.getElementById(`family-${familyId}`);
+            if (!family) return;
+            
+            const service = family.querySelector('.service-select').value;
+            const pcStart = family.querySelector('.pc-start').value;
+            
+            if (pcStart) {
+                const dates = calculateProgramDates(pcStart, service);
+                family.querySelector('.pc-end').value = dates.pcEnd;
+                family.querySelector('.followup-start').value = dates.followupStart;
+                family.querySelector('.followup-end').value = dates.followupEnd;
+            }
+        }
+        
+        function getWeekStart(date) {
+            const result = new Date(date);
+            const day = result.getDay(); // 0 = Sunday, 1 = Monday, etc.
+            
+            // Calculate days to subtract to get to Monday
+            const daysToMonday = (day === 0) ? -6 : -(day - 1);
+            
+            result.setDate(result.getDate() + daysToMonday);
+            
+            // Set to start of day
+            result.setHours(0, 0, 0, 0);
+            
+            return result;
+        }
+        
+        function formatDate(date) {
+            return date.toISOString().split('T')[0];
+        }
+        
+        function analyzeCaseload() {
+            const families = document.querySelectorAll('.family-input');
+            const includeFollowups = document.getElementById('includeFollowups').checked;
+            
+            // Collect all family data
+            const familyData = [];
+            families.forEach(family => {
+                const service = family.querySelector('.service-select').value;
+                const childId = family.querySelector('.child-id').value;
+                
+                let data = { service, childId };
+                
+                if (service === 'ESDM') {
+                    const directStart = family.querySelector('.esdm-direct-start').value;
+                    const directEnd = family.querySelector('.esdm-direct-end').value;
+                    const pcStart = family.querySelector('.esdm-pc-start').value;
+                    const pcEnd = family.querySelector('.esdm-pc-end').value;
+                    
+                    if (childId && directStart) {
+                        data.directStart = parseDate(directStart);
+                        data.directEnd = directEnd ? parseDate(directEnd) : data.directStart;
+                        data.pcStart = pcStart ? parseDate(pcStart) : null;
+                        data.pcEnd = pcEnd ? parseDate(pcEnd) : null;
+                        familyData.push(data);
+                    }
+                } else {
+                    const pcStart = family.querySelector('.pc-start').value;
+                    const pcEnd = family.querySelector('.pc-end').value;
+                    const followupStart = family.querySelector('.followup-start').value;
+                    const followupEnd = family.querySelector('.followup-end').value;
+                    
+                    if (childId && pcStart && pcEnd) {
+                        data.pcStart = parseDate(pcStart);
+                        data.pcEnd = parseDate(pcEnd);
+                        data.followupStart = followupStart ? parseDate(followupStart) : null;
+                        data.followupEnd = followupEnd ? parseDate(followupEnd) : null;
+                        familyData.push(data);
+                    }
+                }
+            });
+            
+            if (familyData.length === 0) {
+                alert('Please add at least one family with dates');
+                return;
+            }
+            
+            // Store for re-analysis when toggle changes
+            currentAnalysisData = familyData;
+            
+            // Find date range
+            const allDates = familyData.flatMap(f => {
+                if (f.service === 'ESDM') {
+                    return [f.directStart, f.directEnd, f.pcStart, f.pcEnd].filter(d => d);
+                } else {
+                    return [f.pcStart, f.pcEnd, f.followupStart, f.followupEnd].filter(d => d);
+                }
+            });
+            
+            let minDate = new Date(Math.min(...allDates));
+            let maxDate = new Date(Math.max(...allDates));
+            
+            // Apply user-specified date range if provided
+            const userStartDate = document.getElementById('analysisStartDate').value;
+            const userEndDate = document.getElementById('analysisEndDate').value;
+            
+            let analysisMinDate = minDate;
+            let analysisMaxDate = maxDate;
+            
+            if (userStartDate) {
+                const specifiedStart = new Date(userStartDate);
+                if (specifiedStart > analysisMinDate) {
+                    analysisMinDate = specifiedStart;
+                }
+            } else {
+                // Extend by a few weeks for visibility (only if not user-specified)
+                analysisMinDate = addWeeks(minDate, -2);
+            }
+            
+            if (userEndDate) {
+                const specifiedEnd = new Date(userEndDate);
+                if (specifiedEnd < analysisMaxDate) {
+                    analysisMaxDate = specifiedEnd;
+                }
+            } else {
+                // Extend by a few weeks for visibility (only if not user-specified)
+                analysisMaxDate = addWeeks(maxDate, 2);
+            }
+            
+            // Calculate weekly loads - use analysisMinDate/analysisMaxDate for the loop range
+            // but still check all families for overlap with each week
+            const weeklyData = {};
+            let currentWeek = getWeekStart(analysisMinDate);
+            
+            while (currentWeek <= analysisMaxDate) {
+                const weekKey = formatDate(currentWeek);
+                const weekEnd = new Date(currentWeek);
+                weekEnd.setDate(weekEnd.getDate() + 6); // End of week is Saturday
+                
+                weeklyData[weekKey] = {
+                    date: new Date(currentWeek),
+                    sessions: 0,
+                    families: []
+                };
+                
+                familyData.forEach(family => {
+                    if (family.service === 'PC') {
+                        // For PC: sessions 4-17 count (weeks 4-17 from start)
+                        const pcActualStart = addWeeks(family.pcStart, 3); // PC starts at week 4
+                        
+                        // Check if this week overlaps with the PC active period
+                        if (currentWeek <= family.pcEnd && weekEnd >= pcActualStart) {
+                            weeklyData[weekKey].sessions += 1;
+                            weeklyData[weekKey].families.push({
+                                id: family.childId,
+                                type: 'PC',
+                                phase: 'weekly'
+                            });
+                        }
+                        // Follow-up phase
+                        else if (includeFollowups && family.followupStart && family.followupEnd && 
+                                 currentWeek <= family.followupEnd && weekEnd >= family.followupStart) {
+                            weeklyData[weekKey].sessions += 0.25;
+                            weeklyData[weekKey].families.push({
+                                id: family.childId,
+                                type: 'PC',
+                                phase: 'followup'
+                            });
+                        }
+                    } else if (family.service === 'ESDM') {
+                        // For ESDM: Direct ESDM counts as 2 sessions/week
+                        if (currentWeek <= family.directEnd && weekEnd >= family.directStart) {
+                            weeklyData[weekKey].sessions += 2;
+                            weeklyData[weekKey].families.push({
+                                id: family.childId,
+                                type: 'ESDM',
+                                phase: 'direct'
+                            });
+                        }
+                        // Abbreviated PC also counts as 2 sessions/week
+                        else if (family.pcStart && family.pcEnd && 
+                                 currentWeek <= family.pcEnd && weekEnd >= family.pcStart) {
+                            weeklyData[weekKey].sessions += 2;
+                            weeklyData[weekKey].families.push({
+                                id: family.childId,
+                                type: 'ESDM',
+                                phase: 'pc'
+                            });
+                        }
+                        // No follow-up for ESDM for simplicity
+                    }
+                });
+                
+                currentWeek = addWeeks(currentWeek, 1);
+            }
+            
+            // Calculate statistics
+            const weeks = Object.values(weeklyData);
+            const sessions = weeks.map(w => w.sessions);
+            const peakSessions = Math.max(...sessions);
+            const avgSessions = (sessions.reduce((a, b) => a + b, 0) / sessions.length).toFixed(1);
+            const overloadWeeks = sessions.filter(s => s > 8).length;
+            const criticalWeeks = sessions.filter(s => s > 10).length;
+            
+            // Update statistics
+            document.getElementById('peakSessions').textContent = Math.round(peakSessions);
+            document.getElementById('avgSessions').textContent = avgSessions;
+            document.getElementById('overloadWeeks').textContent = overloadWeeks;
+            document.getElementById('criticalWeeks').textContent = criticalWeeks;
+            
+            // Create chart
+            const labels = Object.keys(weeklyData).map(key => {
+                const date = new Date(key);
+                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' });
+            });
+            
+            const chartData = Object.values(weeklyData).map(w => w.sessions);
+            
+            const ctx = document.getElementById('sessionChart').getContext('2d');
+            
+            if (chart) {
+                chart.destroy();
+            }
+            
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Weekly Sessions',
+                        data: chartData,
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    },
+                    {
+                        label: 'Target Range (6-8)',
+                        data: Array(labels.length).fill(7),
+                        borderColor: '#28a745',
+                        borderDash: [5, 5],
+                        borderWidth: 2,
+                        fill: false,
+                        pointRadius: 0
+                    },
+                    {
+                        label: 'Warning Threshold (8)',
+                        data: Array(labels.length).fill(8),
+                        borderColor: '#ffc107',
+                        borderDash: [5, 5],
+                        borderWidth: 2,
+                        fill: false,
+                        pointRadius: 0
+                    },
+                    {
+                        label: 'Critical Threshold (10)',
+                        data: Array(labels.length).fill(10),
+                        borderColor: '#dc3545',
+                        borderDash: [5, 5],
+                        borderWidth: 2,
+                        fill: false,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    aspectRatio: 2.5,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                afterLabel: function(context) {
+                                    const weekKey = Object.keys(weeklyData)[context.dataIndex];
+                                    const families = weeklyData[weekKey].families;
+                                    if (families.length > 0) {
+                                        const weekly = families.filter(f => f.phase === 'weekly');
+                                        const followup = families.filter(f => f.phase === 'followup');
+                                        let info = [];
+                                        if (weekly.length > 0) {
+                                            info.push(`Weekly: ${weekly.map(f => f.id + (f.type === 'ESDM' ? ' (ESDM×2)' : '')).join(', ')}`);
+                                        }
+                                        if (followup.length > 0) {
+                                            info.push(`Follow-up: ${followup.map(f => f.id).join(', ')}`);
+                                        }
+                                        return info;
+                                    }
+                                    return '';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Sessions per Week'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Week Starting'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Create weekly breakdown - show last 6 + next 6 weeks from today
+            const breakdown = document.getElementById('weeklyBreakdown');
+            breakdown.innerHTML = '';
+            
+            // Get today's week (Monday)
+            const today = new Date();
+            const todayWeekStart = getWeekStart(today);
+            
+            // Calculate range: 6 weeks ago to 6 weeks ahead
+            const breakdownStartWeek = addWeeks(todayWeekStart, -6);
+            const breakdownEndWeek = addWeeks(todayWeekStart, 6);
+            
+            // Filter weeks to this range
+            const breakdownWeeks = Object.entries(weeklyData)
+                .filter(([key, _]) => {
+                    const weekDate = new Date(key);
+                    return weekDate >= breakdownStartWeek && weekDate <= breakdownEndWeek;
+                })
+                .sort((a, b) => new Date(a[0]) - new Date(b[0])); // Chronological order
+            
+            if (breakdownWeeks.length > 0) {
+                breakdownWeeks.forEach(([key, data]) => {
+                    const div = document.createElement('div');
+                    const roundedSessions = Math.round(data.sessions * 10) / 10; // Round to 1 decimal
+                    div.className = `week-detail ${roundedSessions > 10 ? 'very-high-load' : roundedSessions > 8 ? 'high-load' : ''}`;
+                    
+                    const weekly = data.families.filter(f => f.phase === 'weekly' || f.phase === 'direct' || f.phase === 'pc');
+                    const followup = data.families.filter(f => f.phase === 'followup');
+                    
+                    let familyText = '';
+                    if (weekly.length > 0) {
+                        familyText += 'Weekly: ' + weekly.map(f => f.id + (f.type === 'ESDM' ? ' (×2)' : '')).join(', ');
+                    }
+                    if (followup.length > 0) {
+                        if (familyText) familyText += ' | ';
+                        familyText += 'Follow-up: ' + followup.map(f => f.id).join(', ');
+                    }
+                    
+                    // Highlight current week
+                    const isCurrentWeek = formatDate(todayWeekStart) === key;
+                    const weekLabel = isCurrentWeek ? '📍 This Week' : '';
+                    
+                    div.innerHTML = `
+                        <div class="date">
+                            ${data.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                            ${weekLabel ? `<span style="margin-left: 8px; color: #667eea; font-weight: 700;">${weekLabel}</span>` : ''}
+                        </div>
+                        <div class="count">${roundedSessions} sessions</div>
+                        <div class="families">${familyText}</div>
+                    `;
+                    breakdown.appendChild(div);
+                });
+            } else {
+                breakdown.innerHTML = '<p style="text-align: center; color: #6c757d; padding: 20px;">No data available for recent/upcoming weeks</p>';
+            }
+            
+            // Calculate fiscal year summaries
+            const fiscalYears = {};
+            familyData.forEach(family => {
+                const startDate = family.service === 'ESDM' ? family.directStart : family.pcStart;
+                // Fiscal year runs April 1 - March 31
+                // If start date is Jan-Mar, fiscal year is previous year
+                // If start date is Apr-Dec, fiscal year is current year
+                let fiscalYear;
+                if (startDate.getMonth() < 3) { // Jan (0), Feb (1), Mar (2)
+                    fiscalYear = startDate.getFullYear() - 1;
+                } else { // Apr (3) through Dec (11)
+                    fiscalYear = startDate.getFullYear();
+                }
+                
+                const fyKey = `${fiscalYear}-${fiscalYear + 1}`;
+                
+                if (!fiscalYears[fyKey]) {
+                    fiscalYears[fyKey] = { pc: 0, esdm: 0, total: 0 };
+                }
+                
+                if (family.service === 'PC') {
+                    fiscalYears[fyKey].pc++;
+                } else if (family.service === 'ESDM') {
+                    fiscalYears[fyKey].esdm++;
+                }
+                fiscalYears[fyKey].total++;
+            });
+            
+            // Display fiscal year summary
+            const fiscalSummary = document.getElementById('fiscalYearSummary');
+            fiscalSummary.innerHTML = '<div class="fiscal-year-grid"></div>';
+            const grid = fiscalSummary.querySelector('.fiscal-year-grid');
+            
+            Object.keys(fiscalYears).sort().forEach(fy => {
+                const data = fiscalYears[fy];
+                const card = document.createElement('div');
+                card.className = 'fiscal-year-card';
+                card.innerHTML = `
+                    <h4>FY ${fy}</h4>
+                    <div class="count">${data.total}</div>
+                    <div class="breakdown">
+                        <span>PC: ${data.pc}</span>
+                        <span>ESDM: ${data.esdm}</span>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+            
+            // Create scrollable week-by-week timeline (respects date range filter)
+            const timelinesContainer = document.getElementById('familyTimelines');
+            timelinesContainer.innerHTML = '';
+            
+            // Get weeks in the FILTERED analysis range
+            const timelineWeeks = Object.keys(weeklyData).sort();
+            
+            if (timelineWeeks.length === 0) {
+                timelinesContainer.innerHTML = '<p style="text-align: center; color: #6c757d; padding: 20px;">No data in selected date range</p>';
+                document.getElementById('results').style.display = 'block';
+                return;
+            }
+            
+            // Sort families by start date
+            const sortedFamilies = [...familyData].sort((a, b) => {
+                const aStart = a.service === 'ESDM' ? a.directStart : a.pcStart;
+                const bStart = b.service === 'ESDM' ? b.directStart : b.pcStart;
+                return aStart - bStart;
+            });
+            
+            // Filter families that have ANY activity in the visible date range
+            const visibleFamilies = sortedFamilies.filter(family => {
+                if (family.service === 'PC') {
+                    const familyEnd = family.followupEnd || family.pcEnd;
+                    return family.pcStart <= analysisMaxDate && familyEnd >= analysisMinDate;
+                } else {
+                    const familyEnd = family.pcEnd || family.directEnd;
+                    return family.directStart <= analysisMaxDate && familyEnd >= analysisMinDate;
+                }
+            });
+            
+            // Create header row
+            const headerCell = document.createElement('div');
+            headerCell.className = 'timeline-header';
+            headerCell.textContent = 'Family';
+            timelinesContainer.appendChild(headerCell);
+            
+            timelineWeeks.forEach(weekKey => {
+                const weekDate = new Date(weekKey);
+                const weekHeader = document.createElement('div');
+                weekHeader.className = 'timeline-week-header';
+                
+                // Check if this is the current week
+                const today = new Date();
+                const currentWeekStart = getWeekStart(today);
+                const isCurrentWeek = formatDate(currentWeekStart) === weekKey;
+                
+                if (isCurrentWeek) {
+                    weekHeader.classList.add('current-week');
+                }
+                
+                // Format: "Nov 4" on one line, "2025" on next line
+                const monthDay = weekDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                const year = weekDate.getFullYear();
+                
+                weekHeader.innerHTML = `
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 2px;">
+                        <span style="font-weight: 700;">${monthDay}</span>
+                        <span style="font-size: 9px; opacity: 0.7;">${year}</span>
+                    </div>
+                `;
+                weekHeader.title = weekKey + (isCurrentWeek ? ' (Current Week)' : '');
+                timelinesContainer.appendChild(weekHeader);
+            });
+            
+            // Create row for each visible family
+            visibleFamilies.forEach(family => {
+                // Family label cell
+                const labelCell = document.createElement('div');
+                labelCell.className = 'timeline-family-label';
+                labelCell.innerHTML = `
+                    ${family.childId}
+                    <span class="service-badge ${family.service.toLowerCase()}">${family.service}</span>
+                `;
+                timelinesContainer.appendChild(labelCell);
+                
+                // Week cells
+                timelineWeeks.forEach(weekKey => {
+                    const weekDate = new Date(weekKey);
+                    const cell = document.createElement('div');
+                    cell.className = 'timeline-cell';
+                    cell.title = `${family.childId} - ${weekKey}`;
+                    
+                    // Check if this is the current week
+                    const today = new Date();
+                    const currentWeekStart = getWeekStart(today);
+                    const isCurrentWeek = formatDate(currentWeekStart) === weekKey;
+                    
+                    if (isCurrentWeek) {
+                        cell.classList.add('current-week-cell');
+                    }
+                    
+                    // Determine what phase this week is
+                    if (family.service === 'PC') {
+                        const weeksSinceStart = Math.floor((weekDate - family.pcStart) / (7 * 24 * 60 * 60 * 1000));
+                        
+                        if (weekDate >= family.pcStart && weekDate <= family.pcEnd) {
+                            if (weeksSinceStart < 3) {
+                                cell.classList.add('slp-ot');
+                                cell.title += ' - SLP/OT (Session ' + (weeksSinceStart + 1) + ')';
+                            } else {
+                                cell.classList.add('pc-weekly');
+                                cell.title += ' - PC Session ' + (weeksSinceStart + 1);
+                            }
+                        } else if (family.followupStart && family.followupEnd && 
+                                   weekDate >= family.followupStart && weekDate <= family.followupEnd) {
+                            cell.classList.add('followup');
+                            cell.title += ' - Follow-up';
+                        }
+                    } else if (family.service === 'ESDM') {
+                        // Direct ESDM phase
+                        if (weekDate >= family.directStart && weekDate <= family.directEnd) {
+                            cell.classList.add('esdm-direct');
+                            const weekNum = Math.floor((weekDate - family.directStart) / (7 * 24 * 60 * 60 * 1000)) + 1;
+                            cell.title += ' - Direct ESDM (Week ' + weekNum + ')';
+                        }
+                        // Abbreviated PC phase
+                        else if (family.pcStart && family.pcEnd && 
+                                 weekDate >= family.pcStart && weekDate <= family.pcEnd) {
+                            cell.classList.add('esdm-pc');
+                            const weekNum = Math.floor((weekDate - family.pcStart) / (7 * 24 * 60 * 60 * 1000)) + 1;
+                            cell.title += ' - Abbreviated PC (Week ' + weekNum + ')';
+                        }
+                    }
+                    
+                    timelinesContainer.appendChild(cell);
+                });
+            });
+            
+            // Update grid template to match number of weeks
+            timelinesContainer.style.gridTemplateColumns = `150px repeat(${timelineWeeks.length}, 50px)`;
+            
+            document.getElementById('results').style.display = 'block';
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
