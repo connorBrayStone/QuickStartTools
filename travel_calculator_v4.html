@@ -953,49 +953,27 @@
                                 <>
                                     <div className="form-group">
                                         <label>Your actual trip <span className="label-hint">(home ↔ session)</span></label>
-                                        <div className="input-row">
-                                            <div className="input-with-unit">
-                                                <input 
-                                                    type="number" 
-                                                    placeholder="Distance"
-                                                    value={actualKm}
-                                                    onChange={(e) => setActualKm(e.target.value)}
-                                                />
-                                                <span className="input-unit">km</span>
-                                            </div>
-                                            <div className="input-with-unit">
-                                                <input 
-                                                    type="number" 
-                                                    placeholder="Time"
-                                                    value={actualMin}
-                                                    onChange={(e) => setActualMin(e.target.value)}
-                                                />
-                                                <span className="input-unit">min</span>
-                                            </div>
+                                        <div className="input-with-unit">
+                                            <input 
+                                                type="number" 
+                                                placeholder="Distance"
+                                                value={actualKm}
+                                                onChange={(e) => setActualKm(e.target.value)}
+                                            />
+                                            <span className="input-unit">km</span>
                                         </div>
                                     </div>
 
                                     <div className="form-group">
                                         <label>If from/to office instead <span className="label-hint">(office ↔ session)</span></label>
-                                        <div className="input-row">
-                                            <div className="input-with-unit">
-                                                <input 
-                                                    type="number" 
-                                                    placeholder="Distance"
-                                                    value={officeKm}
-                                                    onChange={(e) => setOfficeKm(e.target.value)}
-                                                />
-                                                <span className="input-unit">km</span>
-                                            </div>
-                                            <div className="input-with-unit">
-                                                <input 
-                                                    type="number" 
-                                                    placeholder="Time"
-                                                    value={officeMin}
-                                                    onChange={(e) => setOfficeMin(e.target.value)}
-                                                />
-                                                <span className="input-unit">min</span>
-                                            </div>
+                                        <div className="input-with-unit">
+                                            <input 
+                                                type="number" 
+                                                placeholder="Distance"
+                                                value={officeKm}
+                                                onChange={(e) => setOfficeKm(e.target.value)}
+                                            />
+                                            <span className="input-unit">km</span>
                                         </div>
                                     </div>
 
@@ -1034,12 +1012,6 @@
                                 <span className="result-label">Claimable Distance</span>
                                 <span className="result-value">{results.claimable_km.toFixed(1)} km</span>
                             </div>
-                            {results.calculationType !== 'full' && (
-                                <div className="result-item">
-                                    <span className="result-label">Claimable Travel Time</span>
-                                    <span className="result-value">{results.claimable_min} min</span>
-                                </div>
-                            )}
                             <div className="result-item">
                                 <span className="result-label">Mileage Reimbursement</span>
                                 <span className="result-value highlight">${results.reimbursement.toFixed(2)}</span>
@@ -1053,12 +1025,12 @@
                                 {results.calculationType === 'lesser' && (
                                     <>
                                         <p>
-                                            <strong>"Lesser of" principle:</strong> Claimable = lesser of actual ({results.actual_km} km / {results.actual_min} min) 
-                                            vs. from office ({results.office_km} km / {results.office_min} min).
+                                            <strong>"Lesser of" principle:</strong> Claimable = lesser of actual ({results.actual_km} km) 
+                                            vs. from office ({results.office_km} km).
                                         </p>
-                                        {(results.non_claimable_km > 0 || results.non_claimable_min > 0) ? (
+                                        {(results.non_claimable_km > 0) ? (
                                             <p style={{marginTop: '0.5rem'}}>
-                                                Your actual trip was longer than the office route. The difference ({results.non_claimable_km.toFixed(1)} km / {results.non_claimable_min} min) is not claimable.
+                                                Your actual trip was longer than the office route. The difference ({results.non_claimable_km.toFixed(1)} km) is not claimable.
                                             </p>
                                         ) : (
                                             <p style={{marginTop: '0.5rem'}}>
