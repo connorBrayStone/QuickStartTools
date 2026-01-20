@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickStart NS Travel Calculator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1e5a7e;
+            --primary-dark: #144052;
+            --primary-light: #e8f4f8;
+            --accent: #e07f3b;
+            --accent-light: #fef3eb;
+            --text: #2d3748;
+            --text-light: #718096;
+            --bg: #f7fafc;
+            --white: #ffffff;
+            --border: #e2e8f0;
+            --success: #38a169;
+            --success-light: #f0fff4;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        body {
+            font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-icon svg {
+            width: 24px;
+            height: 24px;
+            fill: white;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .subtitle {
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--primary-light);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .card-icon svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--primary);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+            font-size: 0.95rem;
+        }
+
+        .label-hint {
+            font-weight: 400;
+            color: var(--text-light);
+            font-size: 0.85rem;
+        }
+
+        input[type="number"], input[type="time"], select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: var(--white);
+        }
+
+        input[type="number"]:focus, input[type="time"]:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .input-with-unit {
+            position: relative;
+        }
+
+        .input-unit {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+            font-size: 0.9rem;
+            pointer-events: none;
+        }
+
+        .input-with-unit input {
+            padding-right: 3rem;
+        }
+
+        .location-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+
+        .location-btn {
+            padding: 1rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: var(--white);
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .location-btn svg {
+            width: 28px;
+            height: 28px;
+            fill: var(--text-light);
+        }
+
+        .location-btn:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .location-btn.active {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+
+        .location-btn.active svg {
+            fill: white;
+        }
+
+        .trip-type-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .trip-type-btn {
+            padding: 1rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: var(--white);
+            font-family: inherit;
+            font-size: 0.95rem;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .trip-type-btn:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .trip-type-btn.active {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+
+        .trip-type-btn.active .trip-type-desc {
+            color: rgba(255,255,255,0.85);
+        }
+
+        .trip-type-radio {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            flex-shrink: 0;
+            margin-top: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .trip-type-btn.active .trip-type-radio {
+            border-color: white;
+            background: white;
+        }
+
+        .trip-type-btn.active .trip-type-radio::after {
+            content: '';
+            width: 10px;
+            height: 10px;
+            background: var(--primary);
+            border-radius: 50%;
+        }
+
+        .trip-type-content {
+            flex: 1;
+        }
+
+        .trip-type-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .trip-type-desc {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            line-height: 1.4;
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            margin-top: 0.5rem;
+        }
+
+        .calculate-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .calculate-btn:active {
+            transform: scale(0.98);
+        }
+
+        .results-card {
+            background: var(--success-light);
+            border: 2px solid var(--success);
+        }
+
+        .results-card .card-icon {
+            background: rgba(56, 161, 105, 0.2);
+        }
+
+        .results-card .card-icon svg {
+            fill: var(--success);
+        }
+
+        .results-card .card-title {
+            color: var(--success);
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(56, 161, 105, 0.2);
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .result-label {
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .result-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--success);
+        }
+
+        .result-value.highlight {
+            font-size: 1.5rem;
+        }
+
+        .explanation {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: var(--text);
+        }
+
+        .explanation-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--primary-dark);
+        }
+
+        .info-box {
+            background: var(--accent-light);
+            border-left: 4px solid var(--accent);
+            padding: 1rem;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 1.25rem;
+        }
+
+        .info-box p {
+            font-size: 0.9rem;
+            color: var(--text);
+        }
+
+        .info-box strong {
+            color: var(--accent);
+        }
+
+        .saved-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-left: 0.5rem;
+        }
+
+        .clear-btn {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-size: 0.85rem;
+            cursor: pointer;
+            text-decoration: underline;
+            padding: 0;
+            margin-top: 0.5rem;
+        }
+
+        .clear-btn:hover {
+            color: var(--text);
+        }
+
+        /* Quick Reference Styles */
+        .reference-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+        }
+
+        .reference-card .card-header {
+            cursor: pointer;
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .reference-card.expanded .card-header {
+            margin-bottom: 1.25rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .toggle-icon {
+            margin-left: auto;
+            transition: transform 0.2s;
+        }
+
+        .reference-card.expanded .toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        .reference-content {
+            display: none;
+        }
+
+        .reference-card.expanded .reference-content {
+            display: block;
+        }
+
+        .principle {
+            margin-bottom: 1.25rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .principle:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .principle-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+
+        .principle-title {
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .principle-text {
+            font-size: 0.9rem;
+            color: var(--text);
+            padding-left: 2rem;
+        }
+
+        .principle-example {
+            background: var(--bg);
+            padding: 0.75rem;
+            border-radius: 6px;
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .principle-example code {
+            background: var(--white);
+            padding: 0.125rem 0.375rem;
+            border-radius: 4px;
+            font-family: inherit;
+            color: var(--primary);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-light);
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .input-row {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const loadSaved = (key, defaultValue) => {
+            try {
+                const saved = localStorage.getItem(`qsns_travel_${key}`);
+                return saved !== null ? JSON.parse(saved) : defaultValue;
+            } catch {
+                return defaultValue;
+            }
+        };
+
+        const save = (key, value) => {
+            try {
+                localStorage.setItem(`qsns_travel_${key}`, JSON.stringify(value));
+            } catch {}
+        };
+
+        function App() {
+            // Saved preferences
+            const [homeToOfficeKm, setHomeToOfficeKm] = useState(loadSaved('homeToOfficeKm', ''));
+            const [homeToOfficeMin, setHomeToOfficeMin] = useState(loadSaved('homeToOfficeMin', ''));
+            
+            // Primary location and trip type
+            const [primaryLocation, setPrimaryLocation] = useState('home');
+            const [tripType, setTripType] = useState('');
+            
+            // Trip inputs
+            const [actualKm, setActualKm] = useState('');
+            const [actualMin, setActualMin] = useState('');
+            const [officeKm, setOfficeKm] = useState('');
+            const [officeMin, setOfficeMin] = useState('');
+            const [sessionEndTime, setSessionEndTime] = useState('');
+            
+            // Results
+            const [results, setResults] = useState(null);
+            const [refExpanded, setRefExpanded] = useState(false);
+
+            useEffect(() => {
+                if (homeToOfficeKm !== '') save('homeToOfficeKm', homeToOfficeKm);
+            }, [homeToOfficeKm]);
+
+            useEffect(() => {
+                if (homeToOfficeMin !== '') save('homeToOfficeMin', homeToOfficeMin);
+            }, [homeToOfficeMin]);
+
+            const clearSaved = () => {
+                localStorage.removeItem('qsns_travel_homeToOfficeKm');
+                localStorage.removeItem('qsns_travel_homeToOfficeMin');
+                setHomeToOfficeKm('');
+                setHomeToOfficeMin('');
+            };
+
+            const resetTrip = () => {
+                setActualKm('');
+                setActualMin('');
+                setOfficeKm('');
+                setOfficeMin('');
+                setSessionEndTime('');
+                setResults(null);
+            };
+
+            const handlePrimaryLocationChange = (loc) => {
+                setPrimaryLocation(loc);
+                setTripType('');
+                resetTrip();
+            };
+
+            const calculate = () => {
+                const actual_km = parseFloat(actualKm) || 0;
+                const actual_min = parseFloat(actualMin) || 0;
+                const office_km = parseFloat(officeKm) || 0;
+                const office_min = parseFloat(officeMin) || 0;
+
+                let claimable_km, claimable_min, non_claimable_km, non_claimable_min, workdayEnd;
+                let calculationType = '';
+
+                if (tripType === 'other') {
+                    // Fully claimable
+                    claimable_km = actual_km;
+                    claimable_min = actual_min;
+                    non_claimable_km = 0;
+                    non_claimable_min = 0;
+                    calculationType = 'full';
+                } else {
+                    // "Lesser of" principle applies to all home ↔ session trips
+                    claimable_km = Math.min(actual_km, office_km);
+                    claimable_min = Math.min(actual_min, office_min);
+                    non_claimable_km = actual_km - claimable_km;
+                    non_claimable_min = actual_min - claimable_min;
+                    calculationType = 'lesser';
+                }
+
+                const reimbursement = claimable_km * 0.59;
+
+                // Workday end calculation for returning home trips
+                const isReturningHome = tripType === 'home_last' || tripType === 'returning_home';
+                if (isReturningHome && sessionEndTime && non_claimable_min > 0) {
+                    const baseEnd = 16 * 60 + 30; // 4:30pm
+                    const adjustedEnd = baseEnd + non_claimable_min;
+                    const endHours = Math.floor(adjustedEnd / 60);
+                    const endMins = Math.round(adjustedEnd % 60);
+                    workdayEnd = `${endHours > 12 ? endHours - 12 : endHours}:${endMins.toString().padStart(2, '0')} ${endHours >= 12 ? 'pm' : 'am'}`;
+                } else if (isReturningHome && sessionEndTime) {
+                    workdayEnd = '4:30 pm';
+                }
+
+                setResults({
+                    claimable_km,
+                    claimable_min,
+                    non_claimable_km,
+                    non_claimable_min,
+                    reimbursement,
+                    workdayEnd,
+                    actual_km,
+                    actual_min,
+                    office_km,
+                    office_min,
+                    calculationType,
+                    tripType,
+                    primaryLocation
+                });
+            };
+
+            const hasSavedPrefs = loadSaved('homeToOfficeKm', '') !== '' || loadSaved('homeToOfficeMin', '') !== '';
+
+            // Determine what to show
+            const showLesserOf = tripType && tripType !== 'other';
+            const showFullyClaimable = tripType === 'other';
+            const showSessionEndTime = tripType === 'home_last' || tripType === 'returning_home';
+
+            return (
+                <div className="container">
+                    <header>
+                        <div className="logo">
+                            <div className="logo-icon">
+                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                                </svg>
+                            </div>
+                            <h1>Travel Calculator</h1>
+                        </div>
+                        <p className="subtitle">QuickStart NS — Mileage & Time</p>
+                    </header>
+
+                    {/* Quick Reference */}
+                    <div className={`card reference-card ${refExpanded ? 'expanded' : ''}`}>
+                        <div className="card-header" onClick={() => setRefExpanded(!refExpanded)}>
+                            <div className="card-icon">
+                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                                </svg>
+                            </div>
+                            <span className="card-title">Quick Reference: Policy Principles</span>
+                            <span className="toggle-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--text-light)">
+                                    <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
+                                </svg>
+                            </span>
+                        </div>
+                        <div className="reference-content">
+                            <div className="principle">
+                                <div className="principle-title">
+                                    <span className="principle-number">1</span>
+                                    The "Lesser Of" Principle
+                                </div>
+                                <div className="principle-text">
+                                    <strong>Any time you travel between home and a session</strong> (whether it's a home day or office day), claimable mileage and time = the <strong>lesser of</strong> your actual trip vs. what the trip would have been from/to the office.
+                                    <div className="principle-example">
+                                        Example: You drive 60 km from home to a session. Office → session would be 80 km. Claim <code>60 km</code> (your actual, since it's less).
+                                    </div>
+                                    <div className="principle-example">
+                                        Example: You drive 85 km from home to a session. Office → session would be 80 km. Claim <code>80 km</code> (the office route, since it's less).
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="principle">
+                                <div className="principle-title">
+                                    <span className="principle-number">2</span>
+                                    Why This Works
+                                </div>
+                                <div className="principle-text">
+                                    The organization never pays more than they would have if you'd started from the office. If your home is closer to the session, the org saves money. If your home is farther, you're capped at the office distance.
+                                    <div className="principle-example">
+                                        This applies consistently regardless of whether home or office is your primary location for the day.
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="principle">
+                                <div className="principle-title">
+                                    <span className="principle-number">3</span>
+                                    Travel From Your Primary Location
+                                </div>
+                                <div className="principle-text">
+                                    Travel from your primary work location to a session (and back) is <strong>fully claimable</strong> at actual distance. This includes:
+                                    <div className="principle-example">
+                                        • Home day: Home ↔ session (mid-day, after first/before last trip)<br/>
+                                        • Office day: Office ↔ session<br/>
+                                        • Any day: Session ↔ session
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="principle">
+                                <div className="principle-title">
+                                    <span className="principle-number">4</span>
+                                    Workday End Time
+                                </div>
+                                <div className="principle-text">
+                                    When returning home as your last trip, if your actual drive exceeds the office route, your workday ends at <strong>4:30pm + the non-claimable travel time</strong>.
+                                    <div className="principle-example">
+                                        Example: Actual drive home is 90 min, office route would be 60 min. Non-claimable = 30 min. Workday ends at <code>5:00 pm</code>.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Your Commute */}
+                    <div className="card">
+                        <div className="card-header">
+                            <div className="card-icon">
+                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                                </svg>
+                            </div>
+                            <span className="card-title">
+                                Your Normal Commute
+                                {hasSavedPrefs && <span className="saved-badge">Saved</span>}
+                            </span>
+                        </div>
+                        <p style={{marginBottom: '1rem', color: 'var(--text-light)', fontSize: '0.9rem'}}>
+                            Your typical home → office distance and time. Saved for future visits.
+                        </p>
+                        <div className="input-row">
+                            <div className="form-group">
+                                <label>Distance <span className="label-hint">(km)</span></label>
+                                <input 
+                                    type="number" 
+                                    placeholder="e.g., 25"
+                                    value={homeToOfficeKm}
+                                    onChange={(e) => setHomeToOfficeKm(e.target.value)}
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Time <span className="label-hint">(minutes)</span></label>
+                                <input 
+                                    type="number" 
+                                    placeholder="e.g., 30"
+                                    value={homeToOfficeMin}
+                                    onChange={(e) => setHomeToOfficeMin(e.target.value)}
+                                />
+                            </div>
+                        </div>
+                        {hasSavedPrefs && (
+                            <button className="clear-btn" onClick={clearSaved}>Clear saved commute</button>
+                        )}
+                    </div>
+
+                    {/* Primary Location */}
+                    <div className="card">
+                        <div className="card-header">
+                            <div className="card-icon">
+                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/>
+                                </svg>
+                            </div>
+                            <span className="card-title">Primary Work Location Today</span>
+                        </div>
+                        <div className="location-selector">
+                            <button 
+                                className={`location-btn ${primaryLocation === 'home' ? 'active' : ''}`}
+                                onClick={() => handlePrimaryLocationChange('home')}
+                            >
+                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                                </svg>
+                                Home
+                            </button>
+                            <button 
+                                className={`location-btn ${primaryLocation === 'office' ? 'active' : ''}`}
+                                onClick={() => handlePrimaryLocationChange('office')}
+                            >
+                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/>
+                                </svg>
+                                Office
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Trip Type */}
+                    <div className="card">
+                        <div className="card-header">
+                            <div className="card-icon">
+                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
+                                </svg>
+                            </div>
+                            <span className="card-title">What Trip Are You Calculating?</span>
+                        </div>
+
+                        <div className="trip-type-selector">
+                            {primaryLocation === 'home' ? (
+                                <>
+                                    <button 
+                                        className={`trip-type-btn ${tripType === 'home_first' ? 'active' : ''}`}
+                                        onClick={() => { setTripType('home_first'); resetTrip(); }}
+                                    >
+                                        <span className="trip-type-radio"></span>
+                                        <span className="trip-type-content">
+                                            <span className="trip-type-title">Leaving home to a session</span>
+                                            <span className="trip-type-desc">First departure from home for the day</span>
+                                        </span>
+                                    </button>
+                                    <button 
+                                        className={`trip-type-btn ${tripType === 'home_last' ? 'active' : ''}`}
+                                        onClick={() => { setTripType('home_last'); resetTrip(); }}
+                                    >
+                                        <span className="trip-type-radio"></span>
+                                        <span className="trip-type-content">
+                                            <span className="trip-type-title">Returning home from a session</span>
+                                            <span className="trip-type-desc">Final return home for the day</span>
+                                        </span>
+                                    </button>
+                                    <button 
+                                        className={`trip-type-btn ${tripType === 'other' ? 'active' : ''}`}
+                                        onClick={() => { setTripType('other'); resetTrip(); }}
+                                    >
+                                        <span className="trip-type-radio"></span>
+                                        <span className="trip-type-content">
+                                            <span className="trip-type-title">Other work travel</span>
+                                            <span className="trip-type-desc">Home ↔ session (mid-day), session ↔ session</span>
+                                        </span>
+                                    </button>
+                                </>
+                            ) : (
+                                <>
+                                    <button 
+                                        className={`trip-type-btn ${tripType === 'leaving_home' ? 'active' : ''}`}
+                                        onClick={() => { setTripType('leaving_home'); resetTrip(); }}
+                                    >
+                                        <span className="trip-type-radio"></span>
+                                        <span className="trip-type-content">
+                                            <span className="trip-type-title">Home → session directly</span>
+                                            <span className="trip-type-desc">Going to a session instead of commuting to office first</span>
+                                        </span>
+                                    </button>
+                                    <button 
+                                        className={`trip-type-btn ${tripType === 'returning_home' ? 'active' : ''}`}
+                                        onClick={() => { setTripType('returning_home'); resetTrip(); }}
+                                    >
+                                        <span className="trip-type-radio"></span>
+                                        <span className="trip-type-content">
+                                            <span className="trip-type-title">Session → home directly</span>
+                                            <span className="trip-type-desc">Going home instead of returning to office first</span>
+                                        </span>
+                                    </button>
+                                    <button 
+                                        className={`trip-type-btn ${tripType === 'other' ? 'active' : ''}`}
+                                        onClick={() => { setTripType('other'); resetTrip(); }}
+                                    >
+                                        <span className="trip-type-radio"></span>
+                                        <span className="trip-type-content">
+                                            <span className="trip-type-title">Other work travel</span>
+                                            <span className="trip-type-desc">Office ↔ session, session ↔ session</span>
+                                        </span>
+                                    </button>
+                                </>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Trip Inputs */}
+                    {tripType && (
+                        <div className="card">
+                            <div className="card-header">
+                                <div className="card-icon">
+                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                                    </svg>
+                                </div>
+                                <span className="card-title">Trip Details</span>
+                            </div>
+
+                            {showFullyClaimable && (
+                                <div className="info-box">
+                                    <p><strong>Fully claimable.</strong> Travel from your primary work location (or between sessions) is claimable at actual distance.</p>
+                                </div>
+                            )}
+
+                            {showLesserOf && (
+                                <div className="info-box">
+                                    <p><strong>"Lesser of" principle.</strong> Claimable = the lesser of your actual trip vs. what it would have been from/to the office.</p>
+                                </div>
+                            )}
+
+                            {showFullyClaimable ? (
+                                <div className="form-group">
+                                    <label>Actual distance driven <span className="label-hint">(km)</span></label>
+                                    <input 
+                                        type="number" 
+                                        placeholder="e.g., 45"
+                                        value={actualKm}
+                                        onChange={(e) => setActualKm(e.target.value)}
+                                    />
+                                </div>
+                            ) : (
+                                <>
+                                    <div className="form-group">
+                                        <label>Your actual trip <span className="label-hint">(home ↔ session)</span></label>
+                                        <div className="input-row">
+                                            <div className="input-with-unit">
+                                                <input 
+                                                    type="number" 
+                                                    placeholder="Distance"
+                                                    value={actualKm}
+                                                    onChange={(e) => setActualKm(e.target.value)}
+                                                />
+                                                <span className="input-unit">km</span>
+                                            </div>
+                                            <div className="input-with-unit">
+                                                <input 
+                                                    type="number" 
+                                                    placeholder="Time"
+                                                    value={actualMin}
+                                                    onChange={(e) => setActualMin(e.target.value)}
+                                                />
+                                                <span className="input-unit">min</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label>If from/to office instead <span className="label-hint">(office ↔ session)</span></label>
+                                        <div className="input-row">
+                                            <div className="input-with-unit">
+                                                <input 
+                                                    type="number" 
+                                                    placeholder="Distance"
+                                                    value={officeKm}
+                                                    onChange={(e) => setOfficeKm(e.target.value)}
+                                                />
+                                                <span className="input-unit">km</span>
+                                            </div>
+                                            <div className="input-with-unit">
+                                                <input 
+                                                    type="number" 
+                                                    placeholder="Time"
+                                                    value={officeMin}
+                                                    onChange={(e) => setOfficeMin(e.target.value)}
+                                                />
+                                                <span className="input-unit">min</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {showSessionEndTime && (
+                                        <div className="form-group">
+                                            <label>Session end time <span className="label-hint">(for workday end calculation)</span></label>
+                                            <input 
+                                                type="time" 
+                                                value={sessionEndTime}
+                                                onChange={(e) => setSessionEndTime(e.target.value)}
+                                            />
+                                        </div>
+                                    )}
+                                </>
+                            )}
+
+                            <button className="calculate-btn" onClick={calculate}>
+                                Calculate
+                            </button>
+                        </div>
+                    )}
+
+                    {/* Results */}
+                    {results && (
+                        <div className="card results-card">
+                            <div className="card-header">
+                                <div className="card-icon">
+                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                                    </svg>
+                                </div>
+                                <span className="card-title">Results</span>
+                            </div>
+
+                            <div className="result-item">
+                                <span className="result-label">Claimable Distance</span>
+                                <span className="result-value">{results.claimable_km.toFixed(1)} km</span>
+                            </div>
+                            {results.calculationType !== 'full' && (
+                                <div className="result-item">
+                                    <span className="result-label">Claimable Travel Time</span>
+                                    <span className="result-value">{results.claimable_min} min</span>
+                                </div>
+                            )}
+                            <div className="result-item">
+                                <span className="result-label">Mileage Reimbursement</span>
+                                <span className="result-value highlight">${results.reimbursement.toFixed(2)}</span>
+                            </div>
+                            {results.workdayEnd && (
+                                <div className="result-item">
+                                    <span className="result-label">Workday Ends</span>
+                                    <span className="result-value highlight">{results.workdayEnd}</span>
+                                </div>
+                            )}
+
+                            <div className="explanation">
+                                <div className="explanation-title">How this was calculated</div>
+                                {results.calculationType === 'full' && (
+                                    <p>Travel from your primary work location (or between sessions) is fully claimable. Your entire {results.actual_km} km is work travel.</p>
+                                )}
+                                {results.calculationType === 'lesser' && (
+                                    <>
+                                        <p>
+                                            <strong>"Lesser of" principle:</strong> Claimable = lesser of actual ({results.actual_km} km / {results.actual_min} min) 
+                                            vs. from office ({results.office_km} km / {results.office_min} min).
+                                        </p>
+                                        {(results.non_claimable_km > 0 || results.non_claimable_min > 0) ? (
+                                            <p style={{marginTop: '0.5rem'}}>
+                                                Your actual trip was longer than the office route. The difference ({results.non_claimable_km.toFixed(1)} km / {results.non_claimable_min} min) is not claimable.
+                                                {results.workdayEnd && <> Workday extends to {results.workdayEnd}.</>}
+                                            </p>
+                                        ) : (
+                                            <p style={{marginTop: '0.5rem'}}>
+                                                Your actual trip was shorter than or equal to the office route — your full trip is claimable.
+                                            </p>
+                                        )}
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    <footer>
+                        <p>Questions? Contact your supervisor.</p>
+                    </footer>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
