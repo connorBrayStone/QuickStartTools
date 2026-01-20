@@ -687,7 +687,7 @@
             // Determine what to show
             const showLesserOf = tripType && tripType !== 'other';
             const showFullyClaimable = tripType === 'other';
-            const showSessionEndTime = tripType === 'home_last' || tripType === 'returning_home';
+            const showSessionEndTime = false; // Removed for now - not featuring travel time
 
             return (
                 <div className="container">
@@ -725,51 +725,36 @@
                                     The "Lesser Of" Principle
                                 </div>
                                 <div className="principle-text">
-                                    <strong>Any time you travel between home and a session</strong> (whether it's a home day or office day), claimable mileage and time = the <strong>lesser of</strong> your actual trip vs. what the trip would have been from/to the office.
+                                    Applies to your <strong>first departure from home to a session</strong> and <strong>final return home from a session</strong> — regardless of whether it's a home day or office day. Claimable = the <strong>lesser of</strong> your actual trip vs. what the trip would have been from/to the office.
                                     <div className="principle-example">
-                                        Example: You drive 60 km from home to a session. Office → session would be 80 km. Claim <code>60 km</code> (your actual, since it's less).
+                                        Example: First trip — you drive 60 km from home to a session. Office → session would be 80 km. Claim <code>60 km</code> (your actual, since it's less).
                                     </div>
                                     <div className="principle-example">
-                                        Example: You drive 85 km from home to a session. Office → session would be 80 km. Claim <code>80 km</code> (the office route, since it's less).
+                                        Example: Last trip — you drive 85 km from session to home. Session → office would be 80 km. Claim <code>80 km</code> (the office route, since it's less).
                                     </div>
                                 </div>
                             </div>
                             <div className="principle">
                                 <div className="principle-title">
                                     <span className="principle-number">2</span>
-                                    Why This Works
+                                    Travel From Your Primary Work Location
                                 </div>
                                 <div className="principle-text">
-                                    The organization never pays more than they would have if you'd started from the office. If your home is closer to the session, the org saves money. If your home is farther, you're capped at the office distance.
+                                    Travel from your primary work location to sessions (and back) is <strong>fully claimable</strong> at actual distance:
                                     <div className="principle-example">
-                                        This applies consistently regardless of whether home or office is your primary location for the day.
+                                        • <strong>Home day:</strong> Home ↔ session trips <em>after</em> your first departure and <em>before</em> your final return are fully claimable<br/>
+                                        • <strong>Office day:</strong> Office ↔ session trips are fully claimable<br/>
+                                        • <strong>Any day:</strong> Session ↔ session trips are fully claimable
                                     </div>
                                 </div>
                             </div>
                             <div className="principle">
                                 <div className="principle-title">
                                     <span className="principle-number">3</span>
-                                    Travel From Your Primary Location
+                                    Why "Lesser Of" Works
                                 </div>
                                 <div className="principle-text">
-                                    Travel from your primary work location to a session (and back) is <strong>fully claimable</strong> at actual distance. This includes:
-                                    <div className="principle-example">
-                                        • Home day: Home ↔ session (mid-day, after first/before last trip)<br/>
-                                        • Office day: Office ↔ session<br/>
-                                        • Any day: Session ↔ session
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="principle">
-                                <div className="principle-title">
-                                    <span className="principle-number">4</span>
-                                    Workday End Time
-                                </div>
-                                <div className="principle-text">
-                                    When returning home as your last trip, if your actual drive exceeds the office route, your workday ends at <strong>4:30pm + the non-claimable travel time</strong>.
-                                    <div className="principle-example">
-                                        Example: Actual drive home is 90 min, office route would be 60 min. Non-claimable = 30 min. Workday ends at <code>5:00 pm</code>.
-                                    </div>
+                                    The organization never pays more than they would have if you'd started from the office. If your home is closer to the session, the org saves money. If your home is farther, you're capped at the office distance — but you're never penalized for where you live.
                                 </div>
                             </div>
                         </div>
@@ -1059,12 +1044,6 @@
                                 <span className="result-label">Mileage Reimbursement</span>
                                 <span className="result-value highlight">${results.reimbursement.toFixed(2)}</span>
                             </div>
-                            {results.workdayEnd && (
-                                <div className="result-item">
-                                    <span className="result-label">Workday Ends</span>
-                                    <span className="result-value highlight">{results.workdayEnd}</span>
-                                </div>
-                            )}
 
                             <div className="explanation">
                                 <div className="explanation-title">How this was calculated</div>
@@ -1080,7 +1059,6 @@
                                         {(results.non_claimable_km > 0 || results.non_claimable_min > 0) ? (
                                             <p style={{marginTop: '0.5rem'}}>
                                                 Your actual trip was longer than the office route. The difference ({results.non_claimable_km.toFixed(1)} km / {results.non_claimable_min} min) is not claimable.
-                                                {results.workdayEnd && <> Workday extends to {results.workdayEnd}.</>}
                                             </p>
                                         ) : (
                                             <p style={{marginTop: '0.5rem'}}>
