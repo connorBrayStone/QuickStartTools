@@ -1,0 +1,1990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESDM Goal Writing Tool — QuickStart NS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f7f6f3;
+            --surface: #ffffff;
+            --surface-alt: #faf9f7;
+            --border: #e8e5df;
+            --border-focus: #5b8a72;
+            --text: #2d2b28;
+            --text-secondary: #6b6660;
+            --text-muted: #9e9890;
+            --accent: #5b8a72;
+            --accent-light: #e8f0eb;
+            --accent-hover: #4a7660;
+            --context-color: #c0392b;
+            --cue-color: #d4770c;
+            --prompt-color: #8e44ad;
+            --behavior-color: #27ae60;
+            --mastery-color: #7f8c8d;
+            --generalization-color: #2980b9;
+            --warning-bg: #fef9e7;
+            --warning-border: #f0c929;
+            --warning-text: #7d6608;
+            --info-bg: #eaf4fc;
+            --info-border: #5dade2;
+            --info-text: #1a5276;
+            --error-bg: #fdedec;
+            --error-border: #e74c3c;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 30px rgba(0,0,0,0.1);
+            --radius: 8px;
+            --radius-lg: 12px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.55;
+            font-size: 15px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── Layout ── */
+        .app-header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .app-header h1 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 22px;
+            font-weight: 400;
+            color: var(--text);
+            letter-spacing: -0.3px;
+        }
+
+        .app-header h1 span {
+            color: var(--accent);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .app-container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 24px 24px 80px;
+        }
+
+        /* ── Mode Toggle ── */
+        .mode-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 12px 20px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .mode-bar .mode-label {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .program-select {
+            display: flex;
+            gap: 4px;
+            background: var(--bg);
+            border-radius: 6px;
+            padding: 3px;
+        }
+
+        .program-btn {
+            padding: 6px 16px;
+            border: none;
+            background: transparent;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .program-btn.active {
+            background: var(--surface);
+            color: var(--text);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .toggle-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toggle-track {
+            width: 44px;
+            height: 24px;
+            background: #ccc;
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle-track.on { background: var(--accent); }
+
+        .toggle-thumb {
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        .toggle-track.on .toggle-thumb {
+            transform: translateX(20px);
+        }
+
+        /* ── Steps Navigation ── */
+        .steps-nav {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 24px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+
+        .step-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            white-space: nowrap;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .step-pill:hover { border-color: var(--accent); color: var(--text); }
+
+        .step-pill.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .step-pill.completed {
+            background: var(--accent-light);
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .step-pill .num {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            background: rgba(0,0,0,0.08);
+        }
+
+        .step-pill.active .num { background: rgba(255,255,255,0.3); }
+        .step-pill.completed .num { background: var(--accent); color: white; }
+
+        /* ── Cards ── */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .card-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 20px;
+            font-weight: 400;
+            margin-bottom: 6px;
+            color: var(--text);
+        }
+
+        .card-subtitle {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        /* ── Forms ── */
+        .field {
+            margin-bottom: 18px;
+        }
+
+        .field label {
+            display: block;
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text);
+            margin-bottom: 5px;
+            letter-spacing: 0.01em;
+        }
+
+        .field label .required { color: var(--context-color); }
+
+        .field-hint {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            line-height: 1.4;
+        }
+
+        input[type="text"], input[type="number"], input[type="date"],
+        textarea, select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 14px;
+            color: var(--text);
+            background: var(--surface);
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(91,138,114,0.12);
+        }
+
+        textarea { resize: vertical; min-height: 70px; }
+
+        .field-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .field-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+        }
+
+        /* ── Radio / Checkbox Groups ── */
+        .option-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .option-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: var(--surface);
+            font-family: inherit;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-secondary);
+        }
+
+        .option-btn:hover { border-color: var(--accent); }
+        .option-btn.selected {
+            background: var(--accent-light);
+            border-color: var(--accent);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* ── Component Color Tags ── */
+        .component-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
+
+        .tag-context { background: rgba(192,57,43,0.1); color: var(--context-color); }
+        .tag-cue { background: rgba(212,119,12,0.1); color: var(--cue-color); }
+        .tag-prompt { background: rgba(142,68,173,0.1); color: var(--prompt-color); }
+        .tag-behavior { background: rgba(39,174,96,0.1); color: var(--behavior-color); }
+        .tag-mastery { background: rgba(127,140,141,0.1); color: var(--mastery-color); }
+        .tag-generalization { background: rgba(41,128,185,0.1); color: var(--generalization-color); }
+
+        /* ── Training Tips (Guide Panels) ── */
+        .guide-panel {
+            background: var(--info-bg);
+            border: 1px solid var(--info-border);
+            border-radius: var(--radius);
+            padding: 14px 16px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            line-height: 1.5;
+            color: var(--info-text);
+        }
+
+        .guide-panel summary {
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            user-select: none;
+        }
+
+        .guide-panel[open] summary { margin-bottom: 8px; }
+
+        .guide-panel .tip-content {
+            margin-top: 8px;
+        }
+
+        .guide-panel table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+            font-size: 12px;
+        }
+
+        .guide-panel table th, .guide-panel table td {
+            padding: 6px 8px;
+            border: 1px solid rgba(93,173,226,0.3);
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .guide-panel table th {
+            background: rgba(93,173,226,0.15);
+            font-weight: 600;
+        }
+
+        .warning-panel {
+            background: var(--warning-bg);
+            border: 1px solid var(--warning-border);
+            border-radius: var(--radius);
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            color: var(--warning-text);
+        }
+
+        .error-panel {
+            background: var(--error-bg);
+            border: 1px solid var(--error-border);
+            border-radius: var(--radius);
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            color: #922b21;
+        }
+
+        /* ── Buttons ── */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover { background: var(--accent-hover); }
+
+        .btn-secondary {
+            background: var(--surface);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover { border-color: var(--accent); }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+
+        .btn-nav-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        /* ── Teaching Steps ── */
+        .step-builder {
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            background: var(--surface-alt);
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .step-header .step-num {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+
+        .step-body {
+            padding: 14px;
+        }
+
+        .step-body .field { margin-bottom: 12px; }
+
+        .step-remove {
+            margin-left: auto;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 18px;
+            padding: 4px;
+            line-height: 1;
+        }
+
+        .step-remove:hover { color: var(--error-border); }
+
+        /* ── Preview Panel ── */
+        .preview-panel {
+            background: var(--surface-alt);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-top: 20px;
+        }
+
+        .preview-panel .preview-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 16px;
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .preview-goal-text {
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .preview-goal-text .c-context { color: var(--context-color); font-weight: 500; }
+        .preview-goal-text .c-cue { color: var(--cue-color); font-weight: 500; }
+        .preview-goal-text .c-prompt { color: var(--prompt-color); font-weight: 500; }
+        .preview-goal-text .c-behavior { color: var(--behavior-color); font-weight: 600; }
+        .preview-goal-text .c-mastery { color: var(--mastery-color); font-weight: 500; }
+        .preview-goal-text .c-generalization { color: var(--generalization-color); font-style: italic; }
+
+        .preview-step-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+            font-size: 13px;
+        }
+
+        .preview-step-table th {
+            background: var(--accent-light);
+            padding: 8px 10px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 12px;
+            color: var(--accent);
+            border-bottom: 2px solid var(--accent);
+        }
+
+        .preview-step-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        .preview-step-table tr.current-step {
+            background: #fffde7;
+        }
+
+        /* ── Output Section ── */
+        .output-tabs {
+            display: flex;
+            gap: 2px;
+            margin-bottom: -1px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .output-tab {
+            padding: 10px 20px;
+            background: var(--surface-alt);
+            border: 1px solid var(--border);
+            border-bottom: none;
+            border-radius: 8px 8px 0 0;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .output-tab.active {
+            background: var(--surface);
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .output-content {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0 var(--radius) var(--radius) var(--radius);
+            padding: 24px;
+            font-size: 14px;
+        }
+
+        .output-content pre {
+            white-space: pre-wrap;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        /* ── Goals List ── */
+        .goals-list {
+            margin-bottom: 20px;
+        }
+
+        .goal-list-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-bottom: 6px;
+            background: var(--surface);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .goal-list-item:hover { border-color: var(--accent); }
+        .goal-list-item.active { border-color: var(--accent); background: var(--accent-light); }
+
+        .goal-list-num {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--accent-light);
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .goal-list-info { flex: 1; }
+        .goal-list-info .domain { font-weight: 600; font-size: 14px; }
+        .goal-list-info .desc { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+        .goal-list-actions {
+            display: flex;
+            gap: 4px;
+        }
+
+        /* ── Quality Checklist ── */
+        .quality-list { list-style: none; }
+
+        .quality-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        .quality-list li:last-child { border-bottom: none; }
+
+        .quality-check {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border);
+            border-radius: 4px;
+            flex-shrink: 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 1px;
+            transition: all 0.2s;
+        }
+
+        .quality-check.checked {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        /* ── Simplified Data Sheet Print Styles ── */
+        .data-sheet-preview {
+            font-family: Arial, sans-serif;
+            font-size: 11px;
+            line-height: 1.3;
+        }
+
+        .data-sheet-preview table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-sheet-preview th, .data-sheet-preview td {
+            border: 1px solid #333;
+            padding: 4px 6px;
+            vertical-align: top;
+        }
+
+        .data-sheet-preview th {
+            background: #e8e8e8;
+            font-weight: bold;
+            font-size: 10px;
+        }
+
+        .data-sheet-preview .goal-header-row td {
+            background: #f0f0f0;
+            font-weight: bold;
+        }
+
+        .data-sheet-preview .current-step-row {
+            background: #fffde7;
+        }
+
+        .data-sheet-preview .interval-cols {
+            width: 22%;
+        }
+
+        /* ── Utility ── */
+        .hidden { display: none !important; }
+        .mt-8 { margin-top: 8px; }
+        .mt-16 { margin-top: 16px; }
+        .mt-24 { margin-top: 24px; }
+        .mb-8 { margin-bottom: 8px; }
+        .mb-16 { margin-bottom: 16px; }
+        .text-center { text-align: center; }
+        .text-muted { color: var(--text-muted); }
+        .text-sm { font-size: 13px; }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; }
+
+        /* ── Print ── */
+        @media print {
+            body { background: white; font-size: 10px; }
+            .app-header, .mode-bar, .steps-nav, .btn-nav-group, .guide-panel,
+            .warning-panel, .header-actions, .no-print { display: none !important; }
+            .app-container { max-width: 100%; padding: 0; margin: 0; }
+            .card { box-shadow: none; border: none; padding: 0; margin-bottom: 10px; }
+            .data-sheet-preview { font-size: 9px; }
+            .data-sheet-preview td, .data-sheet-preview th { padding: 3px 4px; }
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .app-header { padding: 12px 16px; }
+            .app-header h1 { font-size: 18px; }
+            .app-container { padding: 16px 12px 60px; }
+            .card { padding: 20px 16px; }
+            .field-row, .field-row-3 { grid-template-columns: 1fr; }
+            .mode-bar { flex-wrap: wrap; gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="app-header">
+    <h1><span>QuickStart NS</span> — Goal Writing Tool</h1>
+    <div class="header-actions">
+        <button class="btn btn-secondary btn-sm" onclick="saveAllGoals()" title="Save to browser">💾 Save</button>
+        <button class="btn btn-secondary btn-sm" onclick="loadSavedGoals()" title="Load saved goals">📂 Load</button>
+        <button class="btn btn-secondary btn-sm" onclick="exportGoalsJSON()">📤 Export</button>
+    </div>
+</header>
+
+<div class="app-container">
+
+    <!-- Mode Bar -->
+    <div class="mode-bar">
+        <div>
+            <div class="program-select">
+                <button class="program-btn active" data-program="pc" onclick="setProgram('pc')">Parent Coaching</button>
+                <button class="program-btn" data-program="esdm" onclick="setProgram('esdm')">ESDM Program</button>
+            </div>
+        </div>
+        <div class="toggle-wrap">
+            <span class="text-sm" style="color:var(--text-muted)">Quick</span>
+            <div class="toggle-track" id="modeToggle" onclick="toggleMode()">
+                <div class="toggle-thumb"></div>
+            </div>
+            <span class="text-sm" style="color:var(--text-muted)">Guided</span>
+        </div>
+    </div>
+
+    <!-- Child Info -->
+    <div class="card">
+        <div class="field-row-3">
+            <div class="field">
+                <label>Child Name <span class="required">*</span></label>
+                <input type="text" id="childName" placeholder="First name">
+            </div>
+            <div class="field">
+                <label>Date</label>
+                <input type="date" id="goalDate">
+            </div>
+            <div class="field">
+                <label>Team Member</label>
+                <input type="text" id="teamMember" placeholder="Your name">
+            </div>
+        </div>
+    </div>
+
+    <!-- Goals List Overview -->
+    <div class="card" id="goalsOverviewCard">
+        <div class="flex-between mb-16">
+            <div>
+                <div class="card-title">Goals</div>
+                <div class="card-subtitle" id="goalCountLabel">0 goals — PC: target 8–10 goals</div>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="addNewGoal()">+ Add Goal</button>
+        </div>
+        <div class="goals-list" id="goalsList"></div>
+    </div>
+
+    <!-- Goal Editor (shown when editing a goal) -->
+    <div id="goalEditorSection" class="hidden">
+
+        <!-- Step Navigation -->
+        <div class="steps-nav" id="stepsNav">
+            <div class="step-pill active" data-step="1" onclick="goToStep(1)">
+                <span class="num">1</span> Assessment
+            </div>
+            <div class="step-pill" data-step="2" onclick="goToStep(2)">
+                <span class="num">2</span> 5-Part Framework
+            </div>
+            <div class="step-pill" data-step="3" onclick="goToStep(3)">
+                <span class="num">3</span> Teaching Steps
+            </div>
+            <div class="step-pill" data-step="4" onclick="goToStep(4)">
+                <span class="num">4</span> Quality Check
+            </div>
+            <div class="step-pill" data-step="5" onclick="goToStep(5)">
+                <span class="num">5</span> Output
+            </div>
+        </div>
+
+        <!-- STEP 1: Assessment Foundation -->
+        <div class="card step-content" data-step="1">
+            <div class="card-title">Assessment Foundation</div>
+            <div class="card-subtitle">Link this goal to the child's ESDM curricular checklist and family priorities</div>
+
+            <div class="guide-panel guided-content" id="guideAssessment">
+                <details>
+                    <summary>📘 How to select a goal target</summary>
+                    <div class="tip-content">
+                        <p><strong>Zone of Proximal Development (ZPD):</strong> The ZPD is the range of skills the child is just starting to develop — skills they can't yet do independently, but can do with help.</p>
+                        <p class="mt-8"><strong>Your sweet spot:</strong> "P" (Partial) items on the checklist + what the family says they want to work on.</p>
+                        <p class="mt-8"><strong>Steps:</strong></p>
+                        <p>1. Look for clusters of "P" items within a developmental level</p>
+                        <p>2. Match emerging skills to COPM / family priorities</p>
+                        <p>3. Check readiness: Is the child showing some signs? Will they have daily opportunities?</p>
+                        <table class="mt-8">
+                            <tr><th>Issue</th><th>Problem</th><th>Fix</th></tr>
+                            <tr><td>Only "N" items</td><td>Too hard — child can't engage</td><td>Focus on "P" items instead</td></tr>
+                            <tr><td>Only "A" items</td><td>Already mastered</td><td>Look for higher-level "P" items</td></tr>
+                            <tr><td>Skipping COPM</td><td>Goals won't feel meaningful to family</td><td>Revisit family interviews</td></tr>
+                        </table>
+                    </div>
+                </details>
+            </div>
+
+            <div class="field">
+                <label>Developmental Domain <span class="required">*</span></label>
+                <select id="goalDomain" onchange="updateGoalPreview()">
+                    <option value="">Select domain…</option>
+                    <option value="Receptive Communication">Receptive Communication</option>
+                    <option value="Expressive Communication">Expressive Communication</option>
+                    <option value="Social Skills">Social Skills</option>
+                    <option value="Imitation">Imitation</option>
+                    <option value="Joint Attention">Joint Attention</option>
+                    <option value="Play">Play</option>
+                    <option value="Fine Motor">Fine Motor</option>
+                    <option value="Gross Motor">Gross Motor</option>
+                    <option value="Cognition">Cognition</option>
+                    <option value="Behaviour">Behaviour</option>
+                    <option value="Personal Independence">Personal Independence</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>Level <span class="required">*</span></label>
+                <div class="option-group" id="levelGroup">
+                    <button class="option-btn" data-val="Pre-Level 1" onclick="selectOption(this,'level')">Pre-Level 1</button>
+                    <button class="option-btn" data-val="Level 1" onclick="selectOption(this,'level')">Level 1</button>
+                    <button class="option-btn" data-val="Level 2" onclick="selectOption(this,'level')">Level 2</button>
+                    <button class="option-btn" data-val="Level 3" onclick="selectOption(this,'level')">Level 3</button>
+                    <button class="option-btn" data-val="Level 4" onclick="selectOption(this,'level')">Level 4</button>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <div class="field">
+                    <label>Checklist Item # <span class="required">*</span></label>
+                    <input type="text" id="itemNumber" placeholder="e.g., 7" onchange="updateGoalPreview()">
+                </div>
+                <div class="field">
+                    <label>Current Code</label>
+                    <div class="option-group" id="codeGroup">
+                        <button class="option-btn" data-val="A" onclick="selectOption(this,'code')">A (Acquired)</button>
+                        <button class="option-btn" data-val="P" onclick="selectOption(this,'code')">P (Partial)</button>
+                        <button class="option-btn" data-val="N" onclick="selectOption(this,'code')">N (Not Yet)</button>
+                        <button class="option-btn" data-val="X" onclick="selectOption(this,'code')">X (No Opp.)</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="field">
+                <label>Milestone Description <span class="required">*</span></label>
+                <input type="text" id="milestoneDesc" placeholder="e.g., Looks to partner when name is called" onchange="updateGoalPreview()">
+            </div>
+
+            <div class="field">
+                <label>Family Priority Connection</label>
+                <div class="field-hint">How does this connect to family priorities / COPM results?</div>
+                <textarea id="familyPriority" placeholder="e.g., Family wants child to respond when they call her name at home and in the community"></textarea>
+            </div>
+
+            <div class="btn-nav-group">
+                <button class="btn btn-secondary" onclick="closeGoalEditor()">← Back to Goals</button>
+                <button class="btn btn-primary" onclick="goToStep(2)">Next: 5-Part Framework →</button>
+            </div>
+        </div>
+
+        <!-- STEP 2: 5-Part Framework -->
+        <div class="card step-content hidden" data-step="2">
+            <div class="card-title">5-Part Framework</div>
+            <div class="card-subtitle">Build the learning objective using Context, Instructional Cue, Behaviour, Mastery, and Generalization</div>
+
+            <!-- CONTEXT -->
+            <div style="border-left: 4px solid var(--context-color); padding-left: 16px; margin-bottom: 24px;">
+                <div class="mb-8"><span class="component-tag tag-context">1. Context</span></div>
+                <div class="guide-panel guided-content">
+                    <details>
+                        <summary>📘 What is Context?</summary>
+                        <div class="tip-content">
+                            <p>The everyday routines, activities, and settings where the goal will take place. We want children to use new skills naturally throughout their day.</p>
+                            <p class="mt-8"><strong>Include:</strong> 2–3 example routines using "e.g." to show flexibility. Avoid being too narrow (only one activity) or too broad (every routine listed).</p>
+                            <table class="mt-8">
+                                <tr><th>Problem</th><th>Fix</th></tr>
+                                <tr><td>No context included</td><td>Add examples of routines where skill naturally occurs</td></tr>
+                                <tr><td>Too narrow ("during block play at the table")</td><td>Broaden: "during everyday play routines (e.g., blocks, pretend play, puzzles)"</td></tr>
+                                <tr><td>Unrealistic for family</td><td>Collaborate with family to identify routines they already do</td></tr>
+                            </table>
+                        </div>
+                    </details>
+                </div>
+                <div class="field">
+                    <label>Context <span class="required">*</span></label>
+                    <input type="text" id="goalContext" placeholder="e.g., During different activities (e.g., bathing, object play, book reading, eating)" onchange="updateGoalPreview()">
+                </div>
+            </div>
+
+            <!-- INSTRUCTIONAL CUE -->
+            <div style="border-left: 4px solid var(--cue-color); padding-left: 16px; margin-bottom: 24px;">
+                <div class="mb-8"><span class="component-tag tag-cue">2. Instructional Cue(s)</span></div>
+                <div class="guide-panel guided-content">
+                    <details>
+                        <summary>📘 Restricted vs. Free Operant</summary>
+                        <div class="tip-content">
+                            <p><strong>Restricted operant:</strong> The behaviour needs a specific cue to occur (e.g., someone must call the child's name for the child to respond to their name).</p>
+                            <p class="mt-8"><strong>Free operant:</strong> The behaviour occurs spontaneously / through child initiation within a general context (e.g., child spontaneously produces single words to comment during play).</p>
+                            <p class="mt-8">If free operant, the Instructional Cue is left blank — the Context serves as the antecedent condition.</p>
+                        </div>
+                    </details>
+                </div>
+                <div class="field">
+                    <label>Skill Type <span class="required">*</span></label>
+                    <div class="option-group" id="skillTypeGroup">
+                        <button class="option-btn" data-val="restricted" onclick="selectOption(this,'skillType'); toggleCueField()">Restricted Operant (needs specific cue)</button>
+                        <button class="option-btn" data-val="free" onclick="selectOption(this,'skillType'); toggleCueField()">Free Operant (spontaneous)</button>
+                    </div>
+                </div>
+                <div class="field" id="cueField" style="display:none;">
+                    <label>Specific Instructional Cue</label>
+                    <input type="text" id="goalCue" placeholder="e.g., when you call CHILD's name" onchange="updateGoalPreview()">
+                </div>
+            </div>
+
+            <!-- BEHAVIOUR -->
+            <div style="border-left: 4px solid var(--behavior-color); padding-left: 16px; margin-bottom: 24px;">
+                <div class="mb-8"><span class="component-tag tag-behavior">3. Behaviour</span></div>
+                <div class="guide-panel guided-content">
+                    <details>
+                        <summary>📘 Writing Strong Target Behaviours</summary>
+                        <div class="tip-content">
+                            <p><strong>Use active verbs:</strong> look, point, give, label, request, respond, shift gaze, imitate, initiate</p>
+                            <p class="mt-8"><strong>Avoid vague terms:</strong> "understand," "know," "learn," "appropriate," "tolerate," "cooperate"</p>
+                            <p class="mt-8">Ask yourself: Could someone unfamiliar with the child understand exactly what they are expected to do?</p>
+                            <table class="mt-8">
+                                <tr><th>Problem</th><th>Fix</th></tr>
+                                <tr><td>Too vague</td><td>Add more detail about the observable action</td></tr>
+                                <tr><td>Not observable</td><td>Rephrase with visible/audible action</td></tr>
+                                <tr><td>Too complex</td><td>Break into simpler teachable unit</td></tr>
+                            </table>
+                        </div>
+                    </details>
+                </div>
+                <div class="field">
+                    <label>Target Behaviour <span class="required">*</span></label>
+                    <input type="text" id="goalBehavior" placeholder="e.g., she will turn and look to you" oninput="checkVagueBehavior(this)" onchange="updateGoalPreview()">
+                </div>
+                <div class="warning-panel hidden" id="vagueWarning">
+                    ⚠️ This may contain vague language. Use observable, measurable terms (e.g., "look," "point," "say") rather than internal states.
+                </div>
+            </div>
+
+            <!-- MASTERY -->
+            <div style="border-left: 4px solid var(--mastery-color); padding-left: 16px; margin-bottom: 24px;">
+                <div class="mb-8"><span class="component-tag tag-mastery">4. Mastery</span></div>
+                <div class="guide-panel guided-content">
+                    <details>
+                        <summary>📘 Writing Mastery Criteria</summary>
+                        <div class="tip-content">
+                            <p>Mastery criteria have three dimensions:</p>
+                            <p class="mt-8"><strong>1. Within-session measure:</strong> How often (frequency, ratio, duration, latency)</p>
+                            <p><strong>2. Time frame:</strong> Per day, per session, per interval, per routine</p>
+                            <p><strong>3. Across-session consistency:</strong> PC: 2 consecutive sessions. ESDM: 3 consecutive sessions.</p>
+                            <p class="mt-8">Note: The frequency is the number of times the child is <em>successful</em>, not the number of opportunities presented.</p>
+                            <table class="mt-8">
+                                <tr><th>Type</th><th>Example</th><th>Best for</th></tr>
+                                <tr><td>Frequency/Count</td><td>5 times per day</td><td>Quick, observable skills (gaze, pointing)</td></tr>
+                                <tr><td>Ratio</td><td>4 out of 5 opportunities</td><td>Structured teaching tasks</td></tr>
+                                <tr><td>Duration</td><td>For 3 minutes</td><td>Sustained attention, engagement</td></tr>
+                                <tr><td>Latency</td><td>Within 3 seconds</td><td>Response to name, turn-taking</td></tr>
+                            </table>
+                        </div>
+                    </details>
+                </div>
+                <div class="field">
+                    <label>Mastery Criteria <span class="required">*</span></label>
+                    <div class="field-hint" id="masteryHint">PC: across 2 consecutive sessions. ESDM: across 3 consecutive sessions.</div>
+                    <input type="text" id="goalMastery" placeholder="e.g., 6 times per day" onchange="updateGoalPreview()">
+                </div>
+            </div>
+
+            <!-- GENERALIZATION -->
+            <div style="border-left: 4px solid var(--generalization-color); padding-left: 16px; margin-bottom: 24px;">
+                <div class="mb-8"><span class="component-tag tag-generalization">5. Generalization</span></div>
+                <div class="guide-panel guided-content">
+                    <details>
+                        <summary>📘 Planning for Generalization</summary>
+                        <div class="tip-content">
+                            <p>Generalization = the child can use the skill across different people, routines, materials, and settings.</p>
+                            <p class="mt-8">Not all goals need full generalization in the same phase. Think of it as something you build toward.</p>
+                            <p class="mt-8"><strong>Bold & Underlined</strong> = always required. <em>Italic</em> = rarely included, only if generalization is unlikely to develop naturally.</p>
+                            <table class="mt-8">
+                                <tr><th>Type</th><th>Examples</th></tr>
+                                <tr><td>Across People</td><td>With Mom, Dad, sibling, daycare staff</td></tr>
+                                <tr><td>Across Routines</td><td>Playtime, snack, dressing, outdoor time</td></tr>
+                                <tr><td>Across Materials</td><td>Different toys, books, snack foods</td></tr>
+                                <tr><td>Across Settings</td><td>At home, in the car, at daycare</td></tr>
+                            </table>
+                        </div>
+                    </details>
+                </div>
+                <div class="field-row">
+                    <div class="field">
+                        <label>People</label>
+                        <input type="text" id="genPeople" placeholder="e.g., with different people (e.g., parents, etc.)" onchange="updateGoalPreview()">
+                    </div>
+                    <div class="field">
+                        <label>Places / Settings</label>
+                        <input type="text" id="genPlaces" placeholder="e.g., in different locations (e.g., inside, backyard)" onchange="updateGoalPreview()">
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Materials / Other</label>
+                    <input type="text" id="genMaterials" placeholder="e.g., with different objects (e.g., toys, books)" onchange="updateGoalPreview()">
+                </div>
+            </div>
+
+            <!-- Live Preview -->
+            <div class="preview-panel">
+                <div class="preview-title">Live Preview — Learning Objective</div>
+                <div class="preview-goal-text" id="livePreview">
+                    <em class="text-muted">Fill in the fields above to see a live preview of the learning objective</em>
+                </div>
+            </div>
+
+            <div class="btn-nav-group">
+                <button class="btn btn-secondary" onclick="goToStep(1)">← Assessment</button>
+                <button class="btn btn-primary" onclick="goToStep(3)">Next: Teaching Steps →</button>
+            </div>
+        </div>
+
+        <!-- STEP 3: Teaching Steps -->
+        <div class="card step-content hidden" data-step="3">
+            <div class="card-title">Teaching Steps</div>
+            <div class="card-subtitle">Break down the learning objective into smaller teachable steps with prompt fading</div>
+
+            <div class="guide-panel guided-content">
+                <details open>
+                    <summary>📘 Formulating Teaching Steps</summary>
+                    <div class="tip-content">
+                        <p>Task-analyze the learning objective from <strong>current baseline</strong> → <strong>fully mastered objective</strong>.</p>
+                        <p class="mt-8">Teaching steps add a 6th component: <span class="component-tag tag-prompt">Prompts</span> — additional cues that precede and further support evoking the behavior.</p>
+                        <p class="mt-8"><strong>What changes across steps:</strong></p>
+                        <p>• <strong>Prompts</strong> are faded (most → least support)</p>
+                        <p>• <strong>Behaviour</strong> may become more complex or independent</p>
+                        <p>• <strong>Mastery criteria</strong> may increase</p>
+                        <p>• <strong>Generalization</strong> may broaden (typically in later steps)</p>
+                        <p class="mt-8">The <strong>final step</strong> should match the full learning objective (no prompts, full mastery, full generalization).</p>
+                    </div>
+                </details>
+            </div>
+
+            <div class="field">
+                <label>Baseline Statement <span class="required">*</span></label>
+                <div class="field-hint">What the child is doing now, worded positively. Include what they CAN do in relation to this skill.</div>
+                <textarea id="baseline" placeholder="e.g., When someone called CHILD's name while they were directly in front of her and holding something she likes, she would look to them, some of the time."></textarea>
+            </div>
+
+            <div class="field">
+                <label>How to Set It Up</label>
+                <div class="field-hint">Instructional cue worded as a declarative statement for the caregiver</div>
+                <input type="text" id="setupInstruction" placeholder="e.g., Call their name.">
+            </div>
+
+            <div class="field">
+                <label>Current Acquisition Step</label>
+                <div class="option-group" id="currentStepGroup"></div>
+            </div>
+
+            <div id="teachingStepsContainer"></div>
+
+            <button class="btn btn-secondary btn-sm mt-16" onclick="addTeachingStep()">+ Add Step</button>
+
+            <div class="field mt-24">
+                <label>Tips and Strategies</label>
+                <div class="field-hint">Optional: examples on how to set up opportunities, reinforce the behaviour, or generalization ideas</div>
+                <textarea id="tipsStrategies" placeholder="e.g., Call CHILD's name before something fun is going to happen, like showing her a toy or giving her a snack."></textarea>
+            </div>
+
+            <div class="btn-nav-group">
+                <button class="btn btn-secondary" onclick="goToStep(2)">← Framework</button>
+                <button class="btn btn-primary" onclick="goToStep(4)">Next: Quality Check →</button>
+            </div>
+        </div>
+
+        <!-- STEP 4: Quality Check -->
+        <div class="card step-content hidden" data-step="4">
+            <div class="card-title">Quality Check</div>
+            <div class="card-subtitle">Review this goal before finalizing</div>
+
+            <ul class="quality-list" id="qualityChecklist">
+                <li>
+                    <div class="quality-check" onclick="toggleCheck(this)"></div>
+                    <div><strong>Zone of Proximal Development:</strong> Is this skill emerging ("P") or just beyond current level? Not too easy, not too hard.</div>
+                </li>
+                <li>
+                    <div class="quality-check" onclick="toggleCheck(this)"></div>
+                    <div><strong>Family Relevance:</strong> Does this connect to COPM results and what matters to the family right now?</div>
+                </li>
+                <li>
+                    <div class="quality-check" onclick="toggleCheck(this)"></div>
+                    <div><strong>Opportunity:</strong> Will the child have enough daily chances to practice this in natural routines?</div>
+                </li>
+                <li>
+                    <div class="quality-check" onclick="toggleCheck(this)"></div>
+                    <div><strong>Observable:</strong> Can you clearly see or hear when the child does this behaviour?</div>
+                </li>
+                <li>
+                    <div class="quality-check" onclick="toggleCheck(this)"></div>
+                    <div><strong>Achievable:</strong> Is the mastery criteria realistic for a 3-month period given this child's learning rate?</div>
+                </li>
+                <li>
+                    <div class="quality-check" onclick="toggleCheck(this)"></div>
+                    <div><strong>Functional:</strong> Will this skill open up new learning opportunities (behaviour cusp)?</div>
+                </li>
+            </ul>
+
+            <div class="preview-panel mt-24">
+                <div class="preview-title">Full Goal Preview</div>
+                <div id="fullGoalPreview"></div>
+            </div>
+
+            <div class="btn-nav-group">
+                <button class="btn btn-secondary" onclick="goToStep(3)">← Teaching Steps</button>
+                <button class="btn btn-primary" onclick="saveCurrentGoal(); goToStep(5)">Save & View Outputs →</button>
+            </div>
+        </div>
+
+        <!-- STEP 5: Outputs -->
+        <div class="card step-content hidden" data-step="5">
+            <div class="card-title">Goal Outputs</div>
+            <div class="card-subtitle">View this goal in different formats for documentation and session use</div>
+
+            <div class="output-tabs">
+                <button class="output-tab active" onclick="switchOutput('caregiver')">Caregiver (Word)</button>
+                <button class="output-tab" onclick="switchOutput('datasheet')">Data Sheet (Excel)</button>
+                <button class="output-tab" onclick="switchOutput('simplified')">Simplified Session Sheet</button>
+            </div>
+
+            <div class="output-content" id="outputContent">
+                <div id="output-caregiver"></div>
+                <div id="output-datasheet" class="hidden"></div>
+                <div id="output-simplified" class="hidden"></div>
+            </div>
+
+            <div class="mt-16" style="display:flex;gap:8px;flex-wrap:wrap;">
+                <button class="btn btn-secondary btn-sm" onclick="printSimplifiedSheet()">🖨️ Print Simplified Sheet</button>
+                <button class="btn btn-secondary btn-sm" onclick="copyOutput()">📋 Copy Current View</button>
+            </div>
+
+            <div class="btn-nav-group">
+                <button class="btn btn-secondary" onclick="goToStep(4)">← Quality Check</button>
+                <button class="btn btn-primary" onclick="saveCurrentGoal(); closeGoalEditor()">✓ Done — Back to Goals</button>
+            </div>
+        </div>
+
+    </div><!-- end goalEditorSection -->
+
+    <!-- All Goals Data Sheet Output -->
+    <div class="card hidden" id="allGoalsOutputCard">
+        <div class="flex-between mb-16">
+            <div>
+                <div class="card-title">Complete Simplified Data Sheet</div>
+                <div class="card-subtitle">All goals combined for within-session use</div>
+            </div>
+            <div style="display:flex;gap:8px;">
+                <button class="btn btn-primary btn-sm" onclick="printAllGoalsSheet()">🖨️ Print</button>
+                <button class="btn btn-secondary btn-sm" onclick="document.getElementById('allGoalsOutputCard').classList.add('hidden')">Close</button>
+            </div>
+        </div>
+        <div id="allGoalsSheetContent"></div>
+    </div>
+
+</div><!-- end app-container -->
+
+<script>
+// ──────────────────────────────────────────────
+// STATE
+// ──────────────────────────────────────────────
+let state = {
+    program: 'pc', // 'pc' or 'esdm'
+    guidedMode: false,
+    goals: [],
+    currentGoalIndex: -1,
+    currentStep: 1
+};
+
+// ──────────────────────────────────────────────
+// PROGRAM & MODE
+// ──────────────────────────────────────────────
+function setProgram(p) {
+    state.program = p;
+    document.querySelectorAll('.program-btn').forEach(b => b.classList.toggle('active', b.dataset.program === p));
+    updateGoalCountLabel();
+    // Update mastery hint
+    const hint = document.getElementById('masteryHint');
+    if (hint) hint.textContent = p === 'pc'
+        ? 'PC: across 2 consecutive sessions (staff-facing).'
+        : 'ESDM: across 3 consecutive sessions.';
+}
+
+function toggleMode() {
+    state.guidedMode = !state.guidedMode;
+    const track = document.getElementById('modeToggle');
+    track.classList.toggle('on', state.guidedMode);
+    document.querySelectorAll('.guided-content').forEach(el => {
+        el.style.display = state.guidedMode ? '' : 'none';
+    });
+}
+
+// ──────────────────────────────────────────────
+// OPTION GROUP SELECTION
+// ──────────────────────────────────────────────
+const selections = {};
+
+function selectOption(btn, group) {
+    btn.parentElement.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selections[group] = btn.dataset.val;
+    updateGoalPreview();
+}
+
+function toggleCueField() {
+    const cueField = document.getElementById('cueField');
+    cueField.style.display = selections.skillType === 'restricted' ? 'block' : 'none';
+    if (selections.skillType === 'free') {
+        document.getElementById('goalCue').value = '';
+    }
+    updateGoalPreview();
+}
+
+// ──────────────────────────────────────────────
+// VAGUE BEHAVIOR CHECK
+// ──────────────────────────────────────────────
+function checkVagueBehavior(input) {
+    const vague = ['understand', 'know', 'learn', 'appropriate', 'tolerate', 'cooperate', 'engage'];
+    const warn = document.getElementById('vagueWarning');
+    const hasVague = vague.some(t => input.value.toLowerCase().includes(t));
+    warn.classList.toggle('hidden', !hasVague);
+}
+
+// ──────────────────────────────────────────────
+// GOAL MANAGEMENT
+// ──────────────────────────────────────────────
+function createEmptyGoal() {
+    return {
+        domain: '', level: '', itemNumber: '', code: '', milestoneDesc: '',
+        familyPriority: '',
+        context: '', skillType: '', cue: '',
+        behavior: '', mastery: '',
+        genPeople: '', genPlaces: '', genMaterials: '',
+        baseline: '', setupInstruction: '',
+        steps: [
+            { prompt: '', behavior: '', mastery: '', generalization: '' },
+            { prompt: '', behavior: '', mastery: '', generalization: '' },
+            { prompt: '', behavior: '', mastery: '', generalization: '' },
+            { prompt: '', behavior: '', mastery: '', generalization: '' },
+            { prompt: '', behavior: '', mastery: '', generalization: '' }
+        ],
+        currentStep: 1,
+        tipsStrategies: '',
+        qualityChecks: [false, false, false, false, false, false]
+    };
+}
+
+function addNewGoal() {
+    state.goals.push(createEmptyGoal());
+    state.currentGoalIndex = state.goals.length - 1;
+    renderGoalsList();
+    openGoalEditor();
+}
+
+function renderGoalsList() {
+    const list = document.getElementById('goalsList');
+    if (state.goals.length === 0) {
+        list.innerHTML = '<div class="text-center text-muted" style="padding:24px;">No goals yet. Click "+ Add Goal" to begin.</div>';
+    } else {
+        list.innerHTML = state.goals.map((g, i) => {
+            const domain = g.domain || 'Untitled';
+            const desc = g.milestoneDesc || 'No milestone selected';
+            const level = g.level || '';
+            return `<div class="goal-list-item ${i === state.currentGoalIndex ? 'active' : ''}" onclick="editGoal(${i})">
+                <div class="goal-list-num">${i + 1}</div>
+                <div class="goal-list-info">
+                    <div class="domain">${domain} ${level ? '— ' + level : ''}</div>
+                    <div class="desc">${desc}</div>
+                </div>
+                <div class="goal-list-actions">
+                    <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); duplicateGoal(${i})" title="Duplicate">⧉</button>
+                    <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); removeGoal(${i})" title="Remove">✕</button>
+                </div>
+            </div>`;
+        }).join('');
+    }
+    updateGoalCountLabel();
+    // Show/hide all-goals output button
+    if (state.goals.length > 0 && state.goals.some(g => g.steps.some(s => s.behavior))) {
+        document.getElementById('goalsOverviewCard').querySelector('.flex-between').insertAdjacentHTML(
+            'beforeend',
+            document.getElementById('genAllBtn') ? '' :
+            '<button class="btn btn-secondary btn-sm no-print" id="genAllBtn" onclick="generateAllGoalsSheet()">📋 Generate Full Session Sheet</button>'
+        );
+    }
+}
+
+function updateGoalCountLabel() {
+    const n = state.goals.length;
+    const target = state.program === 'pc' ? '8–10' : '12–15';
+    document.getElementById('goalCountLabel').textContent = `${n} goal${n !== 1 ? 's' : ''} — ${state.program === 'pc' ? 'PC' : 'ESDM'}: target ${target} goals`;
+}
+
+function editGoal(i) {
+    state.currentGoalIndex = i;
+    openGoalEditor();
+}
+
+function duplicateGoal(i) {
+    const copy = JSON.parse(JSON.stringify(state.goals[i]));
+    state.goals.splice(i + 1, 0, copy);
+    renderGoalsList();
+}
+
+function removeGoal(i) {
+    if (confirm('Remove this goal?')) {
+        state.goals.splice(i, 1);
+        if (state.currentGoalIndex >= state.goals.length) state.currentGoalIndex = state.goals.length - 1;
+        renderGoalsList();
+    }
+}
+
+// ──────────────────────────────────────────────
+// GOAL EDITOR
+// ──────────────────────────────────────────────
+function openGoalEditor() {
+    document.getElementById('goalEditorSection').classList.remove('hidden');
+    document.getElementById('goalsOverviewCard').classList.add('hidden');
+    loadGoalIntoEditor();
+    goToStep(1);
+}
+
+function closeGoalEditor() {
+    saveCurrentGoal();
+    document.getElementById('goalEditorSection').classList.add('hidden');
+    document.getElementById('goalsOverviewCard').classList.remove('hidden');
+    renderGoalsList();
+}
+
+function loadGoalIntoEditor() {
+    const g = state.goals[state.currentGoalIndex];
+    if (!g) return;
+
+    document.getElementById('goalDomain').value = g.domain;
+    document.getElementById('itemNumber').value = g.itemNumber;
+    document.getElementById('milestoneDesc').value = g.milestoneDesc;
+    document.getElementById('familyPriority').value = g.familyPriority;
+    document.getElementById('goalContext').value = g.context;
+    document.getElementById('goalCue').value = g.cue;
+    document.getElementById('goalBehavior').value = g.behavior;
+    document.getElementById('goalMastery').value = g.mastery;
+    document.getElementById('genPeople').value = g.genPeople;
+    document.getElementById('genPlaces').value = g.genPlaces;
+    document.getElementById('genMaterials').value = g.genMaterials;
+    document.getElementById('baseline').value = g.baseline;
+    document.getElementById('setupInstruction').value = g.setupInstruction;
+    document.getElementById('tipsStrategies').value = g.tipsStrategies;
+
+    // Restore option group selections
+    selections.level = g.level;
+    selections.code = g.code;
+    selections.skillType = g.skillType;
+
+    restoreOptionGroup('levelGroup', g.level);
+    restoreOptionGroup('codeGroup', g.code);
+    restoreOptionGroup('skillTypeGroup', g.skillType);
+
+    document.getElementById('cueField').style.display = g.skillType === 'restricted' ? 'block' : 'none';
+
+    // Teaching steps
+    renderTeachingSteps(g.steps, g.currentStep);
+
+    // Quality checks
+    const checks = document.querySelectorAll('#qualityChecklist .quality-check');
+    checks.forEach((c, i) => {
+        c.classList.toggle('checked', g.qualityChecks[i]);
+        c.innerHTML = g.qualityChecks[i] ? '✓' : '';
+    });
+
+    updateGoalPreview();
+}
+
+function restoreOptionGroup(groupId, value) {
+    document.querySelectorAll(`#${groupId} .option-btn`).forEach(b => {
+        b.classList.toggle('selected', b.dataset.val === value);
+    });
+}
+
+function saveCurrentGoal() {
+    if (state.currentGoalIndex < 0 || !state.goals[state.currentGoalIndex]) return;
+    const g = state.goals[state.currentGoalIndex];
+
+    g.domain = document.getElementById('goalDomain').value;
+    g.level = selections.level || '';
+    g.itemNumber = document.getElementById('itemNumber').value;
+    g.code = selections.code || '';
+    g.milestoneDesc = document.getElementById('milestoneDesc').value;
+    g.familyPriority = document.getElementById('familyPriority').value;
+    g.context = document.getElementById('goalContext').value;
+    g.skillType = selections.skillType || '';
+    g.cue = document.getElementById('goalCue').value;
+    g.behavior = document.getElementById('goalBehavior').value;
+    g.mastery = document.getElementById('goalMastery').value;
+    g.genPeople = document.getElementById('genPeople').value;
+    g.genPlaces = document.getElementById('genPlaces').value;
+    g.genMaterials = document.getElementById('genMaterials').value;
+    g.baseline = document.getElementById('baseline').value;
+    g.setupInstruction = document.getElementById('setupInstruction').value;
+    g.tipsStrategies = document.getElementById('tipsStrategies').value;
+
+    // Save teaching steps
+    const stepEls = document.querySelectorAll('.step-builder');
+    g.steps = [];
+    stepEls.forEach(el => {
+        g.steps.push({
+            prompt: el.querySelector('.step-prompt')?.value || '',
+            behavior: el.querySelector('.step-behavior')?.value || '',
+            mastery: el.querySelector('.step-mastery')?.value || '',
+            generalization: el.querySelector('.step-gen')?.value || ''
+        });
+    });
+
+    // Current step
+    const csBtn = document.querySelector('#currentStepGroup .option-btn.selected');
+    g.currentStep = csBtn ? parseInt(csBtn.dataset.val) : 1;
+
+    // Quality checks
+    const checks = document.querySelectorAll('#qualityChecklist .quality-check');
+    g.qualityChecks = Array.from(checks).map(c => c.classList.contains('checked'));
+}
+
+// ──────────────────────────────────────────────
+// STEP NAVIGATION
+// ──────────────────────────────────────────────
+function goToStep(n) {
+    if (state.currentStep !== n) saveCurrentGoal();
+    state.currentStep = n;
+
+    document.querySelectorAll('.step-content').forEach(el => {
+        el.classList.toggle('hidden', parseInt(el.dataset.step) !== n);
+    });
+
+    document.querySelectorAll('.step-pill').forEach(pill => {
+        const s = parseInt(pill.dataset.step);
+        pill.classList.remove('active', 'completed');
+        if (s === n) pill.classList.add('active');
+        else if (s < n) pill.classList.add('completed');
+    });
+
+    if (n === 4) renderFullGoalPreview();
+    if (n === 5) renderAllOutputs();
+
+    window.scrollTo({ top: 200, behavior: 'smooth' });
+}
+
+// ──────────────────────────────────────────────
+// TEACHING STEPS
+// ──────────────────────────────────────────────
+function renderTeachingSteps(steps, currentStep) {
+    const container = document.getElementById('teachingStepsContainer');
+    container.innerHTML = '';
+
+    steps.forEach((s, i) => {
+        container.insertAdjacentHTML('beforeend', createStepHTML(i, s));
+    });
+
+    renderCurrentStepSelector(steps.length, currentStep);
+}
+
+function createStepHTML(i, s) {
+    const isLast = false; // We don't know total yet
+    return `<div class="step-builder" data-index="${i}">
+        <div class="step-header">
+            <span class="step-num">${i + 1}</span>
+            <span>Step ${i + 1}</span>
+            <button class="step-remove" onclick="removeTeachingStep(${i})" title="Remove step">×</button>
+        </div>
+        <div class="step-body">
+            <div class="field">
+                <label><span class="component-tag tag-prompt">Prompt</span></label>
+                <input type="text" class="step-prompt" value="${escHtml(s.prompt)}" placeholder="e.g., Position yourself in front of CHILD, while holding something she likes to help her to">
+            </div>
+            <div class="field">
+                <label><span class="component-tag tag-behavior">Behaviour</span></label>
+                <input type="text" class="step-behavior" value="${escHtml(s.behavior)}" placeholder="e.g., turn and look to you">
+            </div>
+            <div class="field-row">
+                <div class="field">
+                    <label><span class="component-tag tag-mastery">Mastery</span></label>
+                    <input type="text" class="step-mastery" value="${escHtml(s.mastery)}" placeholder="e.g., 3 times per day">
+                </div>
+                <div class="field">
+                    <label><span class="component-tag tag-generalization">Generalization</span></label>
+                    <input type="text" class="step-gen" value="${escHtml(s.generalization)}" placeholder="(if applicable at this step)">
+                </div>
+            </div>
+        </div>
+    </div>`;
+}
+
+function addTeachingStep() {
+    const container = document.getElementById('teachingStepsContainer');
+    const n = container.children.length;
+    container.insertAdjacentHTML('beforeend', createStepHTML(n, { prompt: '', behavior: '', mastery: '', generalization: '' }));
+    renderCurrentStepSelector(n + 1, state.goals[state.currentGoalIndex]?.currentStep || 1);
+}
+
+function removeTeachingStep(i) {
+    const container = document.getElementById('teachingStepsContainer');
+    if (container.children.length <= 1) return;
+    container.children[i].remove();
+    // Re-number
+    Array.from(container.children).forEach((el, idx) => {
+        el.dataset.index = idx;
+        el.querySelector('.step-num').textContent = idx + 1;
+        el.querySelector('.step-header span:nth-child(2)').textContent = `Step ${idx + 1}`;
+        el.querySelector('.step-remove').setAttribute('onclick', `removeTeachingStep(${idx})`);
+    });
+    renderCurrentStepSelector(container.children.length, state.goals[state.currentGoalIndex]?.currentStep || 1);
+}
+
+function renderCurrentStepSelector(count, current) {
+    const group = document.getElementById('currentStepGroup');
+    group.innerHTML = '';
+    for (let i = 1; i <= count; i++) {
+        group.innerHTML += `<button class="option-btn ${i === current ? 'selected' : ''}" data-val="${i}" onclick="selectOption(this,'currentStep')">Step ${i}${i === 1 ? ' (Baseline)' : ''}</button>`;
+    }
+}
+
+// ──────────────────────────────────────────────
+// QUALITY CHECK
+// ──────────────────────────────────────────────
+function toggleCheck(el) {
+    el.classList.toggle('checked');
+    el.innerHTML = el.classList.contains('checked') ? '✓' : '';
+}
+
+// ──────────────────────────────────────────────
+// LIVE PREVIEW
+// ──────────────────────────────────────────────
+function updateGoalPreview() {
+    const ctx = document.getElementById('goalContext').value;
+    const cue = selections.skillType === 'restricted' ? document.getElementById('goalCue').value : '';
+    const beh = document.getElementById('goalBehavior').value;
+    const mas = document.getElementById('goalMastery').value;
+    const genParts = [
+        document.getElementById('genPeople').value,
+        document.getElementById('genPlaces').value,
+        document.getElementById('genMaterials').value
+    ].filter(Boolean);
+    const gen = genParts.join(', and ');
+
+    if (!ctx && !beh) {
+        document.getElementById('livePreview').innerHTML = '<em class="text-muted">Fill in the fields above to see a live preview</em>';
+        return;
+    }
+
+    let parts = [];
+    if (ctx) parts.push(`<span class="c-context">${escHtml(ctx)}</span>`);
+    if (cue) parts.push(`<span class="c-cue">${escHtml(cue)}</span>`);
+    if (beh) parts.push(`<span class="c-behavior">${escHtml(beh)}</span>`);
+    if (mas) parts.push(`<span class="c-mastery">${escHtml(mas)}</span>`);
+    if (gen) parts.push(`<span class="c-generalization">${escHtml(gen)}</span>`);
+
+    const domain = document.getElementById('goalDomain').value;
+    const milestone = document.getElementById('milestoneDesc').value;
+    const childName = document.getElementById('childName').value || 'CHILD';
+
+    let header = '';
+    if (domain) header += `<div style="font-weight:700;text-decoration:underline;margin-bottom:4px;">${domain}</div>`;
+    if (milestone) header += `<div style="font-style:italic;margin-bottom:8px;">${escHtml(milestone)}</div>`;
+
+    const goalText = parts.join(', ');
+    document.getElementById('livePreview').innerHTML = header +
+        `<div><strong>Goal:</strong> ${goalText || '<em class="text-muted">…</em>'}</div>`;
+}
+
+// ──────────────────────────────────────────────
+// FULL GOAL PREVIEW (Step 4)
+// ──────────────────────────────────────────────
+function renderFullGoalPreview() {
+    const g = getCurrentGoalData();
+    if (!g) return;
+
+    const gen = buildGeneralizationString(g);
+    const cueText = g.skillType === 'restricted' && g.cue ? g.cue + ', ' : '';
+
+    let html = `<div style="font-weight:700;text-decoration:underline;">${g.domain || '—'}</div>`;
+    html += `<div style="font-style:italic;margin-bottom:8px;">${escHtml(g.milestoneDesc || '—')}</div>`;
+    html += `<div class="mb-16"><strong>Goal:</strong> <span class="c-context">${escHtml(g.context)}</span>, ${cueText ? '<span class="c-cue">' + escHtml(cueText) + '</span>' : ''}<span class="c-behavior">${escHtml(g.behavior)}</span>, <span class="c-mastery">${escHtml(g.mastery)}</span>${gen ? ', <span class="c-generalization">' + escHtml(gen) + '</span>' : ''}.</div>`;
+
+    if (g.baseline) {
+        html += `<div class="mb-8"><strong>At the beginning of the program:</strong> ${escHtml(g.baseline)}</div>`;
+    }
+    if (g.setupInstruction) {
+        html += `<div class="mb-16"><strong>How to set it up:</strong> <span class="c-cue">${escHtml(g.setupInstruction)}</span></div>`;
+    }
+
+    // Steps table
+    if (g.steps.length > 0) {
+        html += `<table class="preview-step-table"><thead><tr>
+            <th style="width:50px">Step</th><th>Prompt</th><th>Behaviour</th><th>Mastery</th><th>Gen.</th>
+        </tr></thead><tbody>`;
+        g.steps.forEach((s, i) => {
+            const isCurrent = (i + 1) === g.currentStep;
+            html += `<tr class="${isCurrent ? 'current-step' : ''}">
+                <td style="text-align:center;font-weight:700;">${i + 1}${isCurrent ? ' ◄' : ''}</td>
+                <td><span class="c-prompt">${escHtml(s.prompt) || '—'}</span></td>
+                <td><span class="c-behavior">${escHtml(s.behavior) || '—'}</span></td>
+                <td><span class="c-mastery">${escHtml(s.mastery) || '—'}</span></td>
+                <td><span class="c-generalization">${escHtml(s.generalization) || '—'}</span></td>
+            </tr>`;
+        });
+        html += '</tbody></table>';
+    }
+
+    if (g.tipsStrategies) {
+        html += `<div class="mt-16"><strong>Tips and Strategies:</strong><br>${escHtml(g.tipsStrategies)}</div>`;
+    }
+
+    document.getElementById('fullGoalPreview').innerHTML = html;
+}
+
+// ──────────────────────────────────────────────
+// OUTPUTS (Step 5)
+// ──────────────────────────────────────────────
+function renderAllOutputs() {
+    const g = getCurrentGoalData();
+    if (!g) return;
+    renderCaregiverOutput(g);
+    renderDataSheetOutput(g);
+    renderSimplifiedOutput(g);
+}
+
+function switchOutput(which) {
+    document.querySelectorAll('.output-tab').forEach(t => t.classList.toggle('active', t.textContent.toLowerCase().includes(which.substring(0, 4))));
+    document.getElementById('output-caregiver').classList.toggle('hidden', which !== 'caregiver');
+    document.getElementById('output-datasheet').classList.toggle('hidden', which !== 'datasheet');
+    document.getElementById('output-simplified').classList.toggle('hidden', which !== 'simplified');
+}
+
+function renderCaregiverOutput(g) {
+    const gen = buildGeneralizationString(g);
+    const cue = g.skillType === 'restricted' && g.cue ? g.cue + ', ' : '';
+    const childName = document.getElementById('childName').value || 'CHILD';
+
+    let html = `<div style="font-weight:700;text-decoration:underline;font-size:15px;">${g.domain || '—'}</div>`;
+    html += `<div style="font-style:italic;margin-bottom:12px;">${escHtml(g.milestoneDesc)}</div>`;
+    html += `<p><strong>Goal:</strong> ${escHtml(g.context)}, ${escHtml(cue)}${escHtml(childName)} will ${escHtml(g.behavior)}, ${escHtml(g.mastery)}${gen ? ', ' + escHtml(gen) : ''}.</p>`;
+
+    if (g.baseline) html += `<p class="mt-8"><strong>At the beginning of the program:</strong> ${escHtml(g.baseline)}</p>`;
+    if (g.setupInstruction) html += `<p class="mt-8"><strong>How to set it up:</strong> ${escHtml(g.setupInstruction)}</p>`;
+
+    html += '<table class="preview-step-table mt-16"><tbody>';
+    g.steps.forEach((s, i) => {
+        const stepText = [s.prompt, s.behavior, s.mastery, s.generalization].filter(Boolean).join(', ');
+        html += `<tr${(i + 1) === g.currentStep ? ' class="current-step"' : ''}><td style="width:50px;font-weight:700;">Step ${i + 1}</td><td>${escHtml(stepText)}</td></tr>`;
+    });
+    html += '</tbody></table>';
+
+    if (g.tipsStrategies) html += `<p class="mt-16"><strong>Tips and Strategies:</strong><br>• ${escHtml(g.tipsStrategies)}</p>`;
+
+    document.getElementById('output-caregiver').innerHTML = html;
+}
+
+function renderDataSheetOutput(g) {
+    const gen = buildGeneralizationString(g);
+    const cue = g.skillType === 'restricted' && g.cue ? g.cue : '';
+    const antecedent = [g.context, cue].filter(Boolean).join(', ');
+
+    let html = `<div style="background:var(--surface-alt);padding:12px;border:1px solid var(--border);border-radius:6px;margin-bottom:12px;">`;
+    html += `<div style="font-size:12px;color:var(--text-muted);">${g.level || ''}</div>`;
+    html += `<div style="font-weight:700;font-size:15px;">${g.domain || '—'}</div>`;
+    html += `<div style="font-size:13px;">${g.itemNumber ? g.itemNumber + ' — ' : ''}${escHtml(g.milestoneDesc)}</div>`;
+    html += `</div>`;
+
+    html += `<p><strong>Antecedent:</strong> ${escHtml(antecedent)}</p>`;
+    html += `<p><strong>Behaviour:</strong> ${escHtml(g.behavior)}</p>`;
+    html += `<p><strong>Criteria:</strong> ${escHtml(g.mastery)}${gen ? ', ' + escHtml(gen) : ''}</p>`;
+
+    html += `<table class="preview-step-table mt-16">
+        <thead><tr><th style="width:30px">#</th><th>Teaching Step</th><th style="width:80px">Date Intro</th><th style="width:80px">Date Acquired</th></tr></thead><tbody>`;
+
+    html += `<tr><td style="text-align:center">1</td><td>${escHtml(g.baseline || 'Baseline')}</td><td style="text-align:center">Baseline</td><td></td></tr>`;
+    g.steps.forEach((s, i) => {
+        const stepText = [s.prompt, s.behavior, s.mastery, s.generalization].filter(Boolean).join(', ');
+        html += `<tr${(i + 1) === g.currentStep ? ' class="current-step"' : ''}><td style="text-align:center">${i + 2}</td><td>${escHtml(stepText)}</td><td></td><td></td></tr>`;
+    });
+    html += '</tbody></table>';
+
+    document.getElementById('output-datasheet').innerHTML = html;
+}
+
+function renderSimplifiedOutput(g) {
+    document.getElementById('output-simplified').innerHTML = generateSimplifiedGoalHTML(g, true);
+}
+
+// ──────────────────────────────────────────────
+// HYBRID SIMPLIFIED DATA SHEET
+// ──────────────────────────────────────────────
+function generateSimplifiedGoalHTML(g, showAllSteps) {
+    const cue = g.skillType === 'restricted' && g.cue ? g.cue : '(Spontaneous)';
+    const childName = document.getElementById('childName').value || '___';
+
+    let html = `<div class="data-sheet-preview">`;
+    html += `<table>`;
+
+    // Goal header row
+    html += `<tr class="goal-header-row">
+        <td colspan="2" style="font-weight:bold;">${g.domain || '—'}: ${escHtml(g.milestoneDesc || '—')}</td>
+        <td colspan="3" style="font-size:10px;">
+            <strong>Context:</strong> ${escHtml(g.context)}<br>
+            <strong>Set up:</strong> ${escHtml(cue)}
+        </td>
+    </tr>`;
+
+    // Column headers
+    html += `<tr>
+        <th style="width:8%">Step</th>
+        <th style="width:48%">Prompt → Behaviour → Mastery</th>
+        <th style="width:14%">Int. 1</th>
+        <th style="width:14%">Int. 2</th>
+        <th style="width:14%">Int. 3</th>
+    </tr>`;
+
+    // All steps
+    g.steps.forEach((s, i) => {
+        const isCurrent = (i + 1) === g.currentStep;
+        const stepParts = [];
+        if (s.prompt) stepParts.push(s.prompt);
+        if (s.behavior) stepParts.push(s.behavior);
+        if (s.mastery) stepParts.push(s.mastery);
+        if (s.generalization) stepParts.push(s.generalization);
+        const text = stepParts.join(', ') || '—';
+
+        html += `<tr class="${isCurrent ? 'current-step-row' : ''}" style="${!isCurrent && !showAllSteps ? 'color:#999;' : ''}">
+            <td style="text-align:center;font-weight:bold;${isCurrent ? 'background:#fff9c4;' : ''}">${i + 1}${isCurrent ? ' ◄' : ''}</td>
+            <td style="${isCurrent ? 'font-weight:600;background:#fff9c4;' : ''}">${escHtml(text)}</td>
+            <td style="${isCurrent ? 'background:#fff9c4;' : ''}"></td>
+            <td style="${isCurrent ? 'background:#fff9c4;' : ''}"></td>
+            <td style="${isCurrent ? 'background:#fff9c4;' : ''}"></td>
+        </tr>`;
+    });
+
+    html += `</table></div>`;
+    return html;
+}
+
+function generateAllGoalsSheet() {
+    saveCurrentGoal();
+    const childName = document.getElementById('childName').value || '___';
+    const date = document.getElementById('goalDate').value || '___';
+    const team = document.getElementById('teamMember').value || '___';
+
+    let html = `<div class="data-sheet-preview">
+        <div style="display:flex;justify-content:space-between;border-bottom:2px solid #333;padding-bottom:6px;margin-bottom:8px;">
+            <div><strong>Child:</strong> ${escHtml(childName)}</div>
+            <div><strong>Team Member:</strong> ${escHtml(team)}</div>
+            <div><strong>Date:</strong> ${escHtml(date)}</div>
+            <div><strong>Session #:</strong> ___</div>
+        </div>`;
+
+    state.goals.forEach((g, i) => {
+        html += `<div style="margin-bottom:8px;">${generateSimplifiedGoalHTML(g, true)}</div>`;
+    });
+
+    html += `<div style="margin-top:12px;border-top:1px solid #666;padding-top:8px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:11px;">
+            <div><strong>Interval 1 Activities:</strong><br>1.<br>2.<br>3.</div>
+            <div><strong>Interval 2 Activities:</strong><br>1.<br>2.<br>3.</div>
+            <div><strong>Interval 3 Activities:</strong><br>1.<br>2.<br>3.</div>
+        </div>
+        <div style="margin-top:8px;"><strong>Words to request:</strong> ___</div>
+        <div><strong>Words to label:</strong> ___</div>
+        <div style="margin-top:8px;"><strong>Session Notes:</strong></div>
+        <div style="border:1px solid #999;min-height:40px;margin-top:4px;"></div>
+    </div></div>`;
+
+    document.getElementById('allGoalsSheetContent').innerHTML = html;
+    document.getElementById('allGoalsOutputCard').classList.remove('hidden');
+    document.getElementById('allGoalsOutputCard').scrollIntoView({ behavior: 'smooth' });
+}
+
+// ──────────────────────────────────────────────
+// PRINT
+// ──────────────────────────────────────────────
+function printSimplifiedSheet() {
+    const g = getCurrentGoalData();
+    if (!g) return;
+    const w = window.open('', '_blank');
+    w.document.write(`<html><head><title>Simplified Data Sheet</title>
+        <style>body{font-family:Arial,sans-serif;font-size:11px;margin:1cm;line-height:1.3;}
+        table{width:100%;border-collapse:collapse;}th,td{border:1px solid #333;padding:4px 6px;vertical-align:top;}
+        th{background:#e8e8e8;font-weight:bold;font-size:10px;}
+        .goal-header-row td{background:#f0f0f0;font-weight:bold;}
+        .current-step-row{background:#fff9c4!important;}
+        .current-step-row td{background:#fff9c4!important;}</style></head><body>`);
+    w.document.write(generateSimplifiedGoalHTML(g, true));
+    w.document.write('</body></html>');
+    w.document.close();
+    w.print();
+}
+
+function printAllGoalsSheet() {
+    const content = document.getElementById('allGoalsSheetContent').innerHTML;
+    const w = window.open('', '_blank');
+    w.document.write(`<html><head><title>ESDM Session Data Sheet</title>
+        <style>body{font-family:Arial,sans-serif;font-size:10px;margin:0.5cm;line-height:1.3;}
+        table{width:100%;border-collapse:collapse;}th,td{border:1px solid #333;padding:3px 4px;vertical-align:top;}
+        th{background:#e8e8e8;font-weight:bold;font-size:9px;}
+        .goal-header-row td{background:#f0f0f0;font-weight:bold;}
+        .current-step-row{background:#fff9c4!important;}
+        .current-step-row td{background:#fff9c4!important;font-weight:600;}</style></head><body>`);
+    w.document.write(content);
+    w.document.write('</body></html>');
+    w.document.close();
+    w.print();
+}
+
+// ──────────────────────────────────────────────
+// SAVE / LOAD / EXPORT
+// ──────────────────────────────────────────────
+function saveAllGoals() {
+    saveCurrentGoal();
+    const data = {
+        childName: document.getElementById('childName').value,
+        date: document.getElementById('goalDate').value,
+        teamMember: document.getElementById('teamMember').value,
+        program: state.program,
+        goals: state.goals
+    };
+    localStorage.setItem('esdm_goals_' + (data.childName || 'unnamed'), JSON.stringify(data));
+    showToast('Saved to browser storage');
+}
+
+function loadSavedGoals() {
+    const childName = document.getElementById('childName').value;
+    const key = 'esdm_goals_' + (childName || 'unnamed');
+    const raw = localStorage.getItem(key);
+    if (!raw) {
+        // List all saved
+        const keys = Object.keys(localStorage).filter(k => k.startsWith('esdm_goals_'));
+        if (keys.length === 0) { alert('No saved goals found.'); return; }
+        const name = prompt('Saved goal sets:\n' + keys.map(k => k.replace('esdm_goals_', '')).join('\n') + '\n\nEnter child name to load:');
+        if (!name) return;
+        const data = localStorage.getItem('esdm_goals_' + name);
+        if (!data) { alert('Not found.'); return; }
+        loadGoalData(JSON.parse(data));
+    } else {
+        loadGoalData(JSON.parse(raw));
+    }
+}
+
+function loadGoalData(data) {
+    document.getElementById('childName').value = data.childName || '';
+    document.getElementById('goalDate').value = data.date || '';
+    document.getElementById('teamMember').value = data.teamMember || '';
+    if (data.program) setProgram(data.program);
+    state.goals = data.goals || [];
+    state.currentGoalIndex = -1;
+    renderGoalsList();
+    showToast('Goals loaded');
+}
+
+function exportGoalsJSON() {
+    saveCurrentGoal();
+    const data = {
+        childName: document.getElementById('childName').value,
+        date: document.getElementById('goalDate').value,
+        teamMember: document.getElementById('teamMember').value,
+        program: state.program,
+        goals: state.goals
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `esdm_goals_${data.childName || 'unnamed'}_${data.date || 'undated'}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+function copyOutput() {
+    const visible = document.querySelector('.output-content > div:not(.hidden)');
+    if (visible) {
+        navigator.clipboard.writeText(visible.innerText).then(() => showToast('Copied to clipboard'));
+    }
+}
+
+// ──────────────────────────────────────────────
+// HELPERS
+// ──────────────────────────────────────────────
+function getCurrentGoalData() {
+    saveCurrentGoal();
+    return state.goals[state.currentGoalIndex] || null;
+}
+
+function buildGeneralizationString(g) {
+    return [g.genPeople, g.genPlaces, g.genMaterials].filter(Boolean).join(', and ');
+}
+
+function escHtml(s) {
+    if (!s) return '';
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function showToast(msg) {
+    const toast = document.createElement('div');
+    toast.textContent = msg;
+    toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#333;color:white;padding:10px 24px;border-radius:8px;font-size:14px;z-index:1000;box-shadow:0 4px 12px rgba(0,0,0,0.3);';
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2500);
+}
+
+// ──────────────────────────────────────────────
+// INIT
+// ──────────────────────────────────────────────
+document.getElementById('goalDate').valueAsDate = new Date();
+renderGoalsList();
+// Start in quick mode (guided content hidden)
+document.querySelectorAll('.guided-content').forEach(el => el.style.display = 'none');
+</script>
+
+</body>
+</html>
