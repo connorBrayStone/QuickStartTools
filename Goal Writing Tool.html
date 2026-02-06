@@ -744,6 +744,114 @@
             .data-sheet-preview td, .data-sheet-preview th { padding: 3px 4px; }
         }
 
+        /* ── Compact Sheet Styles (in-page preview + print) ── */
+        .compact-sheet {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 9px;
+            line-height: 1.25;
+            color: #000;
+        }
+
+        .compact-sheet .cs-goals { column-count: 2; column-gap: 8px; }
+
+        .cs-header {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 2px solid #000;
+            padding-bottom: 3px;
+            margin-bottom: 5px;
+            font-size: 10px;
+        }
+
+        .cs-goals {
+            margin-bottom: 5px;
+        }
+
+        .cs-goals .cg-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 14px;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .cg-table td { border: 1px solid #555; padding: 1.5px 3px; vertical-align: top; }
+
+        .cg-goal-hdr td {
+            background: #d9e2f3 !important;
+            color: #1a1a1a !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .cg-hdr-merged {
+            padding: 3px 5px !important;
+        }
+
+        .cg-hdr-title {
+            font-size: 8.5px;
+            font-weight: 700;
+        }
+
+        .cg-hdr-cue {
+            font-size: 7.5px;
+            color: #333;
+            margin-top: 1px;
+            font-style: italic;
+        }
+
+        .cg-step td, .cg-current td { font-size: 8px; }
+
+        .cg-sn { width: 14px; text-align: center; font-weight: 700; font-size: 8px; }
+        .cg-stxt { }
+        .cg-ic {
+            width: 7%;
+            min-width: 20px;
+            min-height: 12px;
+        }
+
+        .cg-current td {
+            background: #fff9c4 !important;
+            font-weight: 600;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .cg-step td { color: #444; font-size: 7.5px; }
+
+        .cs-footer {
+            border-top: 1.5px solid #000;
+            padding-top: 3px;
+            font-size: 8px;
+        }
+
+        .cs-footer-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 4px;
+            margin-bottom: 3px;
+        }
+
+        .cs-footer-row { margin-bottom: 2px; }
+
+        .cs-page-break {
+            break-after: page;
+            page-break-after: always;
+            height: 0;
+            margin: 0;
+        }
+
+        /* ── Print-specific for compact sheet ── */
+        @media print {
+            .compact-sheet { font-size: 8px; }
+            .cs-header { font-size: 9px; }
+            .cg-goal-hdr td { font-size: 8px; }
+            .cg-current td { font-size: 7.5px; }
+            .cg-step td { font-size: 7px; }
+            .cg-ctx { font-size: 7px; }
+            .cs-footer { font-size: 7.5px; }
+        }
+
         /* ── Responsive ── */
         @media (max-width: 768px) {
             .app-header { padding: 12px 16px; }
@@ -1763,14 +1871,31 @@ function renderSimplifiedOutput(g) {
 // ──────────────────────────────────────────────
 // HYBRID SIMPLIFIED DATA SHEET
 // ──────────────────────────────────────────────
+
+// Delta detection: compare step to previous step, return only changed parts
+function getStepDelta(steps, index) {
+    const s = steps[index];
+    if (index === 0) {
+        // First step: show everything
+        return [s.prompt, s.behavior, s.mastery, s.generalization].filter(Boolean).join(', ') || '—';
+    }
+    const prev = steps[index - 1];
+    const changes = [];
+    if (s.prompt !== prev.prompt) changes.push(s.prompt || '(no prompt)');
+    if (s.behavior !== prev.behavior) changes.push(s.behavior);
+    if (s.mastery !== prev.mastery) changes.push(s.mastery);
+    if (s.generalization !== prev.generalization && s.generalization) changes.push(s.generalization);
+    // If nothing changed or everything is empty, show full
+    if (changes.length === 0) return [s.prompt, s.behavior, s.mastery, s.generalization].filter(Boolean).join(', ') || '—';
+    return changes.join(', ');
+}
+
+// Full single-goal simplified sheet (for individual goal output tab)
 function generateSimplifiedGoalHTML(g, showAllSteps) {
     const cue = g.skillType === 'restricted' && g.cue ? g.cue : '(Spontaneous)';
-    const childName = document.getElementById('childName').value || '___';
 
     let html = `<div class="data-sheet-preview">`;
     html += `<table>`;
-
-    // Goal header row
     html += `<tr class="goal-header-row">
         <td colspan="2" style="font-weight:bold;">${g.domain || '—'}: ${escHtml(g.milestoneDesc || '—')}</td>
         <td colspan="3" style="font-size:10px;">
@@ -1778,8 +1903,6 @@ function generateSimplifiedGoalHTML(g, showAllSteps) {
             <strong>Set up:</strong> ${escHtml(cue)}
         </td>
     </tr>`;
-
-    // Column headers
     html += `<tr>
         <th style="width:8%">Step</th>
         <th style="width:48%">Prompt → Behaviour → Mastery</th>
@@ -1787,17 +1910,9 @@ function generateSimplifiedGoalHTML(g, showAllSteps) {
         <th style="width:14%">Int. 2</th>
         <th style="width:14%">Int. 3</th>
     </tr>`;
-
-    // All steps
     g.steps.forEach((s, i) => {
         const isCurrent = (i + 1) === g.currentStep;
-        const stepParts = [];
-        if (s.prompt) stepParts.push(s.prompt);
-        if (s.behavior) stepParts.push(s.behavior);
-        if (s.mastery) stepParts.push(s.mastery);
-        if (s.generalization) stepParts.push(s.generalization);
-        const text = stepParts.join(', ') || '—';
-
+        const text = [s.prompt, s.behavior, s.mastery, s.generalization].filter(Boolean).join(', ') || '—';
         html += `<tr class="${isCurrent ? 'current-step-row' : ''}" style="${!isCurrent && !showAllSteps ? 'color:#999;' : ''}">
             <td style="text-align:center;font-weight:bold;${isCurrent ? 'background:#fff9c4;' : ''}">${i + 1}${isCurrent ? ' ◄' : ''}</td>
             <td style="${isCurrent ? 'font-weight:600;background:#fff9c4;' : ''}">${escHtml(text)}</td>
@@ -1806,9 +1921,46 @@ function generateSimplifiedGoalHTML(g, showAllSteps) {
             <td style="${isCurrent ? 'background:#fff9c4;' : ''}"></td>
         </tr>`;
     });
-
     html += `</table></div>`;
     return html;
+}
+
+// Compact single-goal block for the all-goals print sheet
+function generateCompactGoalBlock(g, goalNum) {
+    const cue = g.skillType === 'restricted' && g.cue ? g.cue : (g.setupInstruction || '(Spontaneous)');
+    const domainShort = (g.domain || '—').replace('Communication', 'Comm.').replace('Personal Independence', 'Pers. Ind.');
+
+    let html = `<table class="cg-table">`;
+    // Single merged header: domain + milestone, then cue on second line
+    html += `<tr class="cg-goal-hdr">
+        <td colspan="4" class="cg-hdr-merged">
+            <div class="cg-hdr-title"><strong>${domainShort}:</strong> ${escHtml(g.milestoneDesc || '—')}</div>
+            <div class="cg-hdr-cue">${escHtml(cue)}</div>
+        </td>
+    </tr>`;
+
+    // Steps
+    g.steps.forEach((s, i) => {
+        const isCurrent = (i + 1) === g.currentStep;
+        const text = isCurrent
+            ? [s.prompt, s.behavior, s.mastery, s.generalization].filter(Boolean).join(', ')
+            : getStepDelta(g.steps, i);
+
+        html += `<tr class="${isCurrent ? 'cg-current' : 'cg-step'}">
+            <td class="cg-sn">${i + 1}${isCurrent ? '◄' : ''}</td>
+            <td class="cg-stxt">${escHtml(truncate(text, isCurrent ? 200 : 80))}</td>
+            <td class="cg-ic"></td>
+            <td class="cg-ic"></td>
+            <td class="cg-ic"></td>
+        </tr>`;
+    });
+    html += `</table>`;
+    return html;
+}
+
+function truncate(s, max) {
+    if (!s) return '';
+    return s.length > max ? s.substring(0, max - 1) + '…' : s;
 }
 
 function generateAllGoalsSheet() {
@@ -1817,29 +1969,54 @@ function generateAllGoalsSheet() {
     const date = document.getElementById('goalDate').value || '___';
     const team = document.getElementById('teamMember').value || '___';
 
-    let html = `<div class="data-sheet-preview">
-        <div style="display:flex;justify-content:space-between;border-bottom:2px solid #333;padding-bottom:6px;margin-bottom:8px;">
-            <div><strong>Child:</strong> ${escHtml(childName)}</div>
-            <div><strong>Team Member:</strong> ${escHtml(team)}</div>
-            <div><strong>Date:</strong> ${escHtml(date)}</div>
-            <div><strong>Session #:</strong> ___</div>
-        </div>`;
+    let html = `<div class="compact-sheet two-col">`;
 
-    state.goals.forEach((g, i) => {
-        html += `<div style="margin-bottom:8px;">${generateSimplifiedGoalHTML(g, true)}</div>`;
-    });
+    // Header
+    html += `<div class="cs-header">
+        <span><strong>Child:</strong> ${escHtml(childName)}</span>
+        <span><strong>Staff:</strong> ${escHtml(team)}</span>
+        <span><strong>Date:</strong> ${escHtml(date)}</span>
+        <span><strong>Session #:</strong> ___</span>
+    </div>`;
 
-    html += `<div style="margin-top:12px;border-top:1px solid #666;padding-top:8px;">
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:11px;">
-            <div><strong>Interval 1 Activities:</strong><br>1.<br>2.<br>3.</div>
-            <div><strong>Interval 2 Activities:</strong><br>1.<br>2.<br>3.</div>
-            <div><strong>Interval 3 Activities:</strong><br>1.<br>2.<br>3.</div>
+    // Goals — split into pages of up to 10
+    const goalsPerPage = 10;
+    const totalPages = Math.ceil(state.goals.length / goalsPerPage);
+
+    for (let page = 0; page < totalPages; page++) {
+        const start = page * goalsPerPage;
+        const end = Math.min(start + goalsPerPage, state.goals.length);
+
+        if (page > 0) {
+            html += `<div class="cs-page-break"></div>`;
+            // Repeat header on new page
+            html += `<div class="cs-header">
+                <span><strong>Child:</strong> ${escHtml(childName)}</span>
+                <span><strong>Staff:</strong> ${escHtml(team)}</span>
+                <span><strong>Date:</strong> ${escHtml(date)}</span>
+                <span><strong>Session #:</strong> ___ &nbsp; (p. ${page + 1}/${totalPages})</span>
+            </div>`;
+        }
+
+        html += `<div class="cs-goals cs-two-col">`;
+        for (let i = start; i < end; i++) {
+            html += generateCompactGoalBlock(state.goals[i], i + 1);
+        }
+        html += `</div>`;
+    }
+
+    // Footer on last page
+    html += `<div class="cs-footer">
+        <div class="cs-footer-grid">
+            <div><strong>Int. 1 Activities:</strong> ___</div>
+            <div><strong>Int. 2 Activities:</strong> ___</div>
+            <div><strong>Int. 3 Activities:</strong> ___</div>
         </div>
-        <div style="margin-top:8px;"><strong>Words to request:</strong> ___</div>
-        <div><strong>Words to label:</strong> ___</div>
-        <div style="margin-top:8px;"><strong>Session Notes:</strong></div>
-        <div style="border:1px solid #999;min-height:40px;margin-top:4px;"></div>
-    </div></div>`;
+        <div class="cs-footer-row"><strong>Words to request:</strong> ___ &nbsp;&nbsp; <strong>Words to label:</strong> ___</div>
+        <div class="cs-footer-row"><strong>Notes:</strong> ___</div>
+    </div>`;
+
+    html += `</div>`;
 
     document.getElementById('allGoalsSheetContent').innerHTML = html;
     document.getElementById('allGoalsOutputCard').classList.remove('hidden');
@@ -1868,18 +2045,40 @@ function printSimplifiedSheet() {
 
 function printAllGoalsSheet() {
     const content = document.getElementById('allGoalsSheetContent').innerHTML;
+
     const w = window.open('', '_blank');
     w.document.write(`<html><head><title>ESDM Session Data Sheet</title>
-        <style>body{font-family:Arial,sans-serif;font-size:10px;margin:0.5cm;line-height:1.3;}
-        table{width:100%;border-collapse:collapse;}th,td{border:1px solid #333;padding:3px 4px;vertical-align:top;}
-        th{background:#e8e8e8;font-weight:bold;font-size:9px;}
-        .goal-header-row td{background:#f0f0f0;font-weight:bold;}
-        .current-step-row{background:#fff9c4!important;}
-        .current-step-row td{background:#fff9c4!important;font-weight:600;}</style></head><body>`);
+        <style>
+        @page { size: portrait; margin: 0.4cm; }
+        body { font-family: Arial, Helvetica, sans-serif; font-size: 8px; margin: 0; padding: 4px; line-height: 1.25; color: #000; }
+        .compact-sheet { font-size: 8px; }
+        .cs-goals { column-count: 2; column-gap: 6px; }
+        .cs-header { display: flex; justify-content: space-between; border-bottom: 2px solid #000; padding-bottom: 2px; margin-bottom: 4px; font-size: 9px; }
+        .cs-goals { margin-bottom: 4px; }
+        .cg-table { width: 100%; border-collapse: collapse; margin-bottom: 3px; break-inside: avoid; page-break-inside: avoid; }
+        .cg-table td { border: 1px solid #555; padding: 1px 2px; vertical-align: top; }
+        .cg-goal-hdr td { background: #d9e2f3 !important; color: #1a1a1a !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .cg-hdr-merged { padding: 2px 4px !important; }
+        .cg-hdr-title { font-size: 8px; font-weight: 700; }
+        .cg-hdr-cue { font-size: 7px; color: #333; margin-top: 1px; font-style: italic; }
+        .cg-num { width: 12px; text-align: center; font-weight: 700; font-size: 8px; }
+        .cg-title { font-size: 7.5px; }
+        .cg-ctx { font-size: 6.5px; line-height: 1.15; }
+        .cg-sn { width: 12px; text-align: center; font-weight: 700; font-size: 7.5px; }
+        .cg-stxt { font-size: 7px; }
+        .cg-ic { width: 7%; min-width: 16px; min-height: 10px; }
+        .cg-current td { background: #fff9c4 !important; font-weight: 600; font-size: 7px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .cg-step td { color: #444; font-size: 6.5px; }
+        .cg-table { width: 100%; border-collapse: collapse; margin-bottom: 12px; break-inside: avoid; page-break-inside: avoid; }
+        .cs-footer { border-top: 1.5px solid #000; padding-top: 2px; font-size: 7px; }
+        .cs-footer-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 3px; margin-bottom: 2px; }
+        .cs-footer-row { margin-bottom: 1px; }
+        .cs-page-break { break-after: page; page-break-after: always; height: 0; margin: 0; }
+        </style></head><body>`);
     w.document.write(content);
     w.document.write('</body></html>');
     w.document.close();
-    w.print();
+    setTimeout(() => w.print(), 300);
 }
 
 // ──────────────────────────────────────────────
