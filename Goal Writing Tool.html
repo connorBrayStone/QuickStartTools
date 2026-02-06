@@ -747,20 +747,20 @@
         /* ── Compact Sheet Styles (in-page preview + print) ── */
         .compact-sheet {
             font-family: Arial, Helvetica, sans-serif;
-            font-size: 9px;
-            line-height: 1.25;
+            font-size: 11px;
+            line-height: 1.3;
             color: #000;
         }
 
-        .compact-sheet .cs-goals { column-count: 2; column-gap: 8px; }
+        .compact-sheet .cs-goals { column-count: 2; column-gap: 12px; }
 
         .cs-header {
             display: flex;
             justify-content: space-between;
             border-bottom: 2px solid #000;
-            padding-bottom: 3px;
-            margin-bottom: 5px;
-            font-size: 10px;
+            padding-bottom: 4px;
+            margin-bottom: 8px;
+            font-size: 11px;
         }
 
         .cs-goals {
@@ -785,29 +785,29 @@
         }
 
         .cg-hdr-merged {
-            padding: 3px 5px !important;
+            padding: 4px 6px !important;
         }
 
         .cg-hdr-title {
-            font-size: 8.5px;
+            font-size: 10px;
             font-weight: 700;
         }
 
         .cg-hdr-cue {
-            font-size: 7.5px;
+            font-size: 9px;
             color: #333;
             margin-top: 1px;
             font-style: italic;
         }
 
-        .cg-step td, .cg-current td { font-size: 8px; }
+        .cg-step td, .cg-current td { font-size: 9.5px; }
 
-        .cg-sn { width: 14px; text-align: center; font-weight: 700; font-size: 8px; }
+        .cg-sn { width: 14px; text-align: center; font-weight: 700; font-size: 10px; }
         .cg-stxt { }
         .cg-ic {
             width: 7%;
             min-width: 20px;
-            min-height: 12px;
+            min-height: 14px;
         }
 
         .cg-current td {
@@ -817,12 +817,12 @@
             print-color-adjust: exact;
         }
 
-        .cg-step td { color: #444; font-size: 7.5px; }
+        .cg-step td { color: #444; font-size: 8.5px; }
 
         .cs-footer {
             border-top: 1.5px solid #000;
-            padding-top: 3px;
-            font-size: 8px;
+            padding-top: 4px;
+            font-size: 9.5px;
         }
 
         .cs-footer-grid {
@@ -1979,8 +1979,8 @@ function generateAllGoalsSheet() {
         <span><strong>Session #:</strong> ___</span>
     </div>`;
 
-    // Goals — split into pages of up to 10
-    const goalsPerPage = 10;
+    // Goals — split into pages of up to 8
+    const goalsPerPage = 8;
     const totalPages = Math.ceil(state.goals.length / goalsPerPage);
 
     for (let page = 0; page < totalPages; page++) {
@@ -2049,30 +2049,25 @@ function printAllGoalsSheet() {
     const w = window.open('', '_blank');
     w.document.write(`<html><head><title>ESDM Session Data Sheet</title>
         <style>
-        @page { size: portrait; margin: 0.4cm; }
-        body { font-family: Arial, Helvetica, sans-serif; font-size: 8px; margin: 0; padding: 4px; line-height: 1.25; color: #000; }
-        .compact-sheet { font-size: 8px; }
-        .cs-goals { column-count: 2; column-gap: 6px; }
-        .cs-header { display: flex; justify-content: space-between; border-bottom: 2px solid #000; padding-bottom: 2px; margin-bottom: 4px; font-size: 9px; }
-        .cs-goals { margin-bottom: 4px; }
-        .cg-table { width: 100%; border-collapse: collapse; margin-bottom: 3px; break-inside: avoid; page-break-inside: avoid; }
-        .cg-table td { border: 1px solid #555; padding: 1px 2px; vertical-align: top; }
-        .cg-goal-hdr td { background: #d9e2f3 !important; color: #1a1a1a !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-        .cg-hdr-merged { padding: 2px 4px !important; }
-        .cg-hdr-title { font-size: 8px; font-weight: 700; }
-        .cg-hdr-cue { font-size: 7px; color: #333; margin-top: 1px; font-style: italic; }
-        .cg-num { width: 12px; text-align: center; font-weight: 700; font-size: 8px; }
-        .cg-title { font-size: 7.5px; }
-        .cg-ctx { font-size: 6.5px; line-height: 1.15; }
-        .cg-sn { width: 12px; text-align: center; font-weight: 700; font-size: 7.5px; }
-        .cg-stxt { font-size: 7px; }
-        .cg-ic { width: 7%; min-width: 16px; min-height: 10px; }
-        .cg-current td { background: #fff9c4 !important; font-weight: 600; font-size: 7px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-        .cg-step td { color: #444; font-size: 6.5px; }
+        @page { size: landscape; margin: 0.5cm; }
+        body { font-family: Arial, Helvetica, sans-serif; font-size: 9.5px; margin: 0; padding: 4px; line-height: 1.3; color: #000; }
+        .compact-sheet { font-size: 9.5px; }
+        .cs-goals { column-count: 2; column-gap: 10px; }
+        .cs-header { display: flex; justify-content: space-between; border-bottom: 2px solid #000; padding-bottom: 3px; margin-bottom: 6px; font-size: 10px; }
         .cg-table { width: 100%; border-collapse: collapse; margin-bottom: 12px; break-inside: avoid; page-break-inside: avoid; }
-        .cs-footer { border-top: 1.5px solid #000; padding-top: 2px; font-size: 7px; }
-        .cs-footer-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 3px; margin-bottom: 2px; }
-        .cs-footer-row { margin-bottom: 1px; }
+        .cg-table td { border: 1px solid #555; padding: 2px 4px; vertical-align: top; }
+        .cg-goal-hdr td { background: #d9e2f3 !important; color: #1a1a1a !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .cg-hdr-merged { padding: 3px 5px !important; }
+        .cg-hdr-title { font-size: 9.5px; font-weight: 700; }
+        .cg-hdr-cue { font-size: 8.5px; color: #333; margin-top: 1px; font-style: italic; }
+        .cg-sn { width: 14px; text-align: center; font-weight: 700; font-size: 9.5px; }
+        .cg-stxt { font-size: 9px; }
+        .cg-ic { width: 7%; min-width: 18px; min-height: 13px; }
+        .cg-current td { background: #fff9c4 !important; font-weight: 600; font-size: 9px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .cg-step td { color: #444; font-size: 8px; }
+        .cs-footer { border-top: 1.5px solid #000; padding-top: 3px; font-size: 8.5px; }
+        .cs-footer-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; margin-bottom: 3px; }
+        .cs-footer-row { margin-bottom: 2px; }
         .cs-page-break { break-after: page; page-break-after: always; height: 0; margin: 0; }
         </style></head><body>`);
     w.document.write(content);
