@@ -1607,10 +1607,14 @@ function switchRole(role) {
     if(txt==='Capacity'||txt==='QS Pipeline') {
       sec.style.display = isClinical ? 'none' : '';
     }
+    if(txt==='My Caseload') {
+      sec.style.display = (role==='cicc-admin') ? 'none' : '';
+    }
   });
 
   if(!isClinical) {
     qsNav.style.display = (role==='cicc-admin') ? 'none' : 'block';
+    if(role==='cicc-admin') showView('capacity');
     addBtn.style.display = (role==='qs-admin') ? 'none' : 'inline-flex';
     mgrBtn.style.display = (role==='qs-supervisor') ? 'inline-flex' : 'none';
     roBanner.style.display = (role==='qs-admin') ? 'flex' : 'none';
