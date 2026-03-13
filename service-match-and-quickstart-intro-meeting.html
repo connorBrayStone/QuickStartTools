@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Service Match &amp; QuickStart Intro Meeting — QS Supervisor Wiki</title>
+<style>
+  :root {
+    --sidebar-w: 280px;
+    --teal: #1a7a6d;
+    --teal-light: #e8f5f2;
+    --bg: #fafafa;
+    --text: #2c3e50;
+    --border: #dde1e5;
+    --amber: #f39c12;
+    --amber-bg: #fef9e7;
+    --resolved-bg: #eafaf1;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    line-height: 1.65;
+    font-size: 15px;
+  }
+
+  /* Sidebar */
+  #sidebar-toc {
+    position: fixed;
+    top: 0; left: 0;
+    width: var(--sidebar-w);
+    height: 100vh;
+    background: #fff;
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+  }
+  .toc-header {
+    padding: 18px 16px 12px;
+    font-weight: 700;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--teal);
+    border-bottom: 2px solid var(--teal);
+    flex-shrink: 0;
+  }
+  .toc-body {
+    padding: 8px 0;
+    overflow-y: auto;
+    flex: 1;
+  }
+  .toc-body a {
+    display: block;
+    padding: 5px 16px;
+    color: #555;
+    text-decoration: none;
+    font-size: 13px;
+    border-left: 3px solid transparent;
+    transition: all 0.15s;
+  }
+  .toc-body a:hover {
+    background: var(--teal-light);
+    color: var(--teal);
+    border-left-color: var(--teal);
+  }
+  .toc-body a.active {
+    background: var(--teal-light);
+    color: var(--teal);
+    font-weight: 600;
+    border-left-color: var(--teal);
+  }
+  .toc-h3 { padding-left: 32px !important; font-size: 12px !important; color: #777 !important; }
+
+  /* Main content */
+  #content {
+    margin-left: var(--sidebar-w);
+    max-width: 860px;
+    padding: 40px 48px 80px;
+  }
+
+  h1 {
+    font-size: 28px;
+    color: var(--teal);
+    margin-bottom: 8px;
+    padding-bottom: 12px;
+    border-bottom: 3px solid var(--teal);
+  }
+  h2 {
+    font-size: 22px;
+    color: var(--teal);
+    margin: 40px 0 16px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  h3 {
+    font-size: 17px;
+    color: #34495e;
+    margin: 28px 0 10px;
+  }
+  h4 {
+    font-size: 15px;
+    font-weight: 600;
+    color: #34495e;
+    margin: 20px 0 8px;
+  }
+
+  p { margin: 10px 0; }
+  hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+  /* Blockquotes */
+  blockquote {
+    border-left: 4px solid var(--teal);
+    background: var(--teal-light);
+    padding: 12px 16px;
+    margin: 14px 0;
+    border-radius: 0 6px 6px 0;
+    font-size: 14px;
+  }
+  blockquote blockquote {
+    border-left-color: #bbb;
+    background: #f5f5f5;
+  }
+
+  /* TODO/OPEN ITEM callouts */
+  blockquote:has(strong:first-child) {
+    /* Default styling from above */
+  }
+
+  /* Tables */
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 14px 0;
+    font-size: 14px;
+  }
+  th {
+    background: var(--teal);
+    color: #fff;
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 13px;
+  }
+  td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tr:nth-child(even) td { background: #f8f9fa; }
+  tr:hover td { background: var(--teal-light); }
+
+  /* Strikethrough rows (resolved items) */
+  del { color: #999; }
+  tr:has(del) td { background: var(--resolved-bg) !important; color: #888; }
+
+  /* Lists */
+  ul, ol { margin: 8px 0 8px 24px; }
+  li { margin: 4px 0; }
+
+  /* Code / role badges */
+  code {
+    background: #eef;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 13px;
+    font-family: 'Consolas', 'Courier New', monospace;
+  }
+  .role-badge {
+    display: inline-block;
+    color: #fff;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    vertical-align: middle;
+  }
+
+  /* Links */
+  a { color: var(--teal); }
+  a:hover { color: #145f54; }
+
+  /* Strong in specific contexts */
+  strong { color: #2c3e50; }
+
+  /* Print styles */
+  @media print {
+    #sidebar-toc { display: none; }
+    #content { margin-left: 0; max-width: 100%; padding: 20px; }
+    h2 { page-break-before: auto; }
+    table { font-size: 11px; }
+    a { color: inherit; text-decoration: none; }
+    a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 10px; color: #888; }
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    #sidebar-toc { width: 220px; }
+    #content { margin-left: 220px; padding: 24px; }
+  }
+
+  /* Last updated banner */
+  .meta-banner {
+    background: var(--teal-light);
+    border: 1px solid #c8e6df;
+    border-radius: 6px;
+    padding: 10px 16px;
+    margin-bottom: 24px;
+    font-size: 13px;
+    color: #555;
+  }
+</style>
+</head>
+<body>
+
+<nav id="sidebar-toc">
+<div class="toc-header">Table of Contents</div>
+<div class="toc-body">
+  <a href="#open-items-summary" class="toc-h2">Open Items Summary</a>
+  <a href="#overview" class="toc-h2">Overview</a>
+  <a href="#key-systems-and-tools" class="toc-h3">Key Systems and Tools</a>
+  <a href="#division-of-responsibilities" class="toc-h3">Division of Responsibilities</a>
+  <a href="#workflow-summary-age-eligible-children-31-months" class="toc-h3">Workflow Summary: Age-Eligible Children (&lt;=31 months)</a>
+  <a href="#status-definitions" class="toc-h2">Status Definitions</a>
+  <a href="#contact-status" class="toc-h3">Contact Status</a>
+  <a href="#program-status" class="toc-h3">Program Status</a>
+  <a href="#reporting-considerations-for-program-status" class="toc-h3">Reporting Considerations for Program Status</a>
+  <a href="#participation-in-qs-ns-services" class="toc-h2">Participation in QS NS Services</a>
+  <a href="#parent-coaching-program" class="toc-h3">Parent Coaching Program</a>
+  <a href="#esdm-program" class="toc-h3">ESDM Program</a>
+  <a href="#community-outreach" class="toc-h2">Community Outreach</a>
+  <a href="#outreach-documentation" class="toc-h3">Outreach Documentation</a>
+  <a href="#common-referral-sources" class="toc-h3">Common Referral Sources</a>
+  <a href="#supervisor-expectations" class="toc-h3">Supervisor Expectations</a>
+  <a href="#section-1-initial-data-entry" class="toc-h2">Section 1: Initial Data Entry</a>
+  <a href="#step-1a-check-existing-client-status" class="toc-h3">Step 1A: Check Existing Client Status</a>
+  <a href="#step-1b-complete-general-client-profile" class="toc-h3">Step 1B: Complete General Client Profile</a>
+  <a href="#section-2-send-receipt-of-referral-confirmation" class="toc-h2">Section 2: Send Receipt of Referral Confirmation</a>
+  <a href="#section-3-assessment-of-quickstart-candidacy" class="toc-h2">Section 3: Assessment of QuickStart Candidacy</a>
+  <a href="#step-3a-determine-if-qs-assessment-of-candidacy-is-needed" class="toc-h3">Step 3A: Determine if QS Assessment of Candidacy is Needed</a>
+  <a href="#step-3b-conduct-qs-assessment-of-candidacy" class="toc-h3">Step 3B: Conduct QS Assessment of Candidacy</a>
+  <a href="#section-35-review-of-waitlist-provisional-cases" class="toc-h2">Section 3.5: Review of Waitlist Provisional Cases</a>
+  <a href="#when-does-this-apply" class="toc-h3">When Does This Apply?</a>
+  <a href="#what-happens" class="toc-h3">What Happens?</a>
+  <a href="#qs-clinical-team-review-process" class="toc-h3">QS Clinical Team Review Process</a>
+  <a href="#cicc-follow-up-actions" class="toc-h3">CICC Follow-Up Actions</a>
+  <a href="#section-4-schedule-meeting-with-resource-coordinator" class="toc-h2">Section 4: Schedule Meeting with Resource Coordinator</a>
+  <a href="#section-5-screening-process-undiagnosed-children" class="toc-h2">Section 5: Screening Process (Undiagnosed Children)</a>
+  <a href="#section-6-informed-choice-discussion" class="toc-h2">Section 6: Informed Choice Discussion</a>
+  <a href="#step-6a-share-program-information" class="toc-h3">Step 6A: Share Program Information</a>
+  <a href="#step-6b-obtain-decision" class="toc-h3">Step 6B: Obtain Decision</a>
+  <a href="#section-7-review-remaining-eligibility-criteria--additional-screeners" class="toc-h2">Section 7: Review Remaining Eligibility Criteria &amp; Additional Screeners</a>
+  <a href="#1-availability-of-primary-participating-caregiver" class="toc-h3">1. Availability of Primary Participating Caregiver</a>
+  <a href="#2-availability-during-program-hours" class="toc-h3">2. Availability During Program Hours</a>
+  <a href="#3-language" class="toc-h3">3. Language</a>
+  <a href="#4-location" class="toc-h3">4. Location</a>
+  <a href="#section-8-final-documentation-and-handoff" class="toc-h2">Section 8: Final Documentation and Handoff</a>
+  <a href="#section-9-qs-receipt-of-service-match--follow-up" class="toc-h2">Section 9: QS Receipt of Service Match &amp; Follow-Up</a>
+  <a href="#step-9a-monitor-for-greenspace-notifications" class="toc-h3">Step 9A: Monitor for Greenspace Notifications</a>
+  <a href="#step-9b-review-childs-greenspace-profile" class="toc-h3">Step 9B: Review Child's Greenspace Profile</a>
+  <a href="#step-9c-add-to-participation-info-sheet" class="toc-h3">Step 9C: Add to Participation Info Sheet</a>
+  <a href="#step-9d-contact-family-to-schedule-intro-meeting" class="toc-h3">Step 9D: Contact Family to Schedule Intro Meeting</a>
+  <a href="#updating-sharevision" class="toc-h3">Updating ShareVision</a>
+  <a href="#section-10-completion-of-qs-intro-meeting" class="toc-h2">Section 10: Completion of QS Intro Meeting</a>
+  <a href="#email-templates" class="toc-h2">Email Templates</a>
+  <a href="#email-template-1-initial-contact--intro-meeting-options" class="toc-h3">Email Template 1: Initial Contact / Intro Meeting Options</a>
+  <a href="#email-template-2-intro-meeting-confirmation" class="toc-h3">Email Template 2: Intro Meeting Confirmation</a>
+  <a href="#email-template-3-calendar-event-body" class="toc-h3">Email Template 3: Calendar Event Body</a>
+  <a href="#email-template-4-reminder-email" class="toc-h3">Email Template 4: Reminder Email</a>
+  <a href="#archive-process-launch-sept-24---oct-22-2025" class="toc-h2">Archive: Process Launch (Sept 24 - Oct 22, 2025)</a>
+  <a href="#receipt-and-transfer-of-referrals-to-cicc-transition-period" class="toc-h3">Receipt and Transfer of Referrals to CICC (Transition Period)</a>
+  <a href="#consent-withdrawal-handling-transition-period" class="toc-h3">Consent Withdrawal Handling (Transition Period)</a>
+</div>
+</nav>
+
+
+<main id="content">
+<h1 id="service-match--quickstart-intro-meeting">Service Match &amp; QuickStart Intro Meeting</h1>
+<blockquote>
+<p><strong>Formerly:</strong> "Referral and Intake"<br />
+<strong>Last updated:</strong> March 13, 2026<br />
+<strong>Context:</strong> Following integration with the Provincial Preschool Autism Service's Clinical Intake and Care Coordination (CICC) team, the majority of referral and intake steps (Sections 1-8) are now performed by CICC. The QuickStart (QS) team's direct involvement begins primarily at Section 9, with ongoing responsibility for maintaining and monitoring the Capacity Sharing Excel Sheet throughout.</p>
+</blockquote>
+<hr />
+<hr />
+<h2 id="open-items-summary">Open Items Summary</h2>
+<p>The following open questions and TODOs are collected from throughout this document. Each also appears inline where it is contextually relevant.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Section</th>
+<th>Item</th>
+<th>Owner</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>3.5</td>
+<td>Add an indicator around how to update QS participation info sheets for ESDM candidacy</td>
+<td>--</td>
+</tr>
+<tr>
+<td>2</td>
+<td>7</td>
+<td>Greenspace fixed-option question for "Availability of Primary Participating Caregiver" needs to be revised/consolidated</td>
+<td>--</td>
+</tr>
+<tr>
+<td>3</td>
+<td>7</td>
+<td>Identify specific sections of QS NS Service Profile to highlight for each eligibility criterion (caregiver availability, program hours, language, location)</td>
+<td>--</td>
+</tr>
+<tr>
+<td>4</td>
+<td>7</td>
+<td>Confirm: should language field be added to Greenspace?</td>
+<td>--</td>
+</tr>
+<tr>
+<td>5</td>
+<td>9B</td>
+<td>Should admins check feasibility of in-person sessions at this point, or during the intro call?</td>
+<td>Connor</td>
+</tr>
+<tr>
+<td>6</td>
+<td>9B</td>
+<td>Should RC remove Greenspace data fields (age based on referral date, earliest available start date, cohort assignment, age at projected start) when family declines?</td>
+<td>Bethany</td>
+</tr>
+<tr>
+<td>~~7~~</td>
+<td>~~10~~</td>
+<td>~~Intro meeting timing — resolved: 4-6 weeks before cohort start, ideal 6 weeks. See Step 9D.~~</td>
+<td>~~resolved~~</td>
+</tr>
+<tr>
+<td>8</td>
+<td>10</td>
+<td>Possibility of gathering child-specific milestone info closer to start date via forms, and/or having the PC/team lead gather it?</td>
+<td>--</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Community Outreach</td>
+<td>Verify and update outreach document links post-CICC integration; review document content to reflect new referral pathway (referral to PPAS, not directly to QS)</td>
+<td>--</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Status Definitions</td>
+<td>Review whether additional program status values are needed for ESDM-specific pathways (e.g. ESDM Waitlist vs. PC Waitlist distinction in the participation info sheet)</td>
+<td>--</td>
+</tr>
+<tr>
+<td>11</td>
+<td>9D</td>
+<td>3-attempt contact policy documented (email-first, 2-day waits, escalation to referral source). Remaining: confirm whether "Unable to Contact" should trigger release of the cohort opening and/or formal notification to CICC</td>
+<td>Connor</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="overview">Overview</h2>
+<p>This guide outlines the integrated service match and intro meeting processes between QuickStart Nova Scotia (QSNS) and the Provincial Preschool Autism Service's Clinical Intake and Care Coordination (CICC) team.</p>
+<p><strong>Important Context:</strong> CICC is the single point of entry for ALL Provincial Preschool Autism Services (PPAS), not just QuickStart. Referrals may come for various reasons (diagnostics, general services, etc.), but CICC should assess QuickStart eligibility for all age-appropriate children.</p>
+<p><strong>Integration Soft Launch Date:</strong> September 24, 2025<br />
+<strong>Transition Period:</strong> Approximately 1 month (see <a href="#archive-process-launch-sept-24---oct-22-2025">Archive</a>)</p>
+<h3 id="key-systems-and-tools">Key Systems and Tools</h3>
+<p><strong>1. Greenspace Database</strong><br />
+- Primary client information system<br />
+- Stores demographic, clinical, and program status data</p>
+<p><strong>2. Capacity Sharing Excel Sheet</strong><br />
+- Located in shared SharePoint folder<br />
+- Live tracking of program status and cohort assignments<br />
+- Zone-specific tabs with color coding:<br />
+  - GREEN: Next available general enrollment spot<br />
+  - ORANGE: HELD spot (for aging-out cases)<br />
+  - RED: Child over 31 months at start</p>
+<p><strong>3. Communication Channels</strong><br />
+- Referrals via: Fax, email, or phone<br />
+- Follow-up within 72 hours for paper referrals</p>
+<h3 id="division-of-responsibilities">Division of Responsibilities</h3>
+<p><strong>CICC Admin (Intake Admin) completes:</strong><br />
+- Sections 1-4: Initial data entry, zone determination, age-based triage<br />
+- Schedules meeting between family and Resource Coordinator</p>
+<p><strong>Resource Coordinator completes:</strong><br />
+- Sections 5-8: Screening, informed choice, additional assessments, final documentation</p>
+<p><strong>QS Team direct involvement:</strong><br />
+- General maintenance and monitoring of the Capacity Sharing Excel Sheet (ongoing, throughout Sections 1-8)<br />
+- Section 3.5: Review of waitlist provisional cases (QS Clinical Team / Zone Supervisor)<br />
+- Section 9 onward: Receipt of service match, follow-up with family, scheduling and completing intro meeting</p>
+<h3 id="workflow-summary-age-eligible-children-31-months">Workflow Summary: Age-Eligible Children (&lt;=31 months)</h3>
+<p><strong>CICC Admin:</strong><br />
+1. Receive Referral (any PPAS service)<br />
+2. Check existing client (1A)<br />
+3. Complete general profile (1B)<br />
+4. Send receipt confirmation (2)<br />
+5. Age check: &lt;=31 months? (3A) --&gt; YES<br />
+6. Zone determination &amp; Capacity sheet triage (3B)<br />
+7. Complete QS fields in Greenspace (3C)<br />
+8. Schedule RC meeting (4)</p>
+<p><strong>Resource Coordinator:</strong><br />
+9. Screening if needed (Section 5)<br />
+10. Informed choice discussion (Section 6)<br />
+11. Additional screening factors (Section 7)<br />
+12. Final documentation (Section 8)</p>
+<p><strong>QS Admin / Supervisor (Section 9+):</strong><br />
+13. Receive service match notification<br />
+14. Review Greenspace profile<br />
+15. Add to Participation Info Sheet<br />
+16. Contact family to schedule intro meeting<br />
+17. Complete intro meeting</p>
+<hr />
+<h2 id="status-definitions">Status Definitions</h2>
+<blockquote>
+<p><strong>Source:</strong> QS Supervisor Manual + QSIS application (updated to reflect CICC integration and current terminology). Historically tracked on per-zone Participation Info Excel sheets; being transitioned into QSIS.</p>
+</blockquote>
+<p>Throughout the service match and program participation process, each family's progression is tracked using two summative categories:</p>
+<ul>
+<li><strong>Contact Status</strong> indicates the most recent contact or communication completed in response to a received service match (formerly "referral"). Updated by the QS Admin as contact attempts and scheduling progress.</li>
+<li><strong>Program Status</strong> indicates the determination or current progression of a family's participation in a respective program within the umbrella of QuickStart NS Services. There is a separate program status for each program (PC, ESDM, Behaviour Support, Sleep Support).</li>
+</ul>
+<h3 id="contact-status">Contact Status</h3>
+<table>
+<thead>
+<tr>
+<th>Designation</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Assigned from Greenspace</strong></td>
+<td>QS Admin has received the service match notification from CICC, reviewed the child's Greenspace profile, and added the child to the participation info sheet. This is the initial contact status when no operational flags were noticed.</td>
+</tr>
+<tr>
+<td><strong>Op. Considerations — Supervisor Review</strong></td>
+<td>Initial status when operational flags were noticed during Greenspace review (Step 9B). QS Admin does not immediately contact the family; instead flags the zone supervisor to review before proceeding.</td>
+</tr>
+<tr>
+<td><strong>1st Attempted Contact</strong></td>
+<td>First attempt to reach the family to schedule the QS Intro Meeting.</td>
+</tr>
+<tr>
+<td><strong>2nd Attempted Contact</strong></td>
+<td>Second attempt to reach the family.</td>
+</tr>
+<tr>
+<td><strong>3rd Attempted Contact</strong></td>
+<td>Third and final attempt to reach the family. If no response after 3rd attempt, status moves to "Unable to Contact."</td>
+</tr>
+<tr>
+<td><strong>QS Intro Scheduled</strong></td>
+<td>QS Intro Meeting has been scheduled with the family.</td>
+</tr>
+<tr>
+<td><strong>QS Intro Complete</strong></td>
+<td>QS Intro Meeting has been completed.</td>
+</tr>
+<tr>
+<td><strong>QS Intro Rescheduled</strong></td>
+<td>A previously scheduled intro meeting was rescheduled.</td>
+</tr>
+<tr>
+<td><strong>S1-4 Confirmation Sent</strong></td>
+<td>Confirmation email sent to the family with finalized team assignment and S1-4 schedule. This is the terminal contact status for families proceeding into the program.</td>
+</tr>
+<tr>
+<td><strong>Unable to Contact</strong></td>
+<td>Family could not be reached after 3 contact attempts. Supervisor and/or manager to be notified.</td>
+</tr>
+</tbody>
+</table>
+<p><em>Note: Historical contact statuses from the pre-CICC process (e.g. "Confirmation of referral sent", "Ineligibility email sent", "ESDM Wait List email sent", "Referral scheduled", "Referral complete") are no longer used. These functions are now handled by CICC during Sections 1-8.</em></p>
+<h3 id="program-status">Program Status</h3>
+<p>These designations apply to each program independently (a family may be "Active" in PC and "Waitlist" for ESDM simultaneously).</p>
+<table>
+<thead>
+<tr>
+<th>Designation</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Candidate</strong></td>
+<td>Meets program eligibility criteria, but either: (a) it is undetermined whether available openings exist before the child ages out, or (b) only age-based eligibility has been confirmed so far (other criteria remain to be assessed by CICC/RC). This is the initial Greenspace status set by CICC during capacity sheet triage.</td>
+</tr>
+<tr>
+<td><strong>Waitlist Provisional</strong></td>
+<td>Meets age-based eligibility criteria but no general or held opening is available before turning 32 months. QS Clinical Team is reviewing for operationally workable alternatives. Set by CICC Admin during capacity sheet triage (Section 3B, Scenario E).</td>
+</tr>
+<tr>
+<td><strong>Waitlist Confirmed</strong></td>
+<td>QS Clinical Team has reviewed the waitlist provisional case and determined that no workable alternative arrangements exist. Child remains on the waitlist in case openings become available before they age out. Referral-order priority applies.</td>
+</tr>
+<tr>
+<td><strong>Eligible</strong></td>
+<td>Meets all program eligibility criteria and has been assigned a guaranteed opening for program participation (cohort and start date confirmed). For waitlist cases, this means the QS Clinical Team found a workable arrangement.</td>
+</tr>
+<tr>
+<td><strong>Ineligible</strong></td>
+<td>Does not meet program eligibility criteria. Reasons include: child does not screen in on MCHAT, family declines participation, child has aged out (32+ months at next available start), or other eligibility criteria not met. Reason should be documented.</td>
+</tr>
+<tr>
+<td><strong>Active</strong></td>
+<td>Currently participating in the program. For PC: status changes to Active when the family completes Session 1 (or as early as when S1-4 confirmation emails are sent).</td>
+</tr>
+<tr>
+<td><strong>Completed</strong></td>
+<td>Successfully completed participation in the program. For PC: when a family completes Session 17 (S18-S19 are follow-up sessions, not counted toward completion).</td>
+</tr>
+<tr>
+<td><strong>Discontinued</strong></td>
+<td>Started but did not complete participation in the program. Includes families who withdrew or were discharged due to lack of attendance after starting sessions. See reporting considerations below.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="reporting-considerations-for-program-status">Reporting Considerations for Program Status</h3>
+<p>The following nuances affect how program status changes are recorded for reporting purposes:</p>
+<p><strong>Discontinued — timing matters for reporting:</strong></p>
+<ul>
+<li>If a family withdraws during or before the intro meeting and there IS sufficient time to find a replacement (e.g. &gt;1 week before cohort start): status may be changed to Discontinued, but no cohort is assigned. This withdrawal is not counted toward reporting metrics.</li>
+<li>If there is NOT sufficient time to find a replacement (e.g. &lt;1 week before cohort start): the family is considered Discontinued with the cohort assigned, and is counted toward reporting.</li>
+<li>If a family has started the program (attended S1 or more) and withdraws or is discharged: status is changed to Discontinued and the cohort number remains for reporting.</li>
+</ul>
+<p><strong>Ineligible — common scenarios:</strong></p>
+<ul>
+<li>Child does not screen in on the MCHAT (during RC screening, Section 5)</li>
+<li>Family chooses not to participate after informed choice discussion (Section 6)</li>
+<li>Child ages out (reaches 32 months with no available opening and no waitlist resolution)</li>
+</ul>
+<blockquote>
+<p><strong>TODO:</strong> Review whether additional program status values are needed for ESDM-specific pathways (e.g. ESDM Waitlist vs. PC Waitlist distinction in the participation info sheet).</p>
+</blockquote>
+<hr />
+<h2 id="participation-in-qs-ns-services">Participation in QS NS Services</h2>
+<blockquote>
+<p><strong>Source:</strong> QS Supervisor Manual + QSIS application (Program Management view). Capacity figures derived from QSIS formulas with confirmation from QS Manager, March 2026.</p>
+</blockquote>
+<p>Within QuickStart Nova Scotia's umbrella of services, the Parent Coaching program is the main offered service with the largest total capacity. The ESDM Program is a supportive service to help team members in learning ESDM, and as such is subject to significantly more limited capacities. Participation in QuickStart NS Services entails participation in either the Parent Coaching Program or the ESDM Program.</p>
+<p>From an operational perspective, participation is determined by (firstly) reviewing eligibility for the Parent Coach Program and (secondarily) reviewing eligibility for the ESDM Program.</p>
+<h3 id="parent-coaching-program">Parent Coaching Program</h3>
+<p>Participation is primarily determined on a "first-come, first-serve" basis, in accordance with the date of the received referral.</p>
+<p><strong>Cohort structure:</strong> Organized into cohorts that occur roughly monthly, with 10 total cohorts over the course of a calendar year.</p>
+<p><em>Reasoning for 10 yearly cohorts (instead of 12):</em><br />
+- No cohort is scheduled to start within the month of December<br />
+- Over the course of a calendar year, it is anticipated that vacations and other unexpected delays (e.g. staff/family illness) amount in the loss of time/capacity for roughly 1 additional cohort</p>
+<p><strong>Capacity and cohort sizing:</strong></p>
+<p>Capacity is derived from the number of active Parent Coach FTE in each zone, multiplied by the zone's caseload rate, minus a 0.5 buffer per PC headcount. This produces the formal mandate (yearly families served), which is distributed evenly across 10 cohorts.</p>
+<table>
+<thead>
+<tr>
+<th>Zone</th>
+<th>Active PC FTE</th>
+<th>Caseload Rate</th>
+<th>Op. Max</th>
+<th>Mandate</th>
+<th>Cohort Distribution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Central</strong></td>
+<td>6.5 (incl. Senior PC at 0.5)</td>
+<td>15.5/PC/yr</td>
+<td>100</td>
+<td>95</td>
+<td>10 cohorts of 10</td>
+</tr>
+<tr>
+<td><strong>Eastern</strong></td>
+<td>3</td>
+<td>12.5/PC/yr</td>
+<td>37.5</td>
+<td>36</td>
+<td>6 cohorts of 4 + 4 cohorts of 3</td>
+</tr>
+<tr>
+<td><strong>Western</strong></td>
+<td>3</td>
+<td>12.5/PC/yr</td>
+<td>37.5</td>
+<td>36</td>
+<td>6 cohorts of 4 + 4 cohorts of 3</td>
+</tr>
+<tr>
+<td><strong>Northern</strong></td>
+<td>2</td>
+<td>12.5/PC/yr</td>
+<td>25</td>
+<td>24</td>
+<td>4 cohorts of 3 + 6 cohorts of 2</td>
+</tr>
+</tbody>
+</table>
+<p><em>Formulas: Operational Maximum = Active PC FTE x zone caseload rate. Mandate = Op. Max - (0.5 x PC headcount). These are configurable in QSIS Program Management and auto-adjust when staffing changes.</em></p>
+<p><em>Sequencing of cohort sizes (which cohorts are larger vs. smaller) is flexible to meet fluctuations in demand, capacity (e.g. reduced team / staff in training), and balancing of caseloads.</em></p>
+<p><strong>Opening assignment — general vs. held:</strong></p>
+<p>Within each cohort, the majority of openings are assigned on a "first-come, first-serve" basis. A portion of openings are designated as <strong>HELD</strong> to provide flexibility in accommodating received referrals where a child may be nearing 31 months of age and where no openings are available before the child would surpass 31 months.</p>
+<p>Typical HELD openings per cohort: Central ~2 per cohort, Provincial zones 0-2 per cohort depending on cohort size.</p>
+<p>Process for assigning held openings:</p>
+<ol>
+<li>Assign to the NEXT child (by order of received referral) who would otherwise be age-ineligible for the PC program if they don't participate in that cohort</li>
+<li>If no children are currently in that circumstance, continue to hold the opening in that cohort in the event of a subsequent referral meeting that criterion</li>
+<li>Once it is time to move ahead with intro meetings (~6 weeks prior) for the cohort and the held opening has not been filled, contact the next child on the list (in order of received referral) to inquire if they would like to take that spot and start earlier — continue until the spot is filled</li>
+</ol>
+<p><strong>Average waiting times:</strong></p>
+<p>The Parent Coaching Program aims to maintain an average waiting time of no longer than 2-3 months between the date when it is determined that a child meets the eligibility requirements (during the referral meeting) and the earliest available starting date.</p>
+<p>With this goal:<br />
+- All children who meet eligibility requirements and are <strong>no older than 29 months</strong> at the time of the referral meeting should ideally be provided with a guaranteed opportunity to participate (i.e. a projected cohort assignment)<br />
+- For children who meet eligibility requirements and are <strong>between 30-31 months</strong>, the aim is to provide as many as possible with a guaranteed opportunity. The withheld openings are designated for this purpose. Even with this measure, there may be children in this category where it is not possible to provide a guaranteed opportunity — in these instances, the child would be placed on a <strong>"Wait List"</strong> for the PC program, in the event that a child with a projected cohort assignment withdraws. Wait List children are contacted on a "first-come, first-serve" basis (date of received referral).</p>
+<h3 id="esdm-program">ESDM Program</h3>
+<p>Also primarily determined on a "first-come, first-serve" basis in accordance with the date of the received referral.</p>
+<p>The ESDM program is subject to more limited capacities compared to the Parent Coaching Program, and it is anticipated that it will not be possible to offer participation to all referred families who meet eligibility requirements. This is not a main service and is used to support the team in learning ESDM.</p>
+<p><strong>Yearly capacities:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Zone</th>
+<th>ESDM/PC/Year</th>
+<th>Caseload Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Central</strong></td>
+<td>1</td>
+<td>Trial: 1 fewer ESDM, 2 more PC due to shorter travel distances</td>
+</tr>
+<tr>
+<td><strong>Eastern</strong></td>
+<td>2</td>
+<td>Standard non-central rate</td>
+</tr>
+<tr>
+<td><strong>Western</strong></td>
+<td>2</td>
+<td>Standard non-central rate</td>
+</tr>
+<tr>
+<td><strong>Northern</strong></td>
+<td>2</td>
+<td>Standard non-central rate</td>
+</tr>
+</tbody>
+</table>
+<p><em>ESDM slot equivalency: 1 ESDM family = 2 PC "slots".</em></p>
+<p>Supervisors, SLPs, and OTs are assigned ESDM Program participants as needed for acquisition and maintenance of ESDM Fidelity.</p>
+<p><strong>Organization of ESDM capacity — Central:</strong></p>
+<p>Participation is sub-divided based on the earliest available opening within age brackets:<br />
+- Children 30-34 months (ineligible for PC based on earliest possible starting time): 4 spots yearly<br />
+- Children 35-39 months: 4 spots yearly<br />
+- Children 40-45 months: 4 spots yearly</p>
+<p>Target onboarding rate: ~1 ESDM family monthly (across the whole Central team). Monthly openings alternate between each of the 3 age brackets (e.g., August: 30-34mo, September: 35-39mo, October: 40-45mo, November: 30-34mo, etc.).</p>
+<p><em>Refer to ESDM Program - Waitlist for more background on this selection process.</em></p>
+<p><strong>Organization of ESDM capacity — Provincial (Eastern / Western / Northern):</strong></p>
+<p>Participation is fully determined on a "first-come, first-serve" basis. Unlike Central, age brackets are not applied at this time. Target onboarding rate: 4-6 ESDM families yearly per zone, 2 ESDM families yearly per Parent Coach.</p>
+<hr />
+<h2 id="community-outreach">Community Outreach</h2>
+<blockquote>
+<p><strong>Source:</strong> QS Supervisor Manual (adapted). Updated to reflect CICC integration — referrals now go to Provincial Preschool Autism Services (PPAS), not directly to QuickStart. CICC handles intake and service matching; families are matched to QS through that process.</p>
+</blockquote>
+<p>Community outreach remains a pivotal component in ensuring accurate information is available and reaching individuals in Nova Scotia who may benefit from QuickStart Nova Scotia's services. Following the CICC integration, the outreach goal is to ensure that community partners and common referral sources are aware of QS NS Services within the broader PPAS umbrella, and that families have the awareness and support needed to place an initial referral to PPAS (through which CICC would assess QuickStart eligibility and service match).</p>
+<h3 id="outreach-documentation">Outreach Documentation</h3>
+<p>The following documentation may be utilized as part of community outreach to parents/caregivers and/or other professionals and service providers in Nova Scotia, to increase knowledge and awareness of QuickStart NS Services.</p>
+<p><strong>General Information on QuickStart NS Services</strong> <em>(default documentation for community outreach):</em></p>
+<blockquote>
+<p><strong>OPEN ITEM:</strong> Links below need to be verified and updated post-CICC integration. Some documents may need content updates to reflect the new referral pathway (referral to PPAS rather than directly to QS).</p>
+</blockquote>
+<ul>
+<li>QuickStart NS Brochure</li>
+<li>FAQ from Community Professionals and Services</li>
+<li>Information on Additional QuickStart Services</li>
+<li>Information on Provincial Expansion</li>
+<li>QSNS Expansion PP Public (presentation)</li>
+</ul>
+<p><strong>Detailed Information on QuickStart NS Parent Coaching Program:</strong><br />
+- <a href="https://autismnovascotia.sharepoint.com/:b:/s/ASDParent-MediatedCoaching/EdzGL8DBYPVNlF_WhDC4MHoB6EGq-ZifkSvyBa45y39tvg?e=CHr7zc">QSNS-Timeline of Sessions.pdf</a><br />
+- QSNS-Parent Mediated Coaching for Autism.pdf</p>
+<p><strong>Detailed Information on QuickStart NS ESDM Program:</strong><br />
+- <a href="https://autismnovascotia.sharepoint.com/:b:/s/ASDParent-MediatedCoaching/EdVdqye80oZDnJeUDZQH5_0BLm1qGzNz06eCvCXd0QXf1Q?e=uh4smo">ESDM - Timeline of Sessions.pdf</a><br />
+- <a href="https://autismnovascotia.sharepoint.com/:b:/s/ASDParent-MediatedCoaching/Ed1H6d4JZS9MoYtUkISRK8MBXlBnWoHl4d3zAVkCkUKL9Q?e=hOH1BX">ESDM Intervention - Parent Guide.pdf</a></p>
+<p><strong>NOTE:</strong> The general information on QS NS Services is the default documentation utilized for community outreach. The more detailed program-specific information is primarily intended for in-depth review with possible or eligible participants during the service match and intro meeting process. In certain instances involving community outreach where more information is requested about one or both programs, this more detailed information may be utilized as well.</p>
+<h3 id="common-referral-sources">Common Referral Sources</h3>
+<p>The following include some of the most common sources of referrals to Provincial Preschool Autism Services (which may result in a service match to QuickStart NS):</p>
+<ul>
+<li><strong>Self-referrals</strong> from a parent/caregiver: heard about services from a past participant, found information on Autism Nova Scotia's website, found information on other social media</li>
+<li><strong>Hearing and Speech Nova Scotia</strong></li>
+<li><strong>Nova Scotia Early Childhood Development Intervention Services</strong></li>
+<li><strong>IWK Children's Hospital:</strong> Developmental Pediatricians (Perinatal team, IWK Diagnostics), Infant and Preschool Rehabilitation team</li>
+<li><strong>Family Doctors / Pediatricians</strong></li>
+</ul>
+<h3 id="supervisor-expectations">Supervisor Expectations</h3>
+<p><strong>Community outreach:</strong></p>
+<p>It is the responsibility of the QuickStart NS Supervisor for each zone to ensure that community outreach has occurred and is maintained over time with the relevant professionals and services in that zone who are also working with children and families that could potentially benefit from QuickStart NS Services. This may include a combination of distribution of the FAQ and other general information sheets as well as direct presentation to other professionals and services in the community.</p>
+<p><strong>Monitoring volume of service matches:</strong></p>
+<p>Through community outreach, it is the responsibility of the supervisor to facilitate that a sufficient number of families are being referred to PPAS (and subsequently service-matched to QuickStart NS) to continue to fill the capacities for the programs being offered. The supervisor should continue to monitor and be aware of the volume of received service matches at any given time — a lower volume or decrease in service matches may indicate the need to re-initiate or increase community outreach.</p>
+<hr />
+<h2 id="section-1-initial-data-entry">Section 1: Initial Data Entry</h2>
+<blockquote>
+<p><strong>Responsible:</strong> <span class="role-badge" style="background:#c0392b">CICC Admin</span></p>
+</blockquote>
+<h3 id="step-1a-check-existing-client-status">Step 1A: Check Existing Client Status</h3>
+<ol>
+<li>Verify if client already exists in Greenspace</li>
+<li>Update existing profile OR create new client entry</li>
+<li>Confirm diagnostic status (diagnosed/undiagnosed)</li>
+<li>For undiagnosed: Verify MCHAT-R/F completion status</li>
+</ol>
+<hr />
+<h3 id="step-1b-complete-general-client-profile">Step 1B: Complete General Client Profile</h3>
+<p><strong>General Information:</strong><br />
+- HCN and expiry date<br />
+- IWK K number<br />
+- Child's name (first, last, preferred, initial)<br />
+- Date of birth<br />
+- Gender and pronouns<br />
+- Complete address<br />
+- Nearest hospital<br />
+- Family physician name<br />
+- Speech Language Pathologist<br />
+- Born in NS? (Yes/No)<br />
+- Source of referral</p>
+<p><strong>Contact Information:</strong><br />
+- Primary parent/guardian (name, relationship, phone, email)<br />
+- Secondary parent/guardian (name, relationship, phone, email)</p>
+<p><strong>Clinical Intake:</strong><br />
+- Date of referral to PPAS</p>
+<hr />
+<h2 id="section-2-send-receipt-of-referral-confirmation">Section 2: Send Receipt of Referral Confirmation</h2>
+<blockquote>
+<p><strong>Responsible:</strong> <span class="role-badge" style="background:#c0392b">CICC Admin</span><br />
+<strong>Timeline:</strong> Within 72 hours of receiving referral (for paper referrals)</p>
+</blockquote>
+<p><strong>Purpose:</strong> Acknowledge receipt (NOT a status determination)</p>
+<p><strong>Action:</strong> Send confirmation email to referral source</p>
+<hr />
+<h2 id="section-3-assessment-of-quickstart-candidacy">Section 3: Assessment of QuickStart Candidacy</h2>
+<blockquote>
+<p><strong>Responsible:</strong> <span class="role-badge" style="background:#c0392b">CICC Admin</span></p>
+</blockquote>
+<h3 id="step-3a-determine-if-qs-assessment-of-candidacy-is-needed">Step 3A: Determine if QS Assessment of Candidacy is Needed</h3>
+<p><strong>Decision Point:</strong> Is the child currently &lt;=31 months old?<br />
+- <strong>YES</strong> --&gt; Proceed to Step 3B<br />
+- <strong>NO</strong> --&gt; Skip to general non-QuickStart processes</p>
+<hr />
+<h3 id="step-3b-conduct-qs-assessment-of-candidacy">Step 3B: Conduct QS Assessment of Candidacy</h3>
+<p><em>(If child &lt;=31 months)</em></p>
+<p><strong>Part 1: Determine Zone</strong> (<span class="role-badge" style="background:#c0392b">CICC Admin</span>)</p>
+<p>Based on family address from Step 1B, identify service zone:</p>
+<table>
+<thead>
+<tr>
+<th>Zone</th>
+<th>Coverage Area</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Central</strong></td>
+<td>Halifax Regional Municipality, Eastern Shore, West Hants</td>
+</tr>
+<tr>
+<td><strong>Eastern</strong></td>
+<td>Cape Breton, Antigonish, Guysborough</td>
+</tr>
+<tr>
+<td><strong>Northern</strong></td>
+<td>Colchester, Cumberland, Pictou</td>
+</tr>
+<tr>
+<td><strong>Western</strong></td>
+<td>Annapolis Valley, South Shore, Yarmouth</td>
+</tr>
+</tbody>
+</table>
+<p><em>Verify using <a href="https://www.nshealth.ca/about-nova-scotia-health/management-zones">NS Health Management Zones Map</a> if needed.</em></p>
+<p><strong>Part 2: Complete Age-Based Triage Using Capacity Sharing Sheet</strong> (<span class="role-badge" style="background:#c0392b">CICC Admin</span>, <span class="role-badge" style="background:#d35400">QS Clinical Team</span> for waitlist provisional cases)</p>
+<p>The CICC Admin opens the <a href="https://autismnovascotia.sharepoint.com/:x:/s/QuickStartSupervisors/EcSguQT3-WZLt3VsPpIArOsBDeByvlBBiT67egmO0Bg57Q?e=jbeB0V">Capacity Sharing Sheet</a> in Excel Online (recommended over desktop to avoid version conflicts and accidental sheet locking). Full step-by-step instructions are maintained in the <a href="https://autismnovascotia.sharepoint.com/:x:/s/QuickStartSupervisors/EcSguQT3-WZLt3VsPpIArOsBDeByvlBBiT67egmO0Bg57Q?e=ItdCy3&amp;nav=MTVfezc4QzdDOEI3LTdCMEQtNEM2My04MkJCLUZENTQyQzhFRkM0Qn0">Guidelines tab</a> of the workbook. Summary of the procedure:</p>
+<p><strong>A)</strong> Navigate to the appropriate zone tab (Central, Eastern, Western, or Northern).</p>
+<blockquote>
+<p><strong>Western Zone only:</strong> Before proceeding, use the dropdown in cell D2 (highlighted yellow) to select the correct sub-region (Southwest, South Shore, or Annapolis Valley).</p>
+</blockquote>
+<p><strong>B)</strong> Locate the GREEN highlighted row — this is the next available opening for general enrollment.</p>
+<p><strong>C)</strong> Enter the child's initials in Column E and date of birth in Column F.</p>
+<p>Child initials convention: first two letters of first name / first two letters of last name / zone initial. Example: "Jacob Wallace" in Central → <strong>JaWa-C</strong>. Date of birth: use the date selector popup when available; if entering manually, use MM/DD/YYYY format exactly.</p>
+<p><strong>D)</strong> Check Column H (child's age at the cohort start date):</p>
+<ul>
+<li><strong>Scenario 1 — No red in Column H:</strong> Child fits in this opening. Keep child in this row, mark "Candidate" as Parent Coach Status in Greenspace, continue with RC scheduling.</li>
+<li><strong>Scenario 2 — Red in Column H:</strong> Child will be over 31 months at this cohort's start date. Copy the child's acronym and DOB from columns E &amp; F, paste into the next closest ORANGE (HELD) row upward. Delete from the original row. Check Column H again in the new row. Repeat upward through HELD openings until finding one with no red (child will still be under 32 months).</li>
+</ul>
+<p><strong>E)</strong> If no HELD opening works (all ORANGE rows still show red in Column H):</p>
+<ol>
+<li>Remove the child's initials and DOB from the capacity sheet (important — do not leave them in a non-viable row)</li>
+<li>Copy the child's information to the "Waitlist Provisional" tab (follow instructions at top of that tab)</li>
+<li>Mark "Waitlist Provisional" in Greenspace</li>
+<li>Continue with RC scheduling (do not pause — the RC call still occurs)</li>
+</ol>
+<p><em>After this point, the QS Clinical Team reviews waitlist provisional cases per Section 3.5.</em></p>
+<p><strong>Sheet protection note:</strong> The capacity sharing sheet is protected in all areas except Columns E, F, and I of each zone tab. This prevents accidental changes to formulas and conditional formatting. If changes beyond those columns are required, contact CICC or QS Manager.</p>
+<hr />
+<h2 id="section-35-review-of-waitlist-provisional-cases">Section 3.5: Review of Waitlist Provisional Cases</h2>
+<blockquote>
+<p><strong>Responsible:</strong> <span class="role-badge" style="background:#d35400">QS Clinical Team</span> (Zone Supervisor, with Director/Manager support as needed)</p>
+</blockquote>
+<h3 id="when-does-this-apply">When Does This Apply?</h3>
+<p>When a child has no general enrollment or held opening available before turning 32 months of age.</p>
+<h3 id="what-happens">What Happens?</h3>
+<p>CICC Admin adds the child to the <a href="https://autismnovascotia.sharepoint.com/:x:/s/QuickStartSupervisors/EcSguQT3-WZLt3VsPpIArOsBDeByvlBBiT67egmO0Bg57Q?e=efgf6u&amp;nav=MTVfezlDOTk4NEFELTNDOUEtNDRDRS1CMThCLUNCOTI1OUI3MDAzOH0">waitlist provisional tab</a> (per Section 2E in the <a href="https://autismnovascotia.sharepoint.com/:x:/s/QuickStartSupervisors/EcSguQT3-WZLt3VsPpIArOsBDeByvlBBiT67egmO0Bg57Q?e=ysfoa8&amp;nav=MTVfezc4QzdDOEI3LTdCMEQtNEM2My04MkJCLUZENTQyQzhFRkM0Qn0">guidelines tab</a>) while QS Clinical team reviews for operational flexibility that may allow program participation.</p>
+<p><strong>Why review at this stage?</strong> Advanced awareness allows the QS team to anticipate time-sensitive arrangements that may be less feasible if flagged only after service matching.</p>
+<h3 id="qs-clinical-team-review-process">QS Clinical Team Review Process</h3>
+<p><strong>Notification method:</strong> Daily email at 7:00 AM lists changes to capacity sharing sheets, including new waitlist provisional cases.</p>
+<p><strong>Available information at this stage:</strong><br />
+- Child acronym, zone, date of birth only (family has not yet consented to information sharing)<br />
+- Full Greenspace profile becomes available after RC meeting if family is a service match</p>
+<p><strong>Steps:</strong></p>
+<ol>
+<li><strong>Monitor</strong> the waitlist provisional tab for children in your zone(s)</li>
+<li><strong>Assess</strong> if workable operational arrangements exist to allow participation before 32 months</li>
+<li><strong>Plan (optional):</strong></li>
+<li>Use hidden columns A-D for preliminary mapping (cohort #, start time, notes). <em>Remember to re-hide when done.</em></li>
+<li>If considering an available/unfilled opening already on the zone's tab, put <strong>HOLD</strong> in the "CHILD acronym" column for that opening so it doesn't get filled while you consolidate your review of workable alternatives.</li>
+<li><strong>Document</strong> your consolidated decision in Column I (all cases) &amp; zone tab (if opening was found):</li>
+</ol>
+<p><strong>If opening identified:</strong></p>
+<blockquote>
+<p>Reviewed by [supervisor name] - proceed with parent coach status as "candidate". Added to [ZONE TAB - cohort &amp; opening #]</p>
+<p><em>Then add child's acronym and DOB to the identified opening in the zone tab.</em></p>
+</blockquote>
+<p><strong>If no opening identified:</strong></p>
+<blockquote>
+<p>Reviewed by [supervisor name] - no openings identified, proceed with parent coach status as "waitlist confirmed".</p>
+</blockquote>
+<h3 id="cicc-follow-up-actions">CICC Follow-Up Actions</h3>
+<p><strong>Before RC call:</strong> RC checks Column I for additional notes when preparing for families with "waitlist provisional" status.</p>
+<p><strong>During RC call:</strong> RC discusses QS based on:<br />
+- <strong>Notes present:</strong> Updated parent coach status from additional notes<br />
+- <strong>No notes present:</strong> Waitlist status (QS team hasn't completed review yet)</p>
+<p><strong>After RC call:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Outcome</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Service match to QS</strong></td>
+<td>RC proceeds per Sections 4+ guidelines</td>
+</tr>
+<tr>
+<td><strong>Not a service match</strong></td>
+<td>RC deletes child from waitlist provisional tab</td>
+</tr>
+</tbody>
+</table>
+<p><em>Deletion serves as communication to QS team that RC call occurred and child was not a service match (since ineligible children don't appear in QS Greenspace clinic).</em></p>
+<blockquote>
+<p><strong>OPEN ITEM:</strong> Add an indicator around how to update QS participation info sheets for ESDM candidacy.</p>
+</blockquote>
+<hr />
+<h2 id="section-4-schedule-meeting-with-resource-coordinator">Section 4: Schedule Meeting with Resource Coordinator</h2>
+<blockquote>
+<p><strong>Responsible:</strong> <span class="role-badge" style="background:#8e44ad">Resource Coordinator</span> <em>(after CICC Admin completes Section 1)</em><br />
+<strong>Timeframe:</strong> Within 1 week of the received referral</p>
+</blockquote>
+<p>All families referred to PPAS will have a call scheduled with a CICC Resource Coordinator regardless of whether QuickStart is a consideration.</p>
+<p>In instances where a child referred to PPAS has the status of "candidate" or "waitlist confirmed/provisional" for QuickStart based on the completed steps in Section 3, the RC will include consideration of QuickStart as a potential service option within PPAS during their scheduled call with the family (specifically following steps in Sections 5-8).</p>
+<hr />
+<h2 id="section-5-screening-process-undiagnosed-children">Section 5: Screening Process (Undiagnosed Children)</h2>
+<blockquote>
+<p><strong>Responsible:</strong> <span class="role-badge" style="background:#8e44ad">Resource Coordinator</span><br />
+<strong>Timeframe:</strong> Within 2 weeks of the received referral</p>
+</blockquote>
+<p>RC will complete screening with family for all undiagnosed children UNLESS an MCHAT-R/F was completed and submitted as part of the referral.</p>
+<p><strong>If Child Screens OUT:</strong><br />
+1. Remove from capacity sharing sheet<br />
+2. Update Greenspace:<br />
+   - Add screening note<br />
+   - Parent Coaching Status = "Ineligible"<br />
+   - Remove cohort assignment and start date<br />
+3. Send letter to referral source (cc family)<br />
+4. Provide information on other available services and option to call back after 6 months</p>
+<p><strong>If Child Screens IN:</strong><br />
+1. Add "Suspected Autism" tag<br />
+2. Request consent for diagnostic waitlist<br />
+3. Proceed to Section 6</p>
+<hr />
+<h2 id="section-6-informed-choice-discussion">Section 6: Informed Choice Discussion</h2>
+<blockquote>
+<p><strong>Responsible:</strong> <span class="role-badge" style="background:#8e44ad">Resource Coordinator</span></p>
+</blockquote>
+<h3 id="step-6a-share-program-information">Step 6A: Share Program Information</h3>
+<p>Review QuickStart NS Service Profile with caregivers, explaining:<br />
+- Goals of service<br />
+- Duration and hours<br />
+- Program structure<br />
+- Parent/caregiver requirements<br />
+- Start date based on cohort</p>
+<h3 id="step-6b-obtain-decision">Step 6B: Obtain Decision</h3>
+<p><strong>If YES (Family Accepts):</strong><br />
+- Update Parent Coaching Status = "Eligible"<br />
+- Add Date of Referral to QuickStart (acceptance date)<br />
+- Proceed to Section 7</p>
+<p><strong>If NO (Family Declines):</strong><br />
+- Update Greenspace: Program Status = "Ineligible"<br />
+- Remove from capacity sharing sheet<br />
+- Open spot for next referral</p>
+<blockquote>
+<p><strong>OPEN ITEM:</strong> Should RC remove the following data from Greenspace when family declines? (Bethany)<br />
+- Age based on referral date (months) - <em>from Capacity Sheet</em><br />
+- Earliest Available Start Date - <em>from Capacity Sheet</em><br />
+- Parent Coaching Cohort Assignment - <em>from Capacity Sheet</em><br />
+- Child's age at projected start date - <em>from Capacity Sheet</em></p>
+</blockquote>
+<hr />
+<h2 id="section-7-review-remaining-eligibility-criteria--additional-screeners">Section 7: Review Remaining Eligibility Criteria &amp; Additional Screeners</h2>
+<blockquote>
+<p><strong>Responsible:</strong> <span class="role-badge" style="background:#8e44ad">Resource Coordinator</span></p>
+</blockquote>
+<h3 id="1-availability-of-primary-participating-caregiver">1. Availability of Primary Participating Caregiver</h3>
+<ul>
+<li>Information should have been discussed within review of QS NS Service Profile</li>
+<li>Confirm that the same (primary) caregiver can attend all 19 sessions based on the available starting date and in alignment with the typical timeline of sessions (with specific attention to the roughly 4-month period of once weekly sessions)</li>
+<li><strong>Key question:</strong> Are they anticipating any extended vacation/periods of unavailability (&gt;2 weeks) during the 4-month period of once-weekly sessions?</li>
+<li>Document in Greenspace:</li>
+<li>Complete fixed-option question in "QuickStart Nova Scotia" section of Greenspace</li>
+<li>As relevant, add details in "notes" on issues identified and/or any expected absences &gt;2 weeks</li>
+<li><strong>NOTE:</strong> The QS NS clinical team will refer to the recorded information following the handoff and make any required determinations if/how it may affect program participation.</li>
+</ul>
+<blockquote>
+<p><strong>OPEN ITEM:</strong> Greenspace fixed-option question for this criterion needs to be revised/consolidated.</p>
+<p><strong>OPEN ITEM:</strong> Identify specific sections of QS NS Service Profile to highlight for each eligibility criterion.</p>
+</blockquote>
+<h3 id="2-availability-during-program-hours">2. Availability During Program Hours</h3>
+<ul>
+<li>Confirm availability during QuickStart NS hours of operation</li>
+<li>Document in Greenspace:</li>
+<li>Complete fixed-option question in "QuickStart Nova Scotia" section</li>
+<li>As relevant, add details in "notes" on issues re: availability during hours of operation</li>
+<li><strong>NOTE:</strong> QS NS clinical team will refer to recorded information following handoff.</li>
+</ul>
+<h3 id="3-language">3. Language</h3>
+<ul>
+<li>Confirm workability of English as primary language of instruction</li>
+<li>Document in Greenspace:</li>
+<li>Complete fixed-option question in "QuickStart Nova Scotia" section</li>
+<li>As relevant, add details in "notes" on limitations of English as primary language</li>
+<li><strong>NOTE:</strong> QS NS clinical team will refer to recorded information following handoff.</li>
+</ul>
+<blockquote>
+<p><strong>OPEN ITEM:</strong> Language field would need to be added to Greenspace.</p>
+</blockquote>
+<h3 id="4-location">4. Location</h3>
+<ul>
+<li>Review 3 typical options for session location: Virtual, Office, or Home (if within 1.5hr driving radius)</li>
+<li><strong>Including CLEAR review of disclaimer:</strong> preferred options for session location cannot be guaranteed and are subject to operational confirmation by QS team</li>
+<li>Document in Greenspace:</li>
+<li>Complete fixed-option field for family preference on location of sessions</li>
+<li>As relevant, add details in "notes" on issues/concerns/limitations (e.g. transportation, connectivity)</li>
+<li><strong>NOTE:</strong> QS NS clinical team will refer to recorded information following handoff.</li>
+</ul>
+<hr />
+<h2 id="section-8-final-documentation-and-handoff">Section 8: Final Documentation and Handoff</h2>
+<blockquote>
+<p><strong>Responsible:</strong> <span class="role-badge" style="background:#8e44ad">Resource Coordinator</span></p>
+</blockquote>
+<p>Upon completion of Sections 5-7:</p>
+<ol>
+<li><strong>Update Greenspace:</strong></li>
+<li>Add QSNS Waitlist tag</li>
+<li>Manage Providers --&gt; Add QSNS Waitlist</li>
+<li>
+<p>Add any additional screening notes</p>
+</li>
+<li>
+<p><strong>Confirm Capacity Sheet:</strong></p>
+</li>
+<li>Verify all information is complete</li>
+<li>
+<p>Ensure cohort assignment is accurate</p>
+</li>
+<li>
+<p><strong>Send Follow-up Email to Family:</strong></p>
+</li>
+<li>Summary of meeting and service match</li>
+<li>Next steps and timeline</li>
+<li>
+<p>CC QuickStart NS clinical team for handoff</p>
+</li>
+<li>
+<p><strong>Flag QuickStart NS Clinical Team (automated):</strong></p>
+</li>
+<li>Generic email (quickStart@autismns.ca) is included in Greenspace</li>
+<li>NOTE: email can be changed to any generic address (does not need to be quickstart@autismns.ca)</li>
+<li>Once RC adds a client to QuickStart within Greenspace, an email notification will automatically be sent to that address</li>
+</ol>
+<hr />
+<h2 id="section-9-qs-receipt-of-service-match--follow-up">Section 9: QS Receipt of Service Match &amp; Follow-Up</h2>
+<blockquote>
+<p><strong>Responsible:</strong> <span class="role-badge" style="background:#2980b9">QS Admin</span><br />
+<strong>Timeframe:</strong> As soon as possible following service match (realistically 24-72 hours until point of attempting 1st QS contact)</p>
+</blockquote>
+<h3 id="step-9a-monitor-for-greenspace-notifications">Step 9A: Monitor for Greenspace Notifications</h3>
+<p>Monitor quickstart@autismns.ca for Greenspace notifications of service matches.</p>
+<p><strong>Monitoring frequency:</strong> Ideally checked daily on working days. In practice, checking every second working day (e.g. Monday-Wednesday-Friday) has proven sufficient based on typical volume of incoming service matches.</p>
+<p><strong>How the email will appear:</strong><br />
+- Title: "the IWK autism portal" -- New client shared with you<br />
+- The included link grants access to sign into the IWK autism portal with Greenspace and brings you to the profile of the newly added child/client</p>
+<h3 id="step-9b-review-childs-greenspace-profile">Step 9B: Review Child's Greenspace Profile</h3>
+<p>Navigate to "Profile", then to the "QuickStart Nova Scotia" list area (clickable within the right-hand menu):</p>
+<ol>
+<li><strong>Review cohort assignment fields:</strong> earliest available starting date, cohort number, age at start of cohort starting date -- <strong>ensure this information matches where the child has been entered in the Capacity Sharing Tool</strong></li>
+<li><strong>Review fixed fields</strong> pertaining to operational considerations (the yes/no questions):</li>
+<li><strong>No operational flags:</strong> If answers to the yes/no questions are all standard (no issues identified), this does NOT indicate operational considerations needing supervisor review</li>
+<li><strong>Operational flags:</strong> If any answers are opposite to standard, this DOES indicate possible operational considerations needing supervisor review</li>
+<li>Whether or not (but especially if) there are operational flags, <strong>navigate to the "notes" section</strong> and review the "intake" note for additional descriptive details from the RC's conversation with the family</li>
+<li><strong>Check for the MCHAT score</strong> -- if the MCHAT score is 2 or below, connect with QuickStart NS Manager</li>
+</ol>
+<blockquote>
+<p><strong>OPEN ITEM:</strong> Should admins check feasibility of in-person sessions at this point, or during the intro meeting? (Connor)</p>
+</blockquote>
+<h3 id="step-9c-add-to-participation-info-sheet">Step 9C: Add to Participation Info Sheet</h3>
+<p>Navigate to the Participation Info Excel workbook for the appropriate zone, then to the "Referral and Eligibility" tab:</p>
+<ol>
+<li>Add the cohort # in Column A</li>
+<li>Add the child's initial in Column B</li>
+<li>Add the appropriate status in Column C</li>
+</ol>
+<p><strong>Status Designations for Column C:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Status</th>
+<th>Description</th>
+<th>When Used</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Assigned from Greenspace</strong></td>
+<td>QS admin has received the service match notification, reviewed Greenspace profile, and added child to participation info sheet</td>
+<td>Initial status when <strong>no operational flags</strong> were noticed. QS Admin proceeds with contacting family to schedule intro meeting.</td>
+</tr>
+<tr>
+<td><strong>Operational considerations - supervisor review required</strong></td>
+<td>--</td>
+<td>Initial status when <strong>operational flags were noticed</strong>. QS Admin does NOT immediately contact family to schedule intro meeting; instead flags the zone supervisor (via comment in Excel) to review.</td>
+</tr>
+<tr>
+<td><strong>1st attempted contact</strong></td>
+<td>--</td>
+<td>As per previous processes</td>
+</tr>
+<tr>
+<td><strong>2nd attempted contact</strong></td>
+<td>--</td>
+<td>As per previous processes</td>
+</tr>
+<tr>
+<td><strong>3rd attempted contact</strong></td>
+<td>--</td>
+<td>As per previous processes</td>
+</tr>
+<tr>
+<td><strong>Intro meeting scheduled</strong></td>
+<td>--</td>
+<td>--</td>
+</tr>
+<tr>
+<td><strong>Intro meeting complete</strong></td>
+<td>--</td>
+<td>--</td>
+</tr>
+<tr>
+<td><strong>Intro meeting rescheduled</strong></td>
+<td>--</td>
+<td>--</td>
+</tr>
+<tr>
+<td><strong>Notified - unable to contact</strong></td>
+<td>--</td>
+<td>--</td>
+</tr>
+</tbody>
+</table>
+<h3 id="step-9d-contact-family-to-schedule-intro-meeting">Step 9D: Contact Family to Schedule Intro Meeting</h3>
+<p><strong>Initial contact method:</strong> Email (see <a href="#email-template-1-initial-contact--intro-meeting-options">Email Template 1: Initial Contact</a>). Email is sent within 72 hours of receiving the service match. Email typically has a high response rate.</p>
+<p><strong>If no response within 2 business days:</strong> Follow up by phone. If unable to reach by phone, continue following the 3-attempt contact policy (update contact status in the participation info sheet after each attempt).</p>
+<p><strong>3-Attempt Contact Policy:</strong></p>
+<ol>
+<li><strong>1st Attempted Contact</strong> — initial email sent to family with intro meeting options (see <a href="#email-template-1-initial-contact--intro-meeting-options">Email Template 1</a>). Wait at least 2 business days for a response.</li>
+<li><strong>2nd Attempted Contact</strong> — follow-up phone call. If no answer, leave a voicemail. If no phone number available, send a follow-up email. Wait at least 2 business days.</li>
+<li><strong>3rd Attempted Contact</strong> — final phone call. If no answer:</li>
+<li>Follow up with CICC / the referring source to notify them that the family could not be reached</li>
+<li>Send a final email to the family indicating QS will no longer be reaching out, and to contact QS if they are still interested</li>
+<li>Update contact status to "Unable to Contact" and notify the zone supervisor</li>
+</ol>
+<p>Within the participation info sheet, add a short record of all contact attempts (call or email, with dates) as a comment/note within the cell containing that child's initials.</p>
+<blockquote>
+<p><strong>NOTE:</strong> The historical contact policy was phone-first (reflecting direct referrals). Current practice following CICC integration is email-first, as the initial email (Template 1) typically has a high response rate and families have already spoken with the CICC Resource Coordinator. The 2-business-day wait and 3-attempt structure remain the same.</p>
+<p><strong>TODO:</strong> Confirm whether "Unable to Contact" should trigger release of the cohort opening and/or notification to CICC (beyond notifying the referring source).</p>
+</blockquote>
+<p><strong>Intro meeting timing:</strong> Aim to schedule intro meetings within a window of 4-6 weeks before the cohort start date. Ideal is 6 weeks out; 5 weeks is fine; 4 weeks is acceptable if necessary. Meeting duration: 1.5 hours has consistently proven sufficient (reduced from the original 2-hour estimate).</p>
+<p><strong>Scheduling considerations (QS Admin reviews supervisor calendar):</strong></p>
+<ul>
+<li>Generally 1 intro meeting per day per supervisor is a comfortable rate. 2 per day can work; 3 is pushing it but may be done when a cohort needs to be finalized quickly.</li>
+<li>Check the supervisor's calendar for travel days or out-of-office sessions — avoid scheduling intro meetings on those days.</li>
+<li>Leave buffer time around intro meeting slots — avoid scheduling immediately adjacent to other events in the supervisor's calendar, especially events that require the supervisor to be out of office (travel time needs to be factored in).</li>
+</ul>
+<p><strong>Upon scheduling:</strong></p>
+<ul>
+<li>Send confirmation email with attachments (see <a href="#email-template-2-intro-meeting-confirmation">Email Template 2: Intro Meeting Confirmation</a>)</li>
+<li>Create an Outlook calendar event on the relevant supervisor's calendar and add the caregiver as an attendee (see <a href="#email-template-3-calendar-event-body">Email Template 3: Calendar Event</a>)</li>
+<li>Set a reminder email to be sent to the family 2-3 days before the meeting (see <a href="#email-template-4-reminder-email">Email Template 4: Reminder</a>)</li>
+</ul>
+<h3 id="updating-sharevision">Updating ShareVision</h3>
+<p><strong>In instances where operational considerations require supervisor contact with family:</strong><br />
+- Supervisor to confirm/schedule the intro meeting time with the family as part of the call<br />
+- Supervisor to add to QS Admin planner:<br />
+  - Sending the confirmation email for the scheduled intro meeting<br />
+  - Creating basic SV profile</p>
+<p><strong>Initial transfer of info from Greenspace to Participation Info sheet</strong> culminates in scheduling the QS intro meeting.</p>
+<p><strong>1st instance of needing to utilize ShareVision</strong> (requires going back into Greenspace):</p>
+<p><em>When:</em> Around the same time and/or shortly after scheduling the intro meeting with the family.</p>
+<p>Create a basic SV profile:<br />
+- <strong>Child profile:</strong> Name, Address, Contact info, Diagnostic status<br />
+- <strong>Fact sheet:</strong> Date of birth, Age, Gender pronouns</p>
+<p><strong>Important note on timing:</strong> Currently, given waiting times, there will be a long pause between the initial service match and the QS intro meeting. As a result, following the service match there is minimal value in transferring over anything beyond the basic info needed to complete determination of eligibility, scheduling of the QS intro meeting, and creation of the basic ShareVision profile. All other more detailed information may change or need updating by the time of the actual QS intro meeting (which at this point in all zones is multiple months out).</p>
+<hr />
+<h2 id="section-10-completion-of-qs-intro-meeting">Section 10: Completion of QS Intro Meeting</h2>
+<blockquote>
+<p><strong>Responsible:</strong> <span class="role-badge" style="background:#27ae60">QS Supervisor</span></p>
+<p>~~<strong>RESOLVED:</strong> Intro meeting timing confirmed as 4-6 weeks before cohort start (ideal: 6 weeks). See Step 9D scheduling guidance.~~</p>
+<p><strong>OPEN ITEM:</strong> Possibility of gathering child-specific milestone info closer to start date via forms, and/or having the Parent Coach / team lead gather it?</p>
+</blockquote>
+<p><strong>Prior to the QS intro call:</strong></p>
+<p>Supervisors to fully review all sections of child's Greenspace (IWK Autism Portal) profile:<br />
+- Notes (including any available information re: completion of the M-CHAT)<br />
+- Child profile</p>
+<p><strong>During / immediately following the QS intro call</strong> (completed by Supervisor):<br />
+- Community partners and programs<br />
+- Safety checklist if needed<br />
+- QuickStart Intro meeting information<br />
+- Intro meeting notes</p>
+<p><strong>After completing cohort scheduling</strong> (completed by Supervisor or QS Admin, depending on cohort scheduling practices):<br />
+- QuickStart Team field in SV</p>
+<p><strong>Following intro meeting, supervisor to complete:</strong><br />
+- Upload all intro meeting notes<br />
+- Community/partners information<br />
+- Update participant info sheet</p>
+<hr />
+<h2 id="email-templates">Email Templates</h2>
+<blockquote>
+<p>The following email templates are utilized as part of the processes for following up on received service matches from CICC. Refer to <a href="#step-9d-contact-family-to-schedule-intro-meeting">Step 9D</a> for the sequence in which these are sent.</p>
+<p><strong>Usage note:</strong> Template 1 is sent when the additional screeners indicated the child was fully eligible. This email can be sent without needing to connect with the supervisor.</p>
+</blockquote>
+<h3 id="email-template-1-initial-contact--intro-meeting-options">Email Template 1: Initial Contact / Intro Meeting Options</h3>
+<p><strong>Subject:</strong> QuickStart NS – Intro Meeting Options</p>
+<blockquote>
+<p>Hi [Caregiver's Name],</p>
+<p>My name is [Your Name], and I'm the Administrative Support for the QuickStart Nova Scotia program at Autism Nova Scotia. QuickStart NS is part of the Provincial Preschool Autism Service (PPAS).</p>
+<p>I'm reaching out to confirm that we've received your match to QuickStart NS from the PPAS Clinical Intake and Care Coordination team. You've been assigned to begin with our team in [Month, Year].</p>
+<p>To get started, we'd like to schedule your intro meeting with [Supervisor], the [Zone Name] Zone Supervisor. During this meeting, you'll review some forms and assessments before officially starting the program. You can choose to have the meeting by phone or Zoom—whichever is more convenient for you.</p>
+<p>The meeting will take about 1.5 hours, and your child, [Child's Name], does not need to be present, as it will be a discussion-based meeting.</p>
+<p>Here are some available times for your Intro Meeting:<br />
+- [Date/Time]<br />
+- [Date/Time]<br />
+- [Date/Time]</p>
+<p>Please let me know which option works best for you. If none of these times fit your schedule, I'd be happy to find another time that does.</p>
+<p>Thank you so much, and I look forward to hearing from you!</p>
+<p>[Your Name]<br />
+Administrative Support, QuickStart NS</p>
+</blockquote>
+<h3 id="email-template-2-intro-meeting-confirmation">Email Template 2: Intro Meeting Confirmation</h3>
+<p><strong>Subject:</strong> QuickStart NS – Intro Meeting Confirmation</p>
+<blockquote>
+<p>Hi [Caregiver's Name],</p>
+<p>Thank you for getting back to me! Your intro meeting has been scheduled for [date] at [time] via [phone/Zoom] with [Supervisor's Name] from the [Zone Name] Zone.</p>
+<p>Attached, you'll find the documents we'll go over together during the meeting:<br />
+- Timeline of Sessions<br />
+- Parent-Mediated Coaching for Autism<br />
+- Consent Forms:<br />
+  - Participation and Confidentiality Agreement<br />
+  - Video Consent<br />
+  - Consent To Release and Share<br />
+- How to Use Zoom</p>
+<p>These forms are fillable on a laptop or desktop computer. If you are comfortable completing them ahead of time, that will be helpful but not required.</p>
+<p>If you have any questions before we meet, please don't hesitate to reach out. In the meantime, I have also included a list of other community resources that you may find helpful:</p>
+<ul>
+<li><a href="https://helpisinyourhands.org/">Help is in your Hands</a> — A free website with 4 web-based video modules to help parents &amp; caregivers add simple intervention practices to their everyday routines at home.</li>
+<li><a href="https://www.iwk.nshealth.ca/mental-health/autism-education-series">IWK Autism Education Series</a> — Short educational videos on how to support your child with suspected or diagnosed autism in their daily routines.</li>
+<li><a href="https://autismnavigator.com/courses/">Autism Navigator Courses</a> — Includes a freely accessible course called "About Autism in Toddlers", which may be of interest if you would like more information on autism in toddlers &amp; what some of the early indicators of autism may look like.</li>
+</ul>
+<p>Looking forward to connecting soon,</p>
+<p>[Your Name]<br />
+Administrative Support, QuickStart NS</p>
+</blockquote>
+<h3 id="email-template-3-calendar-event-body">Email Template 3: Calendar Event Body</h3>
+<p><em>Used when adding the caregiver to the Outlook calendar event for the confirmed intro meeting.</em></p>
+<blockquote>
+<p>Hello [Caregiver's Name],</p>
+<p>This calendar invitation is to confirm your QuickStart NS Intro Meeting scheduled for:</p>
+<p>[Date, time and supervisor name]</p>
+<p>This meeting will take approximately 1.5 hours and is discussion-based. Your child does not need to be present.</p>
+<p>During the meeting, you will review consent forms and complete a brief discussion-based assessment to help us prepare for the start of the program.</p>
+<p>If you have any questions before the meeting, please feel free to reach out.</p>
+<p>We look forward to connecting with you.</p>
+</blockquote>
+<h3 id="email-template-4-reminder-email">Email Template 4: Reminder Email</h3>
+<p><em>Sent 2-3 days before the scheduled intro meeting.</em></p>
+<blockquote>
+<p>Hello [NAME],</p>
+<p>This is a reminder of your Intro Meeting scheduled with [Supervisor Name] on [DATE/TIME]. Please see the previous email for meeting details.</p>
+<p>Thanks,</p>
+<p>[Your Name]<br />
+Administrative Support, QuickStart NS</p>
+</blockquote>
+<hr />
+<h2 id="archive-process-launch-sept-24---oct-22-2025">Archive: Process Launch (Sept 24 - Oct 22, 2025)</h2>
+<blockquote>
+<p><strong>STATUS: HISTORICAL / COMPLETED</strong> -- This section documents the transitional process used during the initial integration launch period. It is retained for reference only and is no longer active.</p>
+</blockquote>
+<h3 id="receipt-and-transfer-of-referrals-to-cicc-transition-period">Receipt and Transfer of Referrals to CICC (Transition Period)</h3>
+<p><strong>Responsible:</strong> <span class="role-badge" style="background:#2980b9">QS Admin</span></p>
+<p>The following outlines the steps that were required for receipt and transfer of referrals to CICC only during the process launch phase of intake integration (starting September 24, 2025), and only pertaining to received referrals where the child was under 32 months of age.</p>
+<p><strong>What remained the same during transition:</strong><br />
+- QuickStart continued to receive referrals directly through the referral form on the QuickStart website (Microsoft Form that auto-populates an <a href="https://autismnovascotia.sharepoint.com/:x:/s/ASDParent-MediatedCoaching/EcCSBtgQsENLrwfgZ3CvhdABuRYbmqvxXFJ7GhIPx0glow?e=kVAWrY">Excel sheet</a>)<br />
+- Referral Excel sheet checked twice daily on all working days (start of day and mid-day)<br />
+- Double-submission process unchanged: second referral not processed unless differing information; connect with QS NS Manager if needed</p>
+<p><strong>What changed (processing received referrals):</strong><br />
+- No longer sending an email to families regarding receiving their referral (CICC handles this)<br />
+- New referrals processed one at a time, oldest to newest, with the following steps per referral:<br />
+  1. Copy the full row from the Excel sheet and paste into the <a href="https://connorbraystone.github.io/QuickStartTools/QS%20referral%20formatting%20tool.htm">QuickStart NS Referral Information Formatter</a><br />
+  2. Click "Convert to Document"<br />
+  3. Verify accuracy of converted document<br />
+  4. Save as PDF: naming convention "QuickStart NS Referral CHILD ACRONYM"<br />
+  5. Open <a href="https://sfts1.gov.ns.ca/human.aspx?OrgID=3408&amp;Arg12=message&amp;Arg06=285451175&amp;Arg08=ytartgfdbpg4dk00">IWK's secure email client (MOVEit)</a><br />
+  6. Click "Go to Mailbox", then "Send Package"<br />
+  7. Compose email:<br />
+     - To: referrals-preschoolautism@iwk.nshealth.ca<br />
+     - Subject: QuickStart NS Referral CHILD ACRONYM<br />
+     - Body: "Hello, Please find the attached referral"<br />
+  8. Attach the PDF and send<br />
+  9. <strong>Delete the PDF from your computer after sending</strong><br />
+  10. On the <a href="https://autismnovascotia.sharepoint.com/:x:/s/ASDParent-MediatedCoaching/EcCSBtgQsENLrwfgZ3CvhdABuRYbmqvxXFJ7GhIPx0glow?e=kVAWrY">ANS referral form Excel sheet</a>, put the date you sent the email to CICC in row AG</p>
+<p><strong>NOTE:</strong> Children age-ineligible for parent coaching but still under 45 months (e.g. ESDM program waitlist) continued as usual -- add to "Referral and Eligibility" tab. The "Referral and Eligibility" tab was generally no longer used for children under 32 months, but for children 32 months and over, processes continued as usual starting with that tab.</p>
+<h3 id="consent-withdrawal-handling-transition-period">Consent Withdrawal Handling (Transition Period)</h3>
+<p><strong>If referral form was submitted without consent to transfer to CICC:</strong><br />
+- Admins to track forms submitted but not completed due to withdrawal of consent<br />
+- If contact information was provided:<br />
+  - Follow up within 24 hours to complete the QS NS Referral form word document with them<br />
+  - Connect with QS NS Supervisor in the zone pertaining to the child; Supervisor to connect with CICC team to arrange cohort assignment</p>
+<p><strong>If phone call received from family inquiring about referring to QuickStart:</strong><br />
+- Ask: "Did you complete or try to complete the referral form on our website?"<br />
+- If yes: "Did the referral form ask you to call us directly?"<br />
+  - If yes: confirm withdrawal of consent with IWK and CICC team<br />
+  - If they confirmed they did not want to consent: complete the QS NS Referral form word document with them; connect with zone Supervisor who connects with CICC for cohort assignment<br />
+- If no: redirect to complete the referral form</p>
+</main>
+
+<script>
+// Scroll spy for sidebar highlighting
+(function() {
+  const headings = document.querySelectorAll('h2[id], h3[id]');
+  const links = document.querySelectorAll('#sidebar-toc .toc-body a');
+
+  function updateActive() {
+    let current = '';
+    headings.forEach(h => {
+      if (h.getBoundingClientRect().top <= 80) current = h.id;
+    });
+    links.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+    });
+  }
+
+  window.addEventListener('scroll', updateActive);
+  updateActive();
+
+  // Smooth scroll
+  links.forEach(a => {
+    a.addEventListener('click', function(e) {
+      e.preventDefault();
+      const target = document.getElementById(this.getAttribute('href').slice(1));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+})();
+</script>
+</body>
+</html>
