@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ABC Flowchart — QuickStart NS</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; background: #f3f4f6; color: #212121; min-height: 100vh; }
+
+  .header { background: #008a98; color: #fff; padding: 14px 24px; display: flex; align-items: center; gap: 14px; }
+  .header h1 { font-size: 18px; font-weight: 700; }
+  .header .subtitle { font-size: 12px; opacity: 0.8; margin-top: 2px; }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 24px; }
+
+  .info-banner { background: #f0fdfa; border: 1px solid #99f6e4; border-radius: 8px; padding: 14px 18px; margin-bottom: 20px; font-size: 13px; color: #0f766e; line-height: 1.6; }
+  .info-banner strong { color: #115e59; }
+
+  .child-info { background: #fff; border-radius: 8px; border: 1px solid #e5e7eb; padding: 16px 20px; margin-bottom: 20px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+  .child-info label { font-size: 12px; font-weight: 600; color: #6b7280; display: block; margin-bottom: 4px; }
+  .child-info input { padding: 6px 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 13px; font-family: inherit; width: 180px; }
+
+  .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .btn { padding: 8px 18px; font-size: 13px; font-weight: 600; border: none; border-radius: 6px; cursor: pointer; font-family: inherit; transition: opacity 0.12s; }
+  .btn:hover { opacity: 0.85; }
+  .btn-primary { background: #008a98; color: #fff; }
+  .btn-outline { background: #fff; color: #374151; border: 1px solid #d1d5db; }
+  .btn-danger { background: #dc2626; color: #fff; font-size: 12px; padding: 6px 14px; }
+  .btn-print { background: #0f766e; color: #fff; }
+
+  .card { background: #fff; border-radius: 8px; border: 1px solid #e5e7eb; padding: 20px; margin-bottom: 12px; }
+  .collapsed { background: #fff; border-radius: 8px; border: 1px solid #e5e7eb; padding: 12px 16px; margin-bottom: 8px; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: border-color 0.12s; }
+  .collapsed:hover { border-color: #008a98; }
+
+  .field-label { font-size: 12px; font-weight: 600; color: #374151; display: block; margin-bottom: 4px; }
+  input.field, textarea.field {
+    width: 100%; padding: 8px 10px; border: 1px solid #d1d5db; border-radius: 6px;
+    font-size: 12px; font-family: inherit; resize: vertical; background: #fff;
+  }
+  input.field:focus, textarea.field:focus { outline: none; border-color: #008a98; box-shadow: 0 0 0 2px rgba(0,138,152,0.15); }
+
+  .chip { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+
+  /* ABC Grid */
+  .abc-grid { display: grid; grid-template-columns: 1fr 24px 1fr 24px 1fr; gap: 0; align-items: stretch; }
+  .abc-headers { display: grid; grid-template-columns: 1fr 24px 1fr 24px 1fr; gap: 0; margin-bottom: 6px; }
+  .abc-header { text-align: center; font-size: 12px; font-weight: 700; color: #374151; letter-spacing: 1px; text-transform: uppercase; }
+
+  .abc-antecedent {
+    grid-column: 1; grid-row: 1 / 4;
+    padding: 14px; background: #eff6ff; border-radius: 8px; border: 2px solid #93c5fd;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .arrow { display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; }
+  .abc-cell { padding: 10px; border-radius: 8px; border: 2px solid; }
+
+  .abc-cell.red { background: #fee2e2; border-color: #fca5a5; }
+  .abc-cell.orange { background: #fff7ed; border-color: #fdba74; }
+  .abc-cell.green { background: #dcfce7; border-color: #86efac; }
+
+  .row-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .row-label.red { color: #dc2626; }
+  .row-label.orange { color: #d97706; }
+  .row-label.green { color: #16a34a; }
+
+  .helper-text { font-size: 9px; color: #9ca3af; font-style: italic; margin-top: 2px; line-height: 1.4; }
+  .sub-label { font-size: 10px; font-weight: 600; display: block; margin-bottom: 2px; }
+  .sub-label.blue { color: #2563eb; }
+  .sub-label.amber { color: #d97706; }
+  .sub-label.red { color: #dc2626; }
+  .sub-label.orange { color: #d97706; }
+  .sub-label.green { color: #16a34a; }
+
+  .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .card-footer { font-size: 11px; color: #9ca3af; margin-top: 12px; padding-top: 8px; border-top: 1px solid #f3f4f6; }
+
+  .empty-state { text-align: center; padding: 48px; color: #9ca3af; }
+  .empty-state .icon { font-size: 32px; margin-bottom: 8px; }
+  .empty-state .title { font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 4px; }
+  .empty-state .desc { font-size: 13px; margin-bottom: 16px; }
+
+  .confirm-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 100; display: flex; align-items: center; justify-content: center; }
+  .confirm-box { background: #fff; border-radius: 10px; padding: 24px; max-width: 340px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+
+  @media print { body { display: none; } }
+  @media (max-width: 768px) {
+    .abc-grid, .abc-headers { grid-template-columns: 1fr; }
+    .abc-antecedent { grid-row: auto; }
+    .arrow { transform: rotate(90deg); padding: 4px 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>ABC Flowchart</h1>
+    <div class="subtitle">Differential Reinforcement Planning Tool &mdash; QuickStart Nova Scotia</div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="info-banner">
+    <strong>How to use:</strong> Map a common antecedent (trigger) to three tiers of child behaviour:
+    <strong style="color:#dc2626;">Red</strong> (not workable &mdash; discourage),
+    <strong style="color:#d97706;">Orange</strong> (current skills &mdash; moderate reinforcement),
+    <strong style="color:#16a34a;">Green</strong> (target skills &mdash; heavy reinforcement).
+    The gradient shifts child behaviour toward target skills over time.
+    You can create multiple flowcharts, then print any of them.
+  </div>
+
+  <!-- Child info -->
+  <div class="child-info">
+    <div>
+      <label>Child's First Name</label>
+      <input type="text" id="childFirst" placeholder="First name" oninput="updateChildName()">
+    </div>
+    <div>
+      <label>Child's Last Name</label>
+      <input type="text" id="childLast" placeholder="Last name" oninput="updateChildName()">
+    </div>
+    <div>
+      <label>Staff Name</label>
+      <input type="text" id="staffName" placeholder="Your name" oninput="saveToStorage()">
+    </div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div style="font-size: 14px; font-weight: 600; color: #374151;" id="flowchartCount"></div>
+    <button class="btn btn-primary" onclick="addFlowchart()">+ Add Flowchart</button>
+  </div>
+
+  <!-- Flowcharts container -->
+  <div id="flowcharts"></div>
+</div>
+
+<!-- Delete confirmation (hidden) -->
+<div id="confirmOverlay" class="confirm-overlay" style="display:none;" onclick="cancelDelete()">
+  <div class="confirm-box" onclick="event.stopPropagation()">
+    <div style="font-size: 15px; font-weight: 700; margin-bottom: 8px;">Delete flowchart?</div>
+    <div style="font-size: 13px; color: #6b7280; margin-bottom: 16px;" id="confirmText"></div>
+    <div style="display: flex; gap: 8px; justify-content: flex-end;">
+      <button class="btn btn-outline" onclick="cancelDelete()">Cancel</button>
+      <button class="btn btn-danger" onclick="confirmDeleteAction()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── LocalStorage ── */
+const STORAGE_KEY = "qs-abc-flowcharts";
+function saveToStorage() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      flowcharts, childFirst, childLast,
+      staffName: document.getElementById("staffName")?.value || "",
+    }));
+  } catch (e) { /* storage full or unavailable */ }
+}
+function loadFromStorage() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch (e) { return null; }
+}
+
+/* ── State ── */
+const saved = loadFromStorage();
+let flowcharts = saved?.flowcharts || [];
+let expandedId = null;
+let deleteTargetId = null;
+let childFirst = saved?.childFirst || "";
+let childLast = saved?.childLast || "";
+
+/* ── Helpers ── */
+function uid() { return "abc-" + Date.now() + "-" + Math.random().toString(36).slice(2, 6); }
+function esc(s) { return (s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+function escNl(s) { return esc(s).replace(/\n/g, "<br>"); }
+function fmtDate(iso) { if (!iso) return ""; const d = new Date(iso); return d.toLocaleDateString("en-CA"); }
+
+function mkFlowchart() {
+  const now = new Date().toISOString();
+  const staff = document.getElementById("staffName").value || "";
+  return {
+    id: uid(), title: "",
+    antecedent: { cue: "", setup: "" },
+    red: { behaviour: "", response: "" },
+    orange: { behaviour: "", response: "" },
+    green: { behaviour: "", response: "" },
+    notes: "",
+    addedBy: staff, addedAt: now, updatedAt: now,
+  };
+}
+
+function updateChildName() {
+  childFirst = document.getElementById("childFirst").value;
+  childLast = document.getElementById("childLast").value;
+  saveToStorage();
+}
+
+/* ── CRUD ── */
+function addFlowchart() {
+  const fc = mkFlowchart();
+  flowcharts.push(fc);
+  expandedId = fc.id;
+  saveToStorage();
+  render();
+  setTimeout(() => {
+    const el = document.getElementById("title-" + fc.id);
+    if (el) el.focus();
+  }, 50);
+}
+
+function removeFlowchart(id) {
+  deleteTargetId = id;
+  const fc = flowcharts.find(f => f.id === id);
+  document.getElementById("confirmText").textContent =
+    'This will permanently remove "' + (fc?.title || "this flowchart") + '" and all its data.';
+  document.getElementById("confirmOverlay").style.display = "flex";
+}
+
+function cancelDelete() {
+  deleteTargetId = null;
+  document.getElementById("confirmOverlay").style.display = "none";
+}
+
+function confirmDeleteAction() {
+  if (deleteTargetId) {
+    flowcharts = flowcharts.filter(f => f.id !== deleteTargetId);
+    if (expandedId === deleteTargetId) expandedId = null;
+    deleteTargetId = null;
+  }
+  document.getElementById("confirmOverlay").style.display = "none";
+  saveToStorage();
+  render();
+}
+
+function updateField(id, path, value) {
+  const fc = flowcharts.find(f => f.id === id);
+  if (!fc) return;
+  fc.updatedAt = new Date().toISOString();
+
+  // path like "title" or "antecedent.cue" or "red.behaviour"
+  const parts = path.split(".");
+  if (parts.length === 1) {
+    fc[parts[0]] = value;
+  } else {
+    fc[parts[0]][parts[1]] = value;
+  }
+  saveToStorage();
+}
+
+function toggleExpand(id) {
+  expandedId = expandedId === id ? null : id;
+  render();
+}
+
+/* ── Rows config ── */
+const ROWS = [
+  {
+    key: "red", label: "Not Workable", color: "#dc2626", bg: "#fee2e2", border: "#fca5a5",
+    behaviourLabel: "Skills the child does that are not workable",
+    behaviourHelper: "Sometimes these skills that are not workable will still occur",
+    responseHelper: "Continuing to respond in this way over time should discourage this behaviour in the future.",
+  },
+  {
+    key: "orange", label: "Current Skills", color: "#d97706", bg: "#fff7ed", border: "#fdba74",
+    behaviourLabel: "Workable skills the child can do already",
+    behaviourHelper: "What has the child learned to do so far? What is easy for them to do?",
+    responseHelper: "Continuing to respond in this way should encourage the child to do this instead of the skills that are not workable",
+  },
+  {
+    key: "green", label: "Target Skills", color: "#16a34a", bg: "#dcfce7", border: "#86efac",
+    behaviourLabel: "New skills the child can learn",
+    behaviourHelper: "What do you want the child to do next?",
+    responseHelper: "Continuing to respond in this way should encourage the child to try the next teaching step",
+  },
+];
+
+/* ── Render ── */
+function render() {
+  const container = document.getElementById("flowcharts");
+  const countEl = document.getElementById("flowchartCount");
+
+  if (flowcharts.length === 0) {
+    countEl.textContent = "";
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="icon">&#9878;&#65039;</div>
+        <div class="title">No ABC Flowcharts yet</div>
+        <div class="desc">Create a flowchart to map behaviour in context and plan differential reinforcement strategies.</div>
+        <button class="btn btn-primary" onclick="addFlowchart()">+ Add First Flowchart</button>
+      </div>`;
+    return;
+  }
+
+  countEl.textContent = flowcharts.length + " flowchart" + (flowcharts.length !== 1 ? "s" : "");
+  let html = "";
+
+  flowcharts.forEach(fc => {
+    if (expandedId !== fc.id) {
+      // Collapsed card
+      html += `<div class="collapsed" onclick="toggleExpand('${fc.id}')">
+        <span style="font-size:14px;font-weight:600;color:#1f2937;flex:1;">${esc(fc.title) || "Untitled flowchart"}</span>
+        ${fc.updatedAt ? '<span style="font-size:11px;color:#9ca3af;">Updated ' + fmtDate(fc.updatedAt) + '</span>' : ''}
+        <span style="font-size:12px;color:#9ca3af;">&#9660;</span>
+      </div>`;
+      return;
+    }
+
+    // Expanded card
+    html += `<div class="card">
+      <div class="card-header">
+        <button class="btn btn-outline" style="font-size:12px;padding:5px 12px;" onclick="toggleExpand('${fc.id}')">&#9650; Collapse</button>
+        <div style="display:flex;gap:12px;">
+          <button class="btn btn-print" style="font-size:12px;padding:5px 14px;" onclick="printFlowchart('${fc.id}')">&#128424; Print</button>
+          <button class="btn btn-danger" onclick="removeFlowchart('${fc.id}')">&#128465; Delete</button>
+        </div>
+      </div>
+
+      <!-- Title -->
+      <div style="margin-bottom:14px;">
+        <label class="field-label">Flowchart Title</label>
+        <input class="field" id="title-${fc.id}" value="${esc(fc.title)}"
+          oninput="updateField('${fc.id}','title',this.value)"
+          placeholder="e.g., Requesting with Words, Transition Behaviour">
+      </div>
+
+      <!-- ABC Column Headers -->
+      <div class="abc-headers">
+        <div class="abc-header"><span style="color:#1f2937;">A</span> &mdash; Antecedent</div>
+        <div></div>
+        <div class="abc-header"><span style="color:#1f2937;">B</span> &mdash; Behaviour</div>
+        <div></div>
+        <div class="abc-header"><span style="color:#1f2937;">C</span> &mdash; Consequence</div>
+      </div>
+
+      <!-- ABC Grid -->
+      <div class="abc-grid">
+        <!-- Antecedent (spans 3 rows) -->
+        <div class="abc-antecedent">
+          <div style="margin-bottom:8px;">
+            <label class="sub-label blue">What is the cue for the child to do the skill?</label>
+            <textarea class="field" rows="3"
+              oninput="updateField('${fc.id}','antecedent.cue',this.value)"
+              placeholder="What usually happens right before? What triggers the behaviour?">${esc(fc.antecedent.cue)}</textarea>
+          </div>
+          <div>
+            <label class="sub-label amber">How can the adult set up an opportunity to work on the skill?</label>
+            <textarea class="field" rows="3"
+              oninput="updateField('${fc.id}','antecedent.setup',this.value)"
+              placeholder="How can you set things up ahead of time for success?">${esc(fc.antecedent.setup)}</textarea>
+          </div>
+        </div>`;
+
+    // 3 rows
+    ROWS.forEach((row, ri) => {
+      const data = fc[row.key];
+      const mb = ri < 2 ? "margin-bottom:4px;" : "";
+      html += `
+        <!-- Arrow A->B -->
+        <div class="arrow" style="grid-column:2;grid-row:${ri+1};${mb}">
+          <span style="color:${row.color};">&rarr;</span>
+        </div>
+        <!-- Behaviour -->
+        <div class="abc-cell ${row.key}" style="grid-column:3;grid-row:${ri+1};${mb}">
+          <div class="row-label ${row.key}">${row.label}</div>
+          <label class="sub-label ${row.key}">${esc(row.behaviourLabel)}</label>
+          <textarea class="field" rows="3"
+            oninput="updateField('${fc.id}','${row.key}.behaviour',this.value)">${esc(data.behaviour)}</textarea>
+          <div class="helper-text">${esc(row.behaviourHelper)}</div>
+        </div>
+        <!-- Arrow B->C -->
+        <div class="arrow" style="grid-column:4;grid-row:${ri+1};${mb}">
+          <span style="color:${row.color};">&rarr;</span>
+        </div>
+        <!-- Consequence -->
+        <div class="abc-cell ${row.key}" style="grid-column:5;grid-row:${ri+1};${mb}">
+          <label class="sub-label ${row.key}">How the adult responds</label>
+          <textarea class="field" rows="3"
+            oninput="updateField('${fc.id}','${row.key}.response',this.value)">${esc(data.response)}</textarea>
+          <div class="helper-text">${esc(row.responseHelper)}</div>
+        </div>`;
+    });
+
+    html += `</div><!-- end abc-grid -->
+
+      <!-- Notes -->
+      <div style="margin-top:12px;">
+        <label class="field-label">Notes <span style="font-weight:400;color:#9ca3af;">(optional)</span></label>
+        <textarea class="field" rows="2"
+          oninput="updateField('${fc.id}','notes',this.value)"
+          placeholder="Additional context, observations, or clinician notes...">${esc(fc.notes || "")}</textarea>
+      </div>
+
+      <div class="card-footer">
+        ${fc.addedBy ? "Added by " + esc(fc.addedBy) + (fc.addedAt ? " on " + fmtDate(fc.addedAt) : "") : ""}
+        ${fc.updatedAt && fc.updatedAt !== fc.addedAt ? " &middot; Last updated " + fmtDate(fc.updatedAt) : ""}
+      </div>
+    </div>`;
+  });
+
+  container.innerHTML = html;
+}
+
+/* ── Print ── */
+function printFlowchart(id) {
+  const fc = flowcharts.find(f => f.id === id);
+  if (!fc) return;
+
+  const em = s => escNl(s) || '<span style="color:#9ca3af;">&mdash;</span>';
+  const childName = (childFirst || "") + (childLast ? " " + childLast : "");
+
+  function rowCells(row, data, isLast) {
+    const mb = isLast ? 0 : 8;
+    return `
+      <div style="grid-column:2;display:flex;align-items:center;justify-content:center;margin-bottom:${mb}px;">
+        <span style="font-size:16px;font-weight:700;color:${row.color};">&rarr;</span>
+      </div>
+      <div style="grid-column:3;padding:12px 14px;background:${row.bg};border:2px solid ${row.border};border-radius:8px;margin-bottom:${mb}px;">
+        <div style="font-weight:700;color:${row.color};text-transform:uppercase;font-size:11px;letter-spacing:0.5px;margin-bottom:4px;">${row.label}</div>
+        <div style="font-weight:600;color:${row.color};font-size:10px;margin-bottom:2px;">${esc(row.behaviourLabel)}</div>
+        <div style="font-size:11px;line-height:1.5;">${em(data.behaviour)}</div>
+        <div style="font-size:9px;color:#9ca3af;font-style:italic;margin-top:3px;">${esc(row.behaviourHelper)}</div>
+      </div>
+      <div style="grid-column:4;display:flex;align-items:center;justify-content:center;margin-bottom:${mb}px;">
+        <span style="font-size:16px;font-weight:700;color:${row.color};">&rarr;</span>
+      </div>
+      <div style="grid-column:5;padding:12px 14px;background:${row.bg};border:2px solid ${row.border};border-radius:8px;margin-bottom:${mb}px;">
+        <div style="font-weight:600;color:${row.color};font-size:10px;margin-bottom:2px;">How the adult responds</div>
+        <div style="font-size:11px;line-height:1.5;">${em(data.response)}</div>
+        <div style="font-size:9px;color:#9ca3af;font-style:italic;margin-top:3px;">${esc(row.responseHelper)}</div>
+      </div>`;
+  }
+
+  const html = `<!DOCTYPE html><html><head>
+<title>ABC Flowchart &mdash; ${esc(fc.title || "Untitled")}</title>
+<style>
+  @page { size: landscape; margin: 1.5cm; }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; padding: 1.5cm; color: #212121; display: flex; flex-direction: column; justify-content: center; }
+  @media print {
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  }
+</style>
+</head><body>
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+    <div style="flex:1;">
+      <div style="color:#008a98;font-size:16px;font-weight:700;">ABC Flowchart</div>
+      <div style="font-size:14px;font-weight:600;">${esc(fc.title)}</div>
+    </div>
+    <div style="font-size:11px;color:#6b7280;text-align:right;">
+      ${childName ? esc(childName) : ""}${fc.updatedAt ? "<br/>Updated " + fc.updatedAt.split("T")[0] : ""}
+    </div>
+  </div>
+
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+  <!-- Column headers -->
+  <div style="display:grid;grid-template-columns:1fr 28px 1fr 28px 1fr;gap:0;margin-bottom:8px;">
+    <div style="text-align:center;font-size:12px;font-weight:700;color:#374151;letter-spacing:1px;text-transform:uppercase;">A &mdash; Antecedent</div>
+    <div></div>
+    <div style="text-align:center;font-size:12px;font-weight:700;color:#374151;letter-spacing:1px;text-transform:uppercase;">B &mdash; Behaviour</div>
+    <div></div>
+    <div style="text-align:center;font-size:12px;font-weight:700;color:#374151;letter-spacing:1px;text-transform:uppercase;">C &mdash; Consequence</div>
+  </div>
+
+  <!-- Flowchart grid -->
+  <div style="display:grid;grid-template-columns:1fr 28px 1fr 28px 1fr;align-items:stretch;gap:0;">
+    <!-- Antecedent spans 3 rows -->
+    <div style="grid-column:1;grid-row:1/4;padding:16px;background:#eff6ff;border:2px solid #93c5fd;border-radius:8px;display:flex;flex-direction:column;justify-content:center;">
+      <div style="margin-bottom:12px;">
+        <div style="font-weight:600;color:#2563eb;font-size:10px;margin-bottom:3px;">What is the cue for the child to do the skill?</div>
+        <div style="font-size:12px;line-height:1.5;">${em(fc.antecedent.cue)}</div>
+      </div>
+      <div>
+        <div style="font-weight:600;color:#d97706;font-size:10px;margin-bottom:3px;">How can the adult set up an opportunity to work on the skill?</div>
+        <div style="font-size:12px;line-height:1.5;">${em(fc.antecedent.setup)}</div>
+      </div>
+    </div>
+
+    <!-- Red row -->
+    ${rowCells(ROWS[0], fc.red, false)}
+    <!-- Orange row -->
+    ${rowCells(ROWS[1], fc.orange, false)}
+    <!-- Green row -->
+    ${rowCells(ROWS[2], fc.green, true)}
+  </div>
+
+  ${fc.notes ? '<div style="margin-top:16px;padding:10px 14px;background:#f9fafb;border-radius:6px;border:1px solid #e5e7eb;font-size:11px;line-height:1.5;"><strong>Notes:</strong> ' + escNl(fc.notes) + '</div>' : ''}
+  </div>
+</body></html>`;
+
+  const w = window.open('', '_blank');
+  if (!w) { alert("Please allow pop-ups to print."); return; }
+  w.document.write(html);
+  w.document.close();
+}
+
+/* ── Initial render ── */
+if (saved) {
+  document.getElementById("childFirst").value = saved.childFirst || "";
+  document.getElementById("childLast").value = saved.childLast || "";
+  document.getElementById("staffName").value = saved.staffName || "";
+}
+render();
+</script>
+</body>
+</html>
