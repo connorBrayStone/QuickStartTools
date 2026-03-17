@@ -102,12 +102,14 @@
 
 <div class="container">
   <div class="info-banner">
-    <strong>How to use:</strong> Map a common antecedent (trigger) to three tiers of child behaviour:
+    <strong>How to use:</strong> Map a common antecedent (trigger) to tiers of child behaviour.
+    <strong>3-tier</strong> (default):
     <strong style="color:#dc2626;">Red</strong> (not workable &mdash; discourage),
     <strong style="color:#d97706;">Orange</strong> (current skills &mdash; moderate reinforcement),
     <strong style="color:#16a34a;">Green</strong> (target skills &mdash; heavy reinforcement).
+    <strong>2-tier:</strong> Orange + Green only (when "not workable" tier isn't needed).
     The gradient shifts child behaviour toward target skills over time.
-    You can create multiple flowcharts, then print any of them.
+    You can create multiple flowcharts, toggle tiers per flowchart, and print any of them.
   </div>
 
   <!-- Child info -->
@@ -185,7 +187,7 @@ function mkFlowchart() {
   const now = new Date().toISOString();
   const staff = document.getElementById("staffName").value || "";
   return {
-    id: uid(), title: "",
+    id: uid(), title: "", mode: "3-tier",
     antecedent: { cue: "", setup: "" },
     red: { behaviour: "", response: "" },
     orange: { behaviour: "", response: "" },
@@ -258,6 +260,15 @@ function toggleExpand(id) {
   render();
 }
 
+function toggleMode(id, mode) {
+  const fc = flowcharts.find(f => f.id === id);
+  if (!fc || fc.mode === mode) return;
+  fc.mode = mode;
+  fc.updatedAt = new Date().toISOString();
+  saveToStorage();
+  render();
+}
+
 /* ── Rows config ── */
 const ROWS = [
   {
@@ -303,8 +314,10 @@ function render() {
   flowcharts.forEach(fc => {
     if (expandedId !== fc.id) {
       // Collapsed card
+      const modeLabel = fc.mode === "2-tier" ? "2-tier" : "3-tier";
       html += `<div class="collapsed" onclick="toggleExpand('${fc.id}')">
         <span style="font-size:14px;font-weight:600;color:#1f2937;flex:1;">${esc(fc.title) || "Untitled flowchart"}</span>
+        <span class="chip" style="color:#374151;background:#f3f4f6;">${modeLabel}</span>
         ${fc.updatedAt ? '<span style="font-size:11px;color:#9ca3af;">Updated ' + fmtDate(fc.updatedAt) + '</span>' : ''}
         <span style="font-size:12px;color:#9ca3af;">&#9660;</span>
       </div>`;
@@ -312,6 +325,11 @@ function render() {
     }
 
     // Expanded card
+    const is2 = fc.mode === "2-tier";
+    const visibleRows = is2 ? ROWS.filter(r => r.key !== "red") : ROWS;
+    const rowSpan = is2 ? "1 / 3" : "1 / 4";
+    const textareaRows = is2 ? 4 : 3;
+
     html += `<div class="card">
       <div class="card-header">
         <button class="btn btn-outline" style="font-size:12px;padding:5px 12px;" onclick="toggleExpand('${fc.id}')">&#9650; Collapse</button>
@@ -321,12 +339,27 @@ function render() {
         </div>
       </div>
 
-      <!-- Title -->
-      <div style="margin-bottom:14px;">
-        <label class="field-label">Flowchart Title</label>
-        <input class="field" id="title-${fc.id}" value="${esc(fc.title)}"
-          oninput="updateField('${fc.id}','title',this.value)"
-          placeholder="e.g., Requesting with Words, Transition Behaviour">
+      <!-- Title + Mode toggle -->
+      <div style="display:flex;gap:16px;align-items:flex-end;margin-bottom:14px;">
+        <div style="flex:1;">
+          <label class="field-label">Flowchart Title</label>
+          <input class="field" id="title-${fc.id}" value="${esc(fc.title)}"
+            oninput="updateField('${fc.id}','title',this.value)"
+            placeholder="e.g., Requesting with Words, Transition Behaviour">
+        </div>
+        <div style="flex-shrink:0;">
+          <label class="field-label">Tiers</label>
+          <div style="display:flex;border:1px solid #d1d5db;border-radius:6px;overflow:hidden;">
+            <button type="button" onclick="toggleMode('${fc.id}','3-tier')"
+              style="padding:6px 12px;font-size:11px;font-weight:600;border:none;cursor:pointer;font-family:inherit;
+              background:${!is2 ? '#008a98' : '#fff'};color:${!is2 ? '#fff' : '#6b7280'};">
+              3-tier</button>
+            <button type="button" onclick="toggleMode('${fc.id}','2-tier')"
+              style="padding:6px 12px;font-size:11px;font-weight:600;border:none;border-left:1px solid #d1d5db;cursor:pointer;font-family:inherit;
+              background:${is2 ? '#008a98' : '#fff'};color:${is2 ? '#fff' : '#6b7280'};">
+              2-tier</button>
+          </div>
+        </div>
       </div>
 
       <!-- ABC Column Headers -->
@@ -340,26 +373,26 @@ function render() {
 
       <!-- ABC Grid -->
       <div class="abc-grid">
-        <!-- Antecedent (spans 3 rows) -->
-        <div class="abc-antecedent">
+        <!-- Antecedent (spans visible rows) -->
+        <div class="abc-antecedent" style="grid-row:${rowSpan};">
           <div style="margin-bottom:8px;">
             <label class="sub-label blue">What is the cue for the child to do the skill?</label>
-            <textarea class="field" rows="3"
+            <textarea class="field" rows="${textareaRows}"
               oninput="updateField('${fc.id}','antecedent.cue',this.value)"
               placeholder="What usually happens right before? What triggers the behaviour?">${esc(fc.antecedent.cue)}</textarea>
           </div>
           <div>
             <label class="sub-label amber">How can the adult set up an opportunity to work on the skill?</label>
-            <textarea class="field" rows="3"
+            <textarea class="field" rows="${textareaRows}"
               oninput="updateField('${fc.id}','antecedent.setup',this.value)"
               placeholder="How can you set things up ahead of time for success?">${esc(fc.antecedent.setup)}</textarea>
           </div>
         </div>`;
 
-    // 3 rows
-    ROWS.forEach((row, ri) => {
+    // Visible rows
+    visibleRows.forEach((row, ri) => {
       const data = fc[row.key];
-      const mb = ri < 2 ? "margin-bottom:4px;" : "";
+      const mb = ri < visibleRows.length - 1 ? "margin-bottom:4px;" : "";
       html += `
         <!-- Arrow A->B -->
         <div class="arrow" style="grid-column:2;grid-row:${ri+1};${mb}">
@@ -369,7 +402,7 @@ function render() {
         <div class="abc-cell ${row.key}" style="grid-column:3;grid-row:${ri+1};${mb}">
           <div class="row-label ${row.key}">${row.label}</div>
           <label class="sub-label ${row.key}">${esc(row.behaviourLabel)}</label>
-          <textarea class="field" rows="3"
+          <textarea class="field" rows="${textareaRows}"
             oninput="updateField('${fc.id}','${row.key}.behaviour',this.value)">${esc(data.behaviour)}</textarea>
           <div class="helper-text">${esc(row.behaviourHelper)}</div>
         </div>
@@ -380,7 +413,7 @@ function render() {
         <!-- Consequence -->
         <div class="abc-cell ${row.key}" style="grid-column:5;grid-row:${ri+1};${mb}">
           <label class="sub-label ${row.key}">How the adult responds</label>
-          <textarea class="field" rows="3"
+          <textarea class="field" rows="${textareaRows}"
             oninput="updateField('${fc.id}','${row.key}.response',this.value)">${esc(data.response)}</textarea>
           <div class="helper-text">${esc(row.responseHelper)}</div>
         </div>`;
@@ -413,6 +446,9 @@ function printFlowchart(id) {
 
   const em = s => escNl(s) || '<span style="color:#9ca3af;">&mdash;</span>';
   const childName = (childFirst || "") + (childLast ? " " + childLast : "");
+  const is2 = fc.mode === "2-tier";
+  const printRows = is2 ? ROWS.filter(r => r.key !== "red") : ROWS;
+  const printRowSpan = is2 ? "1 / 3" : "1 / 4";
 
   function rowCells(row, data, isLast) {
     const mb = isLast ? 0 : 8;
@@ -470,8 +506,8 @@ function printFlowchart(id) {
 
   <!-- Flowchart grid -->
   <div style="display:grid;grid-template-columns:1fr 28px 1fr 28px 1fr;align-items:stretch;gap:0;">
-    <!-- Antecedent spans 3 rows -->
-    <div style="grid-column:1;grid-row:1/4;padding:16px;background:#eff6ff;border:2px solid #93c5fd;border-radius:8px;display:flex;flex-direction:column;justify-content:center;">
+    <!-- Antecedent spans visible rows -->
+    <div style="grid-column:1;grid-row:${printRowSpan};padding:16px;background:#eff6ff;border:2px solid #93c5fd;border-radius:8px;display:flex;flex-direction:column;justify-content:center;">
       <div style="margin-bottom:12px;">
         <div style="font-weight:600;color:#2563eb;font-size:10px;margin-bottom:3px;">What is the cue for the child to do the skill?</div>
         <div style="font-size:12px;line-height:1.5;">${em(fc.antecedent.cue)}</div>
@@ -482,12 +518,7 @@ function printFlowchart(id) {
       </div>
     </div>
 
-    <!-- Red row -->
-    ${rowCells(ROWS[0], fc.red, false)}
-    <!-- Orange row -->
-    ${rowCells(ROWS[1], fc.orange, false)}
-    <!-- Green row -->
-    ${rowCells(ROWS[2], fc.green, true)}
+    ${printRows.map((row, ri) => rowCells(row, fc[row.key], ri === printRows.length - 1)).join("")}
   </div>
 
   ${fc.notes ? '<div style="margin-top:16px;padding:10px 14px;background:#f9fafb;border-radius:6px;border:1px solid #e5e7eb;font-size:11px;line-height:1.5;"><strong>Notes:</strong> ' + escNl(fc.notes) + '</div>' : ''}
