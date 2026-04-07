@@ -214,12 +214,71 @@
     font-size: 13px;
     color: #555;
   }
+
+  /* Topic tags */
+  .topic-tag {
+    display: inline-block;
+    padding: 1px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    vertical-align: middle;
+    margin-left: 8px;
+    cursor: default;
+  }
+  .topic-tag[data-topic="docusign"] {
+    background: #fce4b8;
+    color: #92600a;
+    border: 1px solid #f0c05a;
+  }
+
+  /* Filter toggle in sidebar */
+  .toc-filters {
+    padding: 8px 16px 4px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .filter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    border: 1px solid #f0c05a;
+    background: #fff;
+    color: #92600a;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .filter-btn:hover {
+    background: #fef6e4;
+  }
+  .filter-btn.active {
+    background: #fce4b8;
+    border-color: #d4a034;
+  }
+
+  /* When filter is active, hide non-tagged sections entirely */
+  body.filter-docusign #content > * {
+    display: none;
+  }
+  body.filter-docusign #content > *:has(.topic-tag[data-topic="docusign"]),
+  body.filter-docusign #content > h1 {
+    display: revert;
+  }
+  body.filter-docusign .docusign-section {
+    display: revert !important;
+  }
 </style>
 </head>
 <body>
 
 <nav id="sidebar-toc">
 <div class="toc-header">Table of Contents</div>
+<div class="toc-filters"><button id="filter-docusign" class="filter-btn" title="Show only DocuSign-related sections">&#x1F50D; DocuSign</button></div>
 <div class="toc-body">
   <a href="#open-items-summary" class="toc-h2">Open Items Summary</a>
   <a href="#overview" class="toc-h2">Overview</a>
@@ -267,6 +326,7 @@
   <a href="#step-9d-contact-family-to-schedule-intro-meeting" class="toc-h3">Step 9D: Contact Family to Schedule Intro Meeting</a>
   <a href="#updating-sharevision" class="toc-h3">Updating ShareVision</a>
   <a href="#section-10-completion-of-qs-intro-meeting" class="toc-h2">Section 10: Completion of QS Intro Meeting</a>
+  <a href="#docusign-consent-workflow" class="toc-h3">DocuSign Consent Workflow </a>
   <a href="#section-11-at-the-end-of-qs-services--transition-back-to-cicc" class="toc-h2">Section 11: At the End of QS Services — Transition Back to CICC</a>
   <a href="#overview-of-handover-scenarios" class="toc-h3">Overview of Handover Scenarios</a>
   <a href="#cicc-proactive-contact-rules" class="toc-h3">CICC Proactive Contact Rules</a>
@@ -279,9 +339,9 @@
   <a href="#open-items" class="toc-h3">Open Items</a>
   <a href="#email-templates" class="toc-h2">Email Templates</a>
   <a href="#email-template-1-initial-contact--intro-meeting-options" class="toc-h3">Email Template 1: Initial Contact / Intro Meeting Options</a>
-  <a href="#email-template-2-intro-meeting-confirmation" class="toc-h3">Email Template 2: Intro Meeting Confirmation</a>
-  <a href="#email-template-3-calendar-event-body" class="toc-h3">Email Template 3: Calendar Event Body</a>
-  <a href="#email-template-4-reminder-email" class="toc-h3">Email Template 4: Reminder Email</a>
+  <a href="#email-template-2-intro-meeting-confirmation" class="toc-h3">Email Template 2: Intro Meeting Confirmation </a>
+  <a href="#email-template-3-calendar-event-body" class="toc-h3">Email Template 3: Calendar Event Body </a>
+  <a href="#email-template-4-reminder-email" class="toc-h3">Email Template 4: Reminder Email </a>
   <a href="#archive-process-launch-sept-24---oct-22-2025" class="toc-h2">Archive: Process Launch (Sept 24 - Oct 22, 2025)</a>
   <a href="#receipt-and-transfer-of-referrals-to-cicc-transition-period" class="toc-h3">Receipt and Transfer of Referrals to CICC (Transition Period)</a>
   <a href="#consent-withdrawal-handling-transition-period" class="toc-h3">Consent Withdrawal Handling (Transition Period)</a>
@@ -393,6 +453,36 @@
 <td>11</td>
 <td>Confirm "QS Start Date" value in GreenSpace for families discontinued before Session 1 (intended S1 date vs. Intro Meeting date)</td>
 <td>Connor / CICC</td>
+</tr>
+<tr>
+<td>15</td>
+<td>10</td>
+<td>DocuSign envelope visibility — can zone staff beyond the sender see sent envelopes/status? (account config)</td>
+<td>Connor</td>
+</tr>
+<tr>
+<td>16</td>
+<td>10</td>
+<td>Phone vs. Zoom for intro meetings — is phone still workable given in-meeting DocuSign completion goal?</td>
+<td>Connor</td>
+</tr>
+<tr>
+<td>17</td>
+<td>10</td>
+<td>Physical copy fallback — plan for families unable to complete via DocuSign</td>
+<td>Connor</td>
+</tr>
+<tr>
+<td>18</td>
+<td>10</td>
+<td>DocuSign session timeout — can the 20-minute logout window be increased?</td>
+<td>Connor</td>
+</tr>
+<tr>
+<td>19</td>
+<td>10</td>
+<td>DocuSign API automation for consent auditing (medium-long term)</td>
+<td>Connor</td>
 </tr>
 </tbody>
 </table>
@@ -1147,11 +1237,12 @@
 <li>Check the supervisor's calendar for travel days or out-of-office sessions — avoid scheduling intro meetings on those days.</li>
 <li>Leave buffer time around intro meeting slots — avoid scheduling immediately adjacent to other events in the supervisor's calendar, especially events that require the supervisor to be out of office (travel time needs to be factored in).</li>
 </ul>
-<p><strong>Upon scheduling:</strong></p>
+<p><strong>Upon scheduling:</strong> <span class="topic-tag" data-topic="docusign">DocuSign</span></p>
 <ul>
-<li>Send confirmation email with attachments (see <a href="#email-template-2-intro-meeting-confirmation">Email Template 2: Intro Meeting Confirmation</a>)</li>
+<li>Send confirmation email with attachments (see <a href="#email-template-2-intro-meeting-confirmation">Email Template 2: Intro Meeting Confirmation</a>). Note: consent forms are no longer attached — they are sent separately via DocuSign (see below).</li>
 <li>Create an Outlook calendar event on the relevant supervisor's calendar and add the caregiver as an attendee (see <a href="#email-template-3-calendar-event-body">Email Template 3: Calendar Event</a>)</li>
-<li>Set a reminder email to be sent to the family 2-3 days before the meeting (see <a href="#email-template-4-reminder-email">Email Template 4: Reminder</a>)</li>
+<li>Set a reminder email to be sent to the family <strong>2 days</strong> before the meeting (see <a href="#email-template-4-reminder-email">Email Template 4: Reminder</a>)</li>
+<li><span class="role-badge" style="background:#27ae60">QS Supervisor</span> scheduled-sends the DocuSign consent envelope <strong>~24 hours</strong> before the intro meeting (see <a href="#docusign-consent-workflow">DocuSign Consent Workflow</a>)</li>
 </ul>
 <h3 id="updating-sharevision">Updating ShareVision</h3>
 <p><strong>In instances where operational considerations require supervisor contact with family:</strong><br />
@@ -1187,7 +1278,76 @@
 <p><strong>Following intro meeting, supervisor to complete:</strong><br />
 - Upload all intro meeting notes<br />
 - Community/partners information<br />
-- Update participant info sheet</p>
+- Update participant info sheet<br />
+- Upload completed consent forms to ShareVision (see DocuSign Consent Workflow below)</p>
+<h3 id="docusign-consent-workflow">DocuSign Consent Workflow <span class="topic-tag" data-topic="docusign">DocuSign</span></h3>
+<p>Consent forms (Participation and Confidentiality Agreement, Video Consent, Consent To Release and Share) are sent to families via DocuSign rather than as email attachments. The default signing window is 8 weeks.</p>
+<h4 id="timeline">Timeline</h4>
+<table>
+<thead>
+<tr>
+<th>Timing</th>
+<th>Action</th>
+<th>Who</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Upon scheduling</td>
+<td>Confirmation email sent — includes program guide and timeline, notes that consent forms will arrive via DocuSign before the meeting</td>
+<td><span class="role-badge" style="background:#2980b9">QS Admin</span></td>
+</tr>
+<tr>
+<td>2 days before meeting</td>
+<td>Reminder email sent — notes that DocuSign email will be arriving within the next day</td>
+<td><span class="role-badge" style="background:#2980b9">QS Admin</span></td>
+</tr>
+<tr>
+<td>~24 hours before meeting</td>
+<td>DocuSign consent envelope scheduled-sent to caregiver (and supervising staff member as witness/signer)</td>
+<td><span class="role-badge" style="background:#27ae60">QS Supervisor</span></td>
+</tr>
+<tr>
+<td>During intro meeting</td>
+<td>Supervisor reviews consent forms with caregiver; ideally caregiver completes and signs during the meeting</td>
+<td><span class="role-badge" style="background:#27ae60">QS Supervisor</span></td>
+</tr>
+<tr>
+<td>After meeting (if needed)</td>
+<td>If caregiver did not complete during the meeting, they may complete at their own pace following the call</td>
+<td>Caregiver</td>
+</tr>
+<tr>
+<td>7 days post-meeting</td>
+<td>If forms still not completed, send a follow-up reminder to the caregiver</td>
+<td><span class="role-badge" style="background:#27ae60">QS Supervisor</span></td>
+</tr>
+</tbody>
+</table>
+<h4 id="sending-the-envelope">Sending the Envelope</h4>
+<p><span class="role-badge" style="background:#27ae60">QS Supervisor</span> sends the DocuSign envelope using the QS consent template. The envelope should be <strong>scheduled to send ~24 hours before</strong> the intro meeting. The supervisor is responsible for sending the envelope because:</p>
+<ul>
+<li>The sender has full visibility on envelope status (sent, viewed, completed) in their DocuSign account</li>
+<li>The sender receives the completed copies via email upon all parties signing</li>
+<li>This ensures the supervisor can track completion and upload to ShareVision without additional handoffs</li>
+</ul>
+<h4 id="during-the-intro-meeting">During the Intro Meeting</h4>
+<p>The goal is to have the caregiver review and complete the consent forms during the meeting itself. The supervisor walks through each form, answers questions, and the caregiver signs electronically.</p>
+<p>If the caregiver does not feel ready to complete in the moment (e.g., wants to review further, needs to discuss with a partner), they can complete and sign after the call using the same DocuSign link.</p>
+<blockquote>
+<p><strong>Cost of after-meeting completion:</strong> Follow-up may be required to ensure forms are completed. If 7 days have elapsed since the intro meeting and forms remain incomplete, send a reminder to the caregiver.</p>
+</blockquote>
+<h4 id="upload-to-sharevision">Upload to ShareVision</h4>
+<p>Following completion by the family, <span class="role-badge" style="background:#27ae60">QS Supervisor</span> downloads the signed envelope from DocuSign and uploads to ShareVision.</p>
+<h4 id="auditing">Auditing</h4>
+<p><strong>Immediate term:</strong> Continue current auditing practices with one change — audit reminder is tied to <strong>Session 1</strong> (rather than Session 2) for Yuna and Valeria to verify consent completion.</p>
+<p><strong>Medium-long term:</strong> May be possible to automate consent tracking and auditing through the DocuSign API.</p>
+<blockquote>
+<p><strong>OPEN ITEM — DocuSign Envelope Visibility:</strong> Currently, only the person who sends a DocuSign envelope (and those included as recipients/signers) can see the envelope and its status in their DocuSign account. Can the DocuSign account be configured so that all relevant staff within a zone can see sent envelopes and their status? This is an account-level configuration question.</p>
+<p><strong>OPEN ITEM — Phone vs. Zoom for Intro Meetings:</strong> With the move toward in-meeting DocuSign completion, is phone still a workable modality for intro meetings? Zoom screen-sharing makes it easier to walk a caregiver through the forms in real time. Consider whether Zoom should become the default with phone as an exception.</p>
+<p><strong>OPEN ITEM — Physical Copy Fallback:</strong> What is the plan for families that are unable to complete forms via DocuSign (e.g., limited digital access, technical difficulties)? Anticipate the proportion of participants who may need physical copies and define the alternative workflow.</p>
+<p><strong>OPEN ITEM — DocuSign Session Timeout:</strong> The current DocuSign account signs users out after 20 minutes of inactivity. Can this be increased for all users to accommodate longer form review sessions?</p>
+</blockquote>
 <hr />
 <h2 id="section-11-at-the-end-of-qs-services--transition-back-to-cicc">Section 11: At the End of QS Services — Transition Back to CICC</h2>
 <p>When a child and family complete QuickStart services or are discontinued from the program, the end-of-service workflow ensures a clear pathway to next-level supports through Provincial Preschool Autism Services (PPAS) and the Connections, Information, Consultation &amp; Coordination (CICC) team. This section describes handover scenarios, the practical workflow for different situations, referral mechanics, and staff guidance for discussing transitions with families.</p>
@@ -1534,20 +1694,16 @@ QuickStart Nova Scotia</p>
 <p>[Your Name]<br />
 Administrative Support, QuickStart NS</p>
 </blockquote>
-<h3 id="email-template-2-intro-meeting-confirmation">Email Template 2: Intro Meeting Confirmation</h3>
+<h3 id="email-template-2-intro-meeting-confirmation">Email Template 2: Intro Meeting Confirmation <span class="topic-tag" data-topic="docusign">DocuSign</span></h3>
 <p><strong>Subject:</strong> QuickStart NS – Intro Meeting Confirmation</p>
 <blockquote>
 <p>Hi [Caregiver's Name],</p>
 <p>Thank you for getting back to me! Your intro meeting has been scheduled for [date] at [time] via [phone/Zoom] with [Supervisor's Name] from the [Zone Name] Zone.</p>
-<p>Attached, you'll find the documents we'll go over together during the meeting:<br />
+<p>Attached, you'll find some documents for your reference ahead of the meeting:<br />
 - Timeline of Sessions<br />
 - Parent-Mediated Coaching for Autism<br />
-- Consent Forms:<br />
-  - Participation and Confidentiality Agreement<br />
-  - Video Consent<br />
-  - Consent To Release and Share<br />
 - How to Use Zoom</p>
-<p>These forms are fillable on a laptop or desktop computer. If you are comfortable completing them ahead of time, that will be helpful but not required.</p>
+<p>Prior to your intro meeting, you will also receive a separate email from DocuSign containing the consent forms that [Supervisor's Name] will review with you during the meeting. This email will arrive approximately 1-2 days before your scheduled meeting.</p>
 <p>If you have any questions before we meet, please don't hesitate to reach out. In the meantime, I have also included a list of other community resources that you may find helpful:</p>
 <ul>
 <li><a href="https://helpisinyourhands.org/">Help is in your Hands</a> — A free website with 4 web-based video modules to help parents &amp; caregivers add simple intervention practices to their everyday routines at home.</li>
@@ -1558,22 +1714,23 @@ Administrative Support, QuickStart NS</p>
 <p>[Your Name]<br />
 Administrative Support, QuickStart NS</p>
 </blockquote>
-<h3 id="email-template-3-calendar-event-body">Email Template 3: Calendar Event Body</h3>
+<h3 id="email-template-3-calendar-event-body">Email Template 3: Calendar Event Body <span class="topic-tag" data-topic="docusign">DocuSign</span></h3>
 <p><em>Used when adding the caregiver to the Outlook calendar event for the confirmed intro meeting.</em></p>
 <blockquote>
 <p>Hello [Caregiver's Name],</p>
 <p>This calendar invitation is to confirm your QuickStart NS Intro Meeting scheduled for:</p>
 <p>[Date, time and supervisor name]</p>
 <p>This meeting will take approximately 1.5 hours and is discussion-based. Your child does not need to be present.</p>
-<p>During the meeting, you will review consent forms and complete a brief discussion-based assessment to help us prepare for the start of the program.</p>
+<p>During the meeting, you will review consent forms (sent separately via DocuSign) and complete a brief discussion-based assessment to help us prepare for the start of the program.</p>
 <p>If you have any questions before the meeting, please feel free to reach out.</p>
 <p>We look forward to connecting with you.</p>
 </blockquote>
-<h3 id="email-template-4-reminder-email">Email Template 4: Reminder Email</h3>
-<p><em>Sent 2-3 days before the scheduled intro meeting.</em></p>
+<h3 id="email-template-4-reminder-email">Email Template 4: Reminder Email <span class="topic-tag" data-topic="docusign">DocuSign</span></h3>
+<p><em>Sent 2 days before the scheduled intro meeting.</em></p>
 <blockquote>
 <p>Hello [NAME],</p>
 <p>This is a reminder of your Intro Meeting scheduled with [Supervisor Name] on [DATE/TIME]. Please see the previous email for meeting details.</p>
+<p>You should also be receiving a separate email from DocuSign within the next day, prior to your intro meeting. This email will contain the consent forms that you will review with [Supervisor Name] during the meeting. If you do not see this email when it arrives, please check your junk or spam folder.</p>
 <p>Thanks,</p>
 <p>[Your Name]<br />
 Administrative Support, QuickStart NS</p>
@@ -1648,6 +1805,41 @@ Administrative Support, QuickStart NS</p>
       if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   });
+})();
+
+// Topic filter — wraps content after tagged headings into .docusign-section spans
+// and toggles visibility via body class
+(function() {
+  // Wrap sections that follow a tagged heading
+  const tagged = document.querySelectorAll('.topic-tag[data-topic="docusign"]');
+  tagged.forEach(tag => {
+    const heading = tag.closest('h1, h2, h3, h4, h5, h6');
+    if (!heading) return;
+    const level = parseInt(heading.tagName[1]);
+    // Collect siblings until next heading of same or higher level
+    let el = heading.nextElementSibling;
+    const wrapper = document.createElement('div');
+    wrapper.className = 'docusign-section';
+    heading.parentNode.insertBefore(wrapper, el);
+    while (el) {
+      const next = el.nextElementSibling;
+      if (el.matches && el.matches('h1,h2,h3,h4,h5,h6')) {
+        const elLevel = parseInt(el.tagName[1]);
+        if (elLevel <= level) break;
+      }
+      wrapper.appendChild(el);
+      el = next;
+    }
+  });
+
+  // Filter button
+  const btn = document.getElementById('filter-docusign');
+  if (btn) {
+    btn.addEventListener('click', function() {
+      document.body.classList.toggle('filter-docusign');
+      this.classList.toggle('active');
+    });
+  }
 })();
 </script>
 </body>
