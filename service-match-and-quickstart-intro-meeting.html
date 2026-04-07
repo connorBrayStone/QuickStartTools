@@ -227,17 +227,14 @@
     margin-left: 8px;
     cursor: default;
   }
-  .topic-tag[data-topic="docusign"] {
-    background: #fce4b8;
-    color: #92600a;
-    border: 1px solid #f0c05a;
-  }
-
   /* Filter toggle in sidebar */
   .toc-filters {
     padding: 8px 16px 4px;
     border-bottom: 1px solid var(--border);
     flex-shrink: 0;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
   }
   .filter-btn {
     display: inline-flex;
@@ -247,30 +244,35 @@
     border-radius: 12px;
     font-size: 11px;
     font-weight: 600;
-    border: 1px solid #f0c05a;
+    border: 1px solid var(--border);
     background: #fff;
-    color: #92600a;
+    color: #555;
     cursor: pointer;
     transition: all 0.15s;
   }
-  .filter-btn:hover {
-    background: #fef6e4;
-  }
-  .filter-btn.active {
-    background: #fce4b8;
-    border-color: #d4a034;
-  }
+  .filter-btn:hover { background: #f5f5f5; }
+  .filter-btn[data-topic="docusign"] { border-color: #f0c05a; color: #92600a; }
+  .filter-btn[data-topic="docusign"]:hover { background: #fef6e4; }
+  .filter-btn[data-topic="docusign"].active { background: #fce4b8; border-color: #d4a034; }
+  .filter-btn[data-topic="open-item"] { border-color: #f5a3a3; color: #9b1c1c; }
+  .filter-btn[data-topic="open-item"]:hover { background: #fef2f2; }
+  .filter-btn[data-topic="open-item"].active { background: #fde8e8; border-color: #e05252; }
 
-  /* When filter is active, hide non-tagged sections entirely */
-  body.filter-docusign #content > * {
+  /* When any filter is active, hide non-matching content */
+  body.has-filters #content > * {
     display: none;
   }
-  body.filter-docusign #content > *:has(.topic-tag[data-topic="docusign"]),
-  body.filter-docusign #content > h1 {
+  body.has-filters #content > h1 {
     display: revert;
   }
-  body.filter-docusign .docusign-section {
+  body.has-filters .tag-visible {
     display: revert !important;
+  }
+  /* Highlight matching sidebar links when filter is active */
+  body.has-filters .toc-body a { opacity: 0.3; }
+  body.has-filters .toc-body a.toc-visible {
+    opacity: 1;
+    font-weight: 600;
   }
 </style>
 </head>
@@ -278,7 +280,7 @@
 
 <nav id="sidebar-toc">
 <div class="toc-header">Table of Contents</div>
-<div class="toc-filters"><button id="filter-docusign" class="filter-btn" title="Show only DocuSign-related sections">&#x1F50D; DocuSign</button></div>
+<div class="toc-filters"><button class="filter-btn" data-topic="docusign" title="Filter DocuSign sections">DocuSign</button><button class="filter-btn" data-topic="open-item" title="Filter Open Items">Open Items</button></div>
 <div class="toc-body">
   <a href="#open-items-summary" class="toc-h2">Open Items Summary</a>
   <a href="#overview" class="toc-h2">Overview</a>
@@ -658,7 +660,7 @@
 <li>Child ages out (reaches 32 months with no available opening and no waitlist resolution)</li>
 </ul>
 <blockquote>
-<p><strong>TODO:</strong> Review whether additional program status values are needed for ESDM-specific pathways (e.g. ESDM Waitlist vs. PC Waitlist distinction in the participation info sheet).</p>
+<p><span class="topic-tag" data-topic="open-item" style="background:#fde8e8;color:#9b1c1c;border:1px solid #f5a3a3">Open Item</span> <strong>TODO:</strong> Review whether additional program status values are needed for ESDM-specific pathways (e.g. ESDM Waitlist vs. PC Waitlist distinction in the participation info sheet).</p>
 </blockquote>
 <hr />
 <h2 id="participation-in-qs-ns-services">Participation in QS NS Services</h2>
@@ -793,7 +795,7 @@
 <p>The following documentation may be utilized as part of community outreach to parents/caregivers and/or other professionals and service providers in Nova Scotia, to increase knowledge and awareness of QuickStart NS Services.</p>
 <p><strong>General Information on QuickStart NS Services</strong> <em>(default documentation for community outreach):</em></p>
 <blockquote>
-<p><strong>OPEN ITEM:</strong> Links below need to be verified and updated post-CICC integration. Some documents may need content updates to reflect the new referral pathway (referral to PPAS rather than directly to QS).</p>
+<p><span class="topic-tag" data-topic="open-item" style="background:#fde8e8;color:#9b1c1c;border:1px solid #f5a3a3">Open Item</span> <strong>OPEN ITEM:</strong> Links below need to be verified and updated post-CICC integration. Some documents may need content updates to reflect the new referral pathway (referral to PPAS rather than directly to QS).</p>
 </blockquote>
 <ul>
 <li>QuickStart NS Brochure</li>
@@ -985,7 +987,7 @@
 </table>
 <p><em>Deletion serves as communication to QS team that RC call occurred and child was not a service match (since ineligible children don't appear in QS Greenspace clinic).</em></p>
 <blockquote>
-<p><strong>OPEN ITEM:</strong> Add an indicator around how to update QS participation info sheets for ESDM candidacy.</p>
+<p><span class="topic-tag" data-topic="open-item" style="background:#fde8e8;color:#9b1c1c;border:1px solid #f5a3a3">Open Item</span> <strong>OPEN ITEM:</strong> Add an indicator around how to update QS participation info sheets for ESDM candidacy.</p>
 </blockquote>
 <hr />
 <h2 id="section-4-schedule-meeting-with-resource-coordinator">Section 4: Schedule Meeting with Resource Coordinator</h2>
@@ -1036,7 +1038,7 @@
 - Remove from capacity sharing sheet<br />
 - Open spot for next referral</p>
 <blockquote>
-<p><strong>OPEN ITEM:</strong> Should RC remove the following data from Greenspace when family declines? (Bethany)<br />
+<p><span class="topic-tag" data-topic="open-item" style="background:#fde8e8;color:#9b1c1c;border:1px solid #f5a3a3">Open Item</span> <strong>OPEN ITEM:</strong> Should RC remove the following data from Greenspace when family declines? (Bethany)<br />
 - Age based on referral date (months) - <em>from Capacity Sheet</em><br />
 - Earliest Available Start Date - <em>from Capacity Sheet</em><br />
 - Parent Coaching Cohort Assignment - <em>from Capacity Sheet</em><br />
@@ -1058,8 +1060,8 @@
 <li><strong>NOTE:</strong> The QS NS clinical team will refer to the recorded information following the handoff and make any required determinations if/how it may affect program participation.</li>
 </ul>
 <blockquote>
-<p><strong>OPEN ITEM:</strong> Greenspace fixed-option question for this criterion needs to be revised/consolidated.</p>
-<p><strong>OPEN ITEM:</strong> Identify specific sections of QS NS Service Profile to highlight for each eligibility criterion.</p>
+<p><span class="topic-tag" data-topic="open-item" style="background:#fde8e8;color:#9b1c1c;border:1px solid #f5a3a3">Open Item</span> <strong>OPEN ITEM:</strong> Greenspace fixed-option question for this criterion needs to be revised/consolidated.</p>
+<p><span class="topic-tag" data-topic="open-item" style="background:#fde8e8;color:#9b1c1c;border:1px solid #f5a3a3">Open Item</span> <strong>OPEN ITEM:</strong> Identify specific sections of QS NS Service Profile to highlight for each eligibility criterion.</p>
 </blockquote>
 <h3 id="2-availability-during-program-hours">2. Availability During Program Hours</h3>
 <ul>
@@ -1078,7 +1080,7 @@
 <li><strong>NOTE:</strong> QS NS clinical team will refer to recorded information following handoff.</li>
 </ul>
 <blockquote>
-<p><strong>OPEN ITEM:</strong> Language field would need to be added to Greenspace.</p>
+<p><span class="topic-tag" data-topic="open-item" style="background:#fde8e8;color:#9b1c1c;border:1px solid #f5a3a3">Open Item</span> <strong>OPEN ITEM:</strong> Language field would need to be added to Greenspace.</p>
 </blockquote>
 <h3 id="4-location">4. Location</h3>
 <ul>
@@ -1147,7 +1149,7 @@
 <li><strong>Check for the MCHAT score</strong> -- if the MCHAT score is 2 or below, connect with QuickStart NS Manager</li>
 </ol>
 <blockquote>
-<p><strong>OPEN ITEM:</strong> Should admins check feasibility of in-person sessions at this point, or during the intro meeting? (Connor)</p>
+<p><span class="topic-tag" data-topic="open-item" style="background:#fde8e8;color:#9b1c1c;border:1px solid #f5a3a3">Open Item</span> <strong>OPEN ITEM:</strong> Should admins check feasibility of in-person sessions at this point, or during the intro meeting? (Connor)</p>
 </blockquote>
 <h3 id="step-9c-add-to-participation-info-sheet">Step 9C: Add to Participation Info Sheet</h3>
 <p>Navigate to the Participation Info Excel workbook for the appropriate zone, then to the "Referral and Eligibility" tab:</p>
@@ -1228,7 +1230,7 @@
 <p>Within the participation info sheet, add a short record of all contact attempts (call or email, with dates) as a comment/note within the cell containing that child's initials.</p>
 <blockquote>
 <p><strong>NOTE:</strong> The historical contact policy was phone-first (reflecting direct referrals). Current practice following CICC integration is email-first, as the initial email (Template 1) typically has a high response rate and families have already spoken with the CICC Resource Coordinator. The 2-business-day wait and 3-attempt structure remain the same.</p>
-<p><strong>TODO:</strong> Confirm whether "Unable to Contact" should trigger release of the cohort opening and/or notification to CICC (beyond notifying the referring source).</p>
+<p><span class="topic-tag" data-topic="open-item" style="background:#fde8e8;color:#9b1c1c;border:1px solid #f5a3a3">Open Item</span> <strong>TODO:</strong> Confirm whether "Unable to Contact" should trigger release of the cohort opening and/or notification to CICC (beyond notifying the referring source).</p>
 </blockquote>
 <p><strong>Intro meeting timing:</strong> Aim to schedule intro meetings within a window of 4-6 weeks before the cohort start date. Ideal is 6 weeks out; 5 weeks is fine; 4 weeks is acceptable if necessary. Meeting duration: 1.5 hours has consistently proven sufficient (reduced from the original 2-hour estimate).</p>
 <p><strong>Scheduling considerations (QS Admin reviews supervisor calendar):</strong></p>
@@ -1237,7 +1239,7 @@
 <li>Check the supervisor's calendar for travel days or out-of-office sessions — avoid scheduling intro meetings on those days.</li>
 <li>Leave buffer time around intro meeting slots — avoid scheduling immediately adjacent to other events in the supervisor's calendar, especially events that require the supervisor to be out of office (travel time needs to be factored in).</li>
 </ul>
-<p><strong>Upon scheduling:</strong> <span class="topic-tag" data-topic="docusign">DocuSign</span></p>
+<p><strong>Upon scheduling:</strong> <span class="topic-tag" data-topic="docusign" style="background:#fce4b8;color:#92600a;border:1px solid #f0c05a">DocuSign</span></p>
 <ul>
 <li>Send confirmation email with attachments (see <a href="#email-template-2-intro-meeting-confirmation">Email Template 2: Intro Meeting Confirmation</a>). Note: consent forms are no longer attached — they are sent separately via DocuSign (see below).</li>
 <li>Create an Outlook calendar event on the relevant supervisor's calendar and add the caregiver as an attendee (see <a href="#email-template-3-calendar-event-body">Email Template 3: Calendar Event</a>)</li>
@@ -1262,7 +1264,7 @@
 <blockquote>
 <p><strong>Responsible:</strong> <span class="role-badge" style="background:#27ae60">QS Supervisor</span></p>
 <p>~~<strong>RESOLVED:</strong> Intro meeting timing confirmed as 4-6 weeks before cohort start (ideal: 6 weeks). See Step 9D scheduling guidance.~~</p>
-<p><strong>OPEN ITEM:</strong> Possibility of gathering child-specific milestone info closer to start date via forms, and/or having the Parent Coach / team lead gather it?</p>
+<p><span class="topic-tag" data-topic="open-item" style="background:#fde8e8;color:#9b1c1c;border:1px solid #f5a3a3">Open Item</span> <strong>OPEN ITEM:</strong> Possibility of gathering child-specific milestone info closer to start date via forms, and/or having the Parent Coach / team lead gather it?</p>
 </blockquote>
 <p><strong>Prior to the QS intro call:</strong></p>
 <p>Supervisors to fully review all sections of child's Greenspace (IWK Autism Portal) profile:<br />
@@ -1280,7 +1282,7 @@
 - Community/partners information<br />
 - Update participant info sheet<br />
 - Upload completed consent forms to ShareVision (see DocuSign Consent Workflow below)</p>
-<h3 id="docusign-consent-workflow">DocuSign Consent Workflow <span class="topic-tag" data-topic="docusign">DocuSign</span></h3>
+<h3 id="docusign-consent-workflow">DocuSign Consent Workflow <span class="topic-tag" data-topic="docusign" style="background:#fce4b8;color:#92600a;border:1px solid #f0c05a">DocuSign</span></h3>
 <p>Consent forms (Participation and Confidentiality Agreement, Video Consent, Consent To Release and Share) are sent to families via DocuSign rather than as email attachments. The default signing window is 8 weeks.</p>
 <h4 id="timeline">Timeline</h4>
 <table>
@@ -1343,10 +1345,10 @@
 <p><strong>Immediate term:</strong> Continue current auditing practices with one change — audit reminder is tied to <strong>Session 1</strong> (rather than Session 2) for Yuna and Valeria to verify consent completion.</p>
 <p><strong>Medium-long term:</strong> May be possible to automate consent tracking and auditing through the DocuSign API.</p>
 <blockquote>
-<p><strong>OPEN ITEM — DocuSign Envelope Visibility:</strong> Currently, only the person who sends a DocuSign envelope (and those included as recipients/signers) can see the envelope and its status in their DocuSign account. Can the DocuSign account be configured so that all relevant staff within a zone can see sent envelopes and their status? This is an account-level configuration question.</p>
-<p><strong>OPEN ITEM — Phone vs. Zoom for Intro Meetings:</strong> With the move toward in-meeting DocuSign completion, is phone still a workable modality for intro meetings? Zoom screen-sharing makes it easier to walk a caregiver through the forms in real time. Consider whether Zoom should become the default with phone as an exception.</p>
-<p><strong>OPEN ITEM — Physical Copy Fallback:</strong> What is the plan for families that are unable to complete forms via DocuSign (e.g., limited digital access, technical difficulties)? Anticipate the proportion of participants who may need physical copies and define the alternative workflow.</p>
-<p><strong>OPEN ITEM — DocuSign Session Timeout:</strong> The current DocuSign account signs users out after 20 minutes of inactivity. Can this be increased for all users to accommodate longer form review sessions?</p>
+<p><span class="topic-tag" data-topic="open-item" style="background:#fde8e8;color:#9b1c1c;border:1px solid #f5a3a3">Open Item</span> <strong>OPEN ITEM — DocuSign Envelope Visibility:</strong> Currently, only the person who sends a DocuSign envelope (and those included as recipients/signers) can see the envelope and its status in their DocuSign account. Can the DocuSign account be configured so that all relevant staff within a zone can see sent envelopes and their status? This is an account-level configuration question.</p>
+<p><span class="topic-tag" data-topic="open-item" style="background:#fde8e8;color:#9b1c1c;border:1px solid #f5a3a3">Open Item</span> <strong>OPEN ITEM — Phone vs. Zoom for Intro Meetings:</strong> With the move toward in-meeting DocuSign completion, is phone still a workable modality for intro meetings? Zoom screen-sharing makes it easier to walk a caregiver through the forms in real time. Consider whether Zoom should become the default with phone as an exception.</p>
+<p><span class="topic-tag" data-topic="open-item" style="background:#fde8e8;color:#9b1c1c;border:1px solid #f5a3a3">Open Item</span> <strong>OPEN ITEM — Physical Copy Fallback:</strong> What is the plan for families that are unable to complete forms via DocuSign (e.g., limited digital access, technical difficulties)? Anticipate the proportion of participants who may need physical copies and define the alternative workflow.</p>
+<p><span class="topic-tag" data-topic="open-item" style="background:#fde8e8;color:#9b1c1c;border:1px solid #f5a3a3">Open Item</span> <strong>OPEN ITEM — DocuSign Session Timeout:</strong> The current DocuSign account signs users out after 20 minutes of inactivity. Can this be increased for all users to accommodate longer form review sessions?</p>
 </blockquote>
 <hr />
 <h2 id="section-11-at-the-end-of-qs-services--transition-back-to-cicc">Section 11: At the End of QS Services — Transition Back to CICC</h2>
@@ -1507,7 +1509,7 @@
 <li>Input the date the Discharge letter was provided to the family in the <strong>"QS End Date"</strong> field.</li>
 </ol>
 <blockquote>
-<p><strong>OPEN ITEM — QS Start Date for Pre-S1 Discontinued Families:</strong> For families who are discontinued before attending Session 1, the appropriate value for "QS Start Date" in GreenSpace needs clarification. Options include the family's intended Session 1 date or their Intro Meeting date. To be confirmed with CICC.</p>
+<p><span class="topic-tag" data-topic="open-item" style="background:#fde8e8;color:#9b1c1c;border:1px solid #f5a3a3">Open Item</span> <strong>OPEN ITEM — QS Start Date for Pre-S1 Discontinued Families:</strong> For families who are discontinued before attending Session 1, the appropriate value for "QS Start Date" in GreenSpace needs clarification. Options include the family's intended Session 1 date or their Intro Meeting date. To be confirmed with CICC.</p>
 </blockquote>
 <hr />
 <h3 id="important-restrictions">Important Restrictions</h3>
@@ -1694,7 +1696,7 @@ QuickStart Nova Scotia</p>
 <p>[Your Name]<br />
 Administrative Support, QuickStart NS</p>
 </blockquote>
-<h3 id="email-template-2-intro-meeting-confirmation">Email Template 2: Intro Meeting Confirmation <span class="topic-tag" data-topic="docusign">DocuSign</span></h3>
+<h3 id="email-template-2-intro-meeting-confirmation">Email Template 2: Intro Meeting Confirmation <span class="topic-tag" data-topic="docusign" style="background:#fce4b8;color:#92600a;border:1px solid #f0c05a">DocuSign</span></h3>
 <p><strong>Subject:</strong> QuickStart NS – Intro Meeting Confirmation</p>
 <blockquote>
 <p>Hi [Caregiver's Name],</p>
@@ -1714,7 +1716,7 @@ Administrative Support, QuickStart NS</p>
 <p>[Your Name]<br />
 Administrative Support, QuickStart NS</p>
 </blockquote>
-<h3 id="email-template-3-calendar-event-body">Email Template 3: Calendar Event Body <span class="topic-tag" data-topic="docusign">DocuSign</span></h3>
+<h3 id="email-template-3-calendar-event-body">Email Template 3: Calendar Event Body <span class="topic-tag" data-topic="docusign" style="background:#fce4b8;color:#92600a;border:1px solid #f0c05a">DocuSign</span></h3>
 <p><em>Used when adding the caregiver to the Outlook calendar event for the confirmed intro meeting.</em></p>
 <blockquote>
 <p>Hello [Caregiver's Name],</p>
@@ -1725,7 +1727,7 @@ Administrative Support, QuickStart NS</p>
 <p>If you have any questions before the meeting, please feel free to reach out.</p>
 <p>We look forward to connecting with you.</p>
 </blockquote>
-<h3 id="email-template-4-reminder-email">Email Template 4: Reminder Email <span class="topic-tag" data-topic="docusign">DocuSign</span></h3>
+<h3 id="email-template-4-reminder-email">Email Template 4: Reminder Email <span class="topic-tag" data-topic="docusign" style="background:#fce4b8;color:#92600a;border:1px solid #f0c05a">DocuSign</span></h3>
 <p><em>Sent 2 days before the scheduled intro meeting.</em></p>
 <blockquote>
 <p>Hello [NAME],</p>
@@ -1807,39 +1809,198 @@ Administrative Support, QuickStart NS</p>
   });
 })();
 
-// Topic filter — wraps content after tagged headings into .docusign-section spans
-// and toggles visibility via body class
+// Topic filter — generic multi-tag system with AND stacking
 (function() {
-  // Wrap sections that follow a tagged heading
-  const tagged = document.querySelectorAll('.topic-tag[data-topic="docusign"]');
-  tagged.forEach(tag => {
-    const heading = tag.closest('h1, h2, h3, h4, h5, h6');
-    if (!heading) return;
-    const level = parseInt(heading.tagName[1]);
-    // Collect siblings until next heading of same or higher level
-    let el = heading.nextElementSibling;
-    const wrapper = document.createElement('div');
-    wrapper.className = 'docusign-section';
-    heading.parentNode.insertBefore(wrapper, el);
-    while (el) {
-      const next = el.nextElementSibling;
-      if (el.matches && el.matches('h1,h2,h3,h4,h5,h6')) {
-        const elLevel = parseInt(el.tagName[1]);
-        if (elLevel <= level) break;
-      }
-      wrapper.appendChild(el);
-      el = next;
-    }
+  const content = document.getElementById('content');
+  const activeFilters = new Set();
+  const tocLinks = document.querySelectorAll('#sidebar-toc .toc-body a');
+
+  // STEP 1: Collect direct tags on elements
+  // directTags: element -> Set of topic strings
+  const directTags = new Map();
+  document.querySelectorAll('.topic-tag[data-topic]').forEach(tag => {
+    const el = tag.closest('h1,h2,h3,h4,h5,h6,blockquote,p');
+    if (!el) return;
+    if (!directTags.has(el)) directTags.set(el, new Set());
+    directTags.get(el).add(tag.dataset.topic);
   });
 
-  // Filter button
-  const btn = document.getElementById('filter-docusign');
-  if (btn) {
-    btn.addEventListener('click', function() {
-      document.body.classList.toggle('filter-docusign');
-      this.classList.toggle('active');
+  // STEP 2: Wrap content after tagged headings into section divs
+  // These sections inherit the heading's tags
+  const sections = []; // { wrapper, topics }
+  directTags.forEach((topics, el) => {
+    if (!el.matches('h1,h2,h3,h4,h5,h6')) return;
+    const level = parseInt(el.tagName[1]);
+    let sibling = el.nextElementSibling;
+    const wrapper = document.createElement('div');
+    wrapper.className = 'tag-section';
+    el.parentNode.insertBefore(wrapper, sibling);
+    while (sibling) {
+      const next = sibling.nextElementSibling;
+      if (sibling.matches && sibling.matches('h1,h2,h3,h4,h5,h6')) {
+        if (parseInt(sibling.tagName[1]) <= level) break;
+      }
+      wrapper.appendChild(sibling);
+      sibling = next;
+    }
+    sections.push({ wrapper, topics: new Set(topics) });
+  });
+
+  // STEP 3: Build effective topics for every tagged element
+  // effectiveTopics = own direct tags UNION tags inherited from any ancestor section
+  function getEffectiveTopics(el) {
+    const effective = new Set(directTags.get(el) || []);
+    // Walk up to find ancestor tag-sections and inherit their topics
+    let ancestor = el.closest('.tag-section');
+    while (ancestor) {
+      const sec = sections.find(s => s.wrapper === ancestor);
+      if (sec) sec.topics.forEach(t => effective.add(t));
+      // Check for nested sections
+      const outerAncestor = ancestor.parentElement ? ancestor.parentElement.closest('.tag-section') : null;
+      ancestor = outerAncestor;
+    }
+    return effective;
+  }
+
+  // STEP 4: Find the nearest heading (with id) for any element, for sidebar mapping
+  function findNearestHeading(el) {
+    // If it's a heading itself
+    if (el.matches('h1,h2,h3,h4,h5,h6') && el.id) return el;
+    // Walk backward through previous siblings and parents to find the closest heading
+    let node = el;
+    while (node) {
+      // Check previous siblings
+      let prev = node.previousElementSibling;
+      while (prev) {
+        if (prev.matches('h1,h2,h3,h4,h5,h6') && prev.id) return prev;
+        // Check inside tag-section wrappers
+        if (prev.classList && prev.classList.contains('tag-section')) {
+          const inner = prev.querySelectorAll('h2[id],h3[id],h4[id]');
+          if (inner.length) return inner[inner.length - 1];
+        }
+        prev = prev.previousElementSibling;
+      }
+      // Move up to parent
+      node = node.parentElement;
+      if (node === content || !node) break;
+      // Check if parent itself is preceded by a heading
+      if (node.matches && node.matches('h1,h2,h3,h4,h5,h6') && node.id) return node;
+    }
+    return null;
+  }
+
+  // STEP 5: Build sidebar link -> effective topics mapping
+  const linkTopics = new Map();
+  function addLinkTopics(headingEl, topics) {
+    if (!headingEl || !headingEl.id) return;
+    const link = document.querySelector('#sidebar-toc .toc-body a[href="#' + headingEl.id + '"]');
+    if (link) {
+      if (!linkTopics.has(link)) linkTopics.set(link, new Set());
+      topics.forEach(t => linkTopics.get(link).add(t));
+    }
+    // Also propagate to parent h2 link if this is h3/h4
+    if (headingEl.tagName === 'H3' || headingEl.tagName === 'H4') {
+      // Find nearest preceding h2
+      let prev = headingEl;
+      while (prev) {
+        prev = prev.previousElementSibling;
+        if (!prev) {
+          // Check parent's siblings (we might be inside a tag-section wrapper)
+          const parent = headingEl.parentElement;
+          if (parent && parent.classList.contains('tag-section')) {
+            prev = parent;
+            continue;
+          }
+          break;
+        }
+        if (prev.matches('h2') && prev.id) {
+          addLinkTopics(prev, topics);
+          break;
+        }
+        // Also check if prev is a tag-section that might contain h2
+        if (prev.classList && prev.classList.contains('tag-section')) {
+          // look before the wrapper
+          continue;
+        }
+      }
+    }
+  }
+
+  // Map all tagged elements to sidebar
+  directTags.forEach((topics, el) => {
+    const effective = getEffectiveTopics(el);
+    const heading = findNearestHeading(el);
+    if (heading) addLinkTopics(heading, effective);
+  });
+
+  // STEP 6: Apply filters
+  function applyFilters() {
+    const hasFilters = activeFilters.size > 0;
+    document.body.classList.toggle('has-filters', hasFilters);
+
+    // Clear all
+    content.querySelectorAll('.tag-visible').forEach(e => e.classList.remove('tag-visible'));
+    tocLinks.forEach(l => l.classList.remove('toc-visible'));
+
+    if (!hasFilters) return;
+
+    // Show elements whose effective topics contain ALL active filters
+    directTags.forEach((ownTopics, el) => {
+      const effective = getEffectiveTopics(el);
+      const match = [...activeFilters].every(f => effective.has(f));
+      if (!match) return;
+
+      // Make the element itself visible
+      el.classList.add('tag-visible');
+
+      // If it's a heading, also show its section wrapper
+      if (el.matches('h1,h2,h3,h4,h5,h6')) {
+        const sec = sections.find(s => {
+          // section wrapper is the next sibling after the heading
+          return s.wrapper.previousElementSibling === el ||
+                 s.wrapper === el.nextElementSibling;
+        });
+        if (sec) sec.wrapper.classList.add('tag-visible');
+      }
+
+      // For non-heading elements (blockquotes, p): also make the nearest
+      // heading visible so it acts as a scroll anchor for sidebar clicks
+      if (!el.matches('h1,h2,h3,h4,h5,h6')) {
+        const heading = findNearestHeading(el);
+        if (heading) heading.classList.add('tag-visible');
+      }
+
+      // Walk up to make all ancestors up to #content visible
+      let node = el;
+      while (node && node !== content) {
+        if (node.parentNode === content) {
+          node.classList.add('tag-visible');
+        }
+        node = node.parentNode;
+      }
+    });
+
+    // Sidebar links: visible if effective topics match ALL active filters
+    linkTopics.forEach((topics, link) => {
+      const match = [...activeFilters].every(f => topics.has(f));
+      link.classList.toggle('toc-visible', match);
     });
   }
+
+  // Filter buttons
+  document.querySelectorAll('.filter-btn[data-topic]').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const topic = this.dataset.topic;
+      if (activeFilters.has(topic)) {
+        activeFilters.delete(topic);
+        this.classList.remove('active');
+      } else {
+        activeFilters.add(topic);
+        this.classList.add('active');
+      }
+      applyFilters();
+    });
+  });
 })();
 </script>
 </body>
