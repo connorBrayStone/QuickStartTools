@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PPAS Integrated Service Delivery Consent — Staff Guide</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+  :root {
+    --ppas-teal: #00837A;
+    --ppas-teal-light: #e6f4f3;
+    --ppas-teal-mid: #b3dbd8;
+    --amber: #B45309;
+    --amber-light: #fef3c7;
+    --red: #991B1B;
+    --red-light: #fee2e2;
+    --slate: #1e293b;
+    --slate-mid: #475569;
+    --slate-light: #f1f5f9;
+    --border: #cbd5e1;
+    --white: #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13.5px;
+    color: var(--slate);
+    background: var(--white);
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 32px 40px;
+    line-height: 1.55;
+  }
+
+  /* HEADER */
+  .doc-header {
+    border-bottom: 2.5px solid var(--ppas-teal);
+    padding-bottom: 14px;
+    margin-bottom: 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .doc-header-left h1 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ppas-teal);
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+  }
+
+  .doc-header-left p {
+    font-size: 11.5px;
+    color: var(--slate-mid);
+    margin-top: 3px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .doc-header-right {
+    font-size: 10.5px;
+    color: var(--slate-mid);
+    text-align: right;
+    font-family: 'IBM Plex Mono', monospace;
+    line-height: 1.6;
+  }
+
+  /* PURPOSE BOX */
+  .purpose-box {
+    background: var(--ppas-teal-light);
+    border-left: 3px solid var(--ppas-teal);
+    padding: 12px 16px;
+    border-radius: 0 4px 4px 0;
+    margin-bottom: 22px;
+    font-size: 13px;
+    color: var(--slate);
+  }
+
+  .purpose-box strong {
+    color: var(--ppas-teal);
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 5px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  /* SECTION HEADINGS */
+  h2 {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--slate-mid);
+    font-family: 'IBM Plex Mono', monospace;
+    margin: 24px 0 10px 0;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* FORM SECTION CARDS */
+  .section-card {
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+
+  .section-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 14px;
+    background: var(--slate-light);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-card-header .section-label {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--slate);
+    flex: 1;
+  }
+
+  .badge {
+    font-size: 10px;
+    font-weight: 600;
+    font-family: 'IBM Plex Mono', monospace;
+    padding: 2px 7px;
+    border-radius: 3px;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  .badge-required {
+    background: var(--red-light);
+    color: var(--red);
+    border: 1px solid #fca5a5;
+  }
+
+  .badge-optional {
+    background: var(--slate-light);
+    color: var(--slate-mid);
+    border: 1px solid var(--border);
+  }
+
+  .section-card-body {
+    padding: 11px 14px;
+    font-size: 13px;
+  }
+
+  .section-card-body p {
+    color: var(--slate);
+    margin-bottom: 7px;
+  }
+
+  .section-card-body p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* REQUIRED FIELD DETAIL */
+  .required-fields {
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .required-field-item {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    background: var(--red-light);
+    border: 1px solid #fca5a5;
+    border-radius: 4px;
+    padding: 8px 11px;
+    font-size: 12.5px;
+  }
+
+  .required-field-item .field-name {
+    font-weight: 600;
+    color: var(--red);
+    white-space: nowrap;
+    min-width: 160px;
+    font-size: 12px;
+  }
+
+  .required-field-item .field-reason {
+    color: var(--slate);
+    line-height: 1.5;
+  }
+
+  /* SCRIPT CALLOUT */
+  .script-box {
+    background: #f8fafc;
+    border: 1px dashed var(--border);
+    border-radius: 4px;
+    padding: 9px 13px;
+    margin-top: 8px;
+    font-size: 12.5px;
+    color: var(--slate-mid);
+    font-style: italic;
+    line-height: 1.55;
+  }
+
+  .script-box::before {
+    content: "Say: ";
+    font-style: normal;
+    font-weight: 600;
+    font-size: 10px;
+    font-family: 'IBM Plex Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ppas-teal);
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* TABLE EXPLAINER */
+  .table-explainer {
+    border: 1px solid var(--ppas-teal-mid);
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 22px;
+    font-size: 12.5px;
+  }
+
+  .table-explainer-header {
+    background: var(--ppas-teal);
+    color: white;
+    padding: 8px 14px;
+    font-weight: 600;
+    font-size: 11.5px;
+    letter-spacing: 0.02em;
+  }
+
+  .table-explainer-body {
+    padding: 11px 14px;
+    background: var(--ppas-teal-light);
+    color: var(--slate);
+    line-height: 1.6;
+  }
+
+  .table-explainer-body p {
+    margin-bottom: 5px;
+  }
+
+  .table-explainer-body p:last-child { margin-bottom: 0; }
+
+  /* REMINDER BOX */
+  .reminder-box {
+    background: var(--amber-light);
+    border-left: 3px solid var(--amber);
+    padding: 10px 14px;
+    border-radius: 0 4px 4px 0;
+    margin-top: 22px;
+    font-size: 12.5px;
+    color: var(--slate);
+  }
+
+  .reminder-box strong {
+    color: var(--amber);
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-family: 'IBM Plex Mono', monospace;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* FOOTER */
+  .doc-footer {
+    margin-top: 28px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    font-size: 10.5px;
+    color: var(--slate-mid);
+    font-family: 'IBM Plex Mono', monospace;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  @media print {
+    body { padding: 20px 28px; }
+    .section-card, .table-explainer { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<div class="doc-header">
+  <div class="doc-header-left">
+    <h1>PPAS Integrated Service Delivery Consent<br>Staff Reference Guide</h1>
+    <p>QuickStart Nova Scotia — Internal Staff Resource</p>
+  </div>
+  <div class="doc-header-right">
+    Stage 2 Consent<br>April 2026
+  </div>
+</div>
+
+<div class="purpose-box">
+  <strong>Purpose of this guide</strong>
+  This guide helps you walk a family through the PPAS Integrated Service Delivery Consent form. It explains what each section is asking, which fields are required and why, and what to say if families have questions. A brief review of this form with the family is required before they sign.
+</div>
+
+<h2>How This Form Is Being Completed</h2>
+
+<div class="section-card">
+  <div class="section-card-header">
+    <span class="section-label">Option 1 — Supervisor Review + DocuSign</span>
+    <span class="badge badge-optional">Preferred</span>
+  </div>
+  <div class="section-card-body">
+    <p>The supervisor reviews the form with the family and sends the DocuSign link immediately after. This can happen in two ways:</p>
+    <div class="required-fields" style="margin-top:6px;">
+      <div class="required-field-item" style="background: var(--ppas-teal-light); border-color: var(--ppas-teal-mid);">
+        <span class="field-name" style="color: var(--ppas-teal); min-width:140px;">During intro meeting</span>
+        <span class="field-reason">Supervisor reviews the form as part of the QS Intro Meeting. DocuSign is sent immediately after — either during the meeting or via scheduled send shortly after.</span>
+      </div>
+      <div class="required-field-item" style="background: var(--ppas-teal-light); border-color: var(--ppas-teal-mid);">
+        <span class="field-name" style="color: var(--ppas-teal); min-width:140px;">Follow-up phone call</span>
+        <span class="field-reason">Supervisor conducts a brief review call (5–10 min) with the family. DocuSign link is sent immediately after the call.</span>
+      </div>
+    </div>
+    <p style="color: var(--slate-mid); font-size:12px; margin-top:8px;">After signing: DocuSign stores the completed form. Upload to Greenspace as required.</p>
+  </div>
+</div>
+
+<div class="section-card">
+  <div class="section-card-header">
+    <span class="section-label">Option 2 — Staff In-Person (Printed Form)</span>
+    <span class="badge badge-optional">When supervisor review not possible</span>
+  </div>
+  <div class="section-card-body">
+    <p>Where supervisor review is not possible, the attending staff member reviews the form with the family during a session using a <strong>printed copy</strong>. The family completes and signs in wet ink during that session.</p>
+    <p style="color: var(--slate-mid); font-size:12px;">After signing: scan the completed form and upload to Greenspace. Offer the family a copy for their records.</p>
+  </div>
+</div>
+
+<h2>Form Overview — What the Form Is Doing</h2>
+
+<div class="table-explainer">
+  <div class="table-explainer-header">Understanding the Partner Agencies Table</div>
+  <div class="table-explainer-body">
+    <p>The main table has <strong>rows</strong> (types of information) and <strong>columns</strong> (partner organizations). Families check which partners they consent to share each type of information with.</p>
+    <p>The four partner columns are: <strong>IWK Health, Nova Scotia Health, Hearing and Speech Nova Scotia,</strong> and <strong>Autism Nova Scotia's QuickStart NS Program.</strong></p>
+    <p>Families can consent to <em>all</em> information with <em>all</em> partners, or they can be selective — for example, consenting to IWK but not Nova Scotia Health, or only sharing certain types of information. All choices beyond the two required fields below are genuinely optional.</p>
+  </div>
+</div>
+
+<h2>Form Sections — What Each Part Is Asking</h2>
+
+<div class="section-card">
+  <div class="section-card-header">
+    <span class="section-label">Partner Agencies — QuickStart Column</span>
+    <span class="badge badge-required">Required</span>
+  </div>
+  <div class="section-card-body">
+    <p>The first row asks families to consent to PPAS collecting and sharing their child's information with partner agencies. The <strong>QuickStart NS column is required.</strong></p>
+    <div class="script-box">
+      "Since your child is participating in QuickStart, we do need your consent to share information within our program — that's the one field in this table that's required."
+    </div>
+    <p style="margin-top:8px; color: var(--slate-mid); font-size:12px;">The other three partner columns (IWK Health, Nova Scotia Health, HSNS) are optional. Families can check any, all, or none of them.</p>
+  </div>
+</div>
+
+<div class="section-card">
+  <div class="section-card-header">
+    <span class="section-label">Information Types — Diagnosis Information, QuickStart Column</span>
+    <span class="badge badge-required">Required</span>
+  </div>
+  <div class="section-card-body">
+    <p>Families can choose which <em>types</em> of information to share. <strong>Diagnosis information in the QuickStart column is required.</strong></p>
+    <div class="script-box">
+      "Diagnosis information is the one required field here — QuickStart is specifically for children with a suspected, provisional, or confirmed autism diagnosis, and we already have this as part of your service match. This just formalizes that."
+    </div>
+    <p style="margin-top:8px; color: var(--slate-mid); font-size:12px;">All other information types — medical history, clinic notes, assessments, treatment participation — are optional and can be limited per partner.</p>
+  </div>
+</div>
+
+<div class="section-card">
+  <div class="section-card-header">
+    <span class="section-label">Other Service Providers / Clinicians</span>
+    <span class="badge badge-optional">Optional</span>
+  </div>
+  <div class="section-card-body">
+    <p>Families can name up to 4 external providers they'd like included — for example, a private therapist, family doctor, or school resource. This section is entirely optional.</p>
+    <div class="script-box">
+      "If there are other providers involved in your child's care that you'd like included — for example, NSECDIS, a private therapist, your family doctor, anyone like that — you can add them here. Completely optional."
+    </div>
+  </div>
+</div>
+
+<div class="section-card">
+  <div class="section-card-header">
+    <span class="section-label">Communication Methods</span>
+    <span class="badge badge-optional">Optional</span>
+  </div>
+  <div class="section-card-body">
+    <p>This section asks how information can be shared among partners — face-to-face, phone, mail, fax, or secure email. Families check whichever methods they're comfortable with.</p>
+    <div class="script-box">
+      "This just covers how we communicate with other providers — you can check whichever methods you're comfortable with."
+    </div>
+  </div>
+</div>
+
+<div class="section-card">
+  <div class="section-card-header">
+    <span class="section-label">Use of Information</span>
+    <span class="badge badge-optional">Optional</span>
+  </div>
+  <div class="section-card-body">
+    <p>Two checkboxes: consent to use information (1) to provide services to the child, and (2) to evaluate the PPAS program. These are separate purposes — families can consent to one without the other.</p>
+    <div class="script-box">
+      "There are two uses listed here — one is for providing services to your child directly, which is the main purpose. The other is to help evaluate and improve the PPAS program overall. You can consent to both, or just the first one."
+    </div>
+  </div>
+</div>
+
+<div class="section-card">
+  <div class="section-card-header">
+    <span class="section-label">Affirmation and Consent / Signature</span>
+    <span class="badge badge-required">Required to complete</span>
+  </div>
+  <div class="section-card-body">
+    <p>The final section confirms that a PPAS staff member has reviewed the form with the family, and captures the family's signature. Key details to mention:</p>
+    <div class="required-fields">
+      <div class="required-field-item">
+        <span class="field-name">Valid for 1 year</span>
+        <span class="field-reason">The consent is valid for one year from the date of signing. It will need to be renewed at that point.</span>
+      </div>
+      <div class="required-field-item">
+        <span class="field-name">Can be withdrawn</span>
+        <span class="field-reason">Families can withdraw their consent at any time, in whole or in part, by providing written notice to PPAS. Withdrawal does not have retroactive effect.</span>
+      </div>
+      <div class="required-field-item">
+        <span class="field-name">Can exclude a partner</span>
+        <span class="field-reason">If a family later decides they don't want information shared with a particular organization, they can strike out that agency's name on the form and initial it.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="reminder-box">
+  <strong>Reminder — Both Pathways</strong>
+  A brief review of this form with the family must happen before they sign, regardless of how the form is being completed.
+  <ul style="margin-top: 7px; padding-left: 18px; line-height: 1.7;">
+    <li><strong>Supervisor review + DocuSign:</strong> Send the DocuSign link immediately after the review — do not send in advance of the conversation.</li>
+    <li><strong>Staff in-person:</strong> Review the printed form together during the session, then have the family complete and sign in wet ink before leaving.</li>
+  </ul>
+</div>
+
+<div class="doc-footer">
+  <span>QuickStart Nova Scotia — Internal Use Only</span>
+  <span>PPAS Stage 2 Consent Staff Guide — April 2026</span>
+</div>
+
+</body>
+</html>
