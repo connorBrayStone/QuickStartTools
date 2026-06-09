@@ -21,7 +21,9 @@
   .toc-body { padding: 8px 0; overflow-y: auto; flex: 1; }
   .toc-body a { display: block; padding: 5px 16px; color: #555; text-decoration: none; font-size: 13px; border-left: 3px solid transparent; transition: all 0.15s; }
   .toc-body a:hover { background: var(--teal-light); color: var(--teal); border-left-color: var(--teal); }
-  .toc-body a.active { background: var(--teal-light); color: var(--teal); font-weight: 600; border-left-color: var(--teal); }
+  .toc-body a.active { background: var(--teal-light); color: var(--teal); font-weight: 700; border-left-color: var(--teal); }
+  /* Checklist mode: links whose target section isn't shown are not navigable — dim + disable. */
+  body.checklist-mode .toc-body a.toc-unreachable { opacity: 0.32; pointer-events: none; font-style: italic; }
   .toc-h3 { padding-left: 32px !important; font-size: 12px !important; color: #777 !important; }
   #content { margin-left: var(--sidebar-w); padding: 40px 48px 80px; }
   h1 { font-size: 28px; color: var(--teal); margin-bottom: 8px; padding-bottom: 12px; border-bottom: 3px solid var(--teal); }
@@ -55,6 +57,10 @@
   tr:hover td { background: var(--teal-light); }
   del { color: #999; }
   tr:has(del) td { background: var(--resolved-bg) !important; color: #888; }
+  /* Highlight rows: tint a row whose first cell is a bold Green/Yellow/Red label (e.g. waitlist age table). */
+  tr.hl-green td { background: #d9ecdd !important; }
+  tr.hl-yellow td { background: #fbf1cf !important; }
+  tr.hl-red td { background: #f5dada !important; }
   ul, ol { margin: 8px 0 8px 24px; }
   li { margin: 4px 0; }
   code { background: #eef; padding: 2px 6px; border-radius: 3px; font-size: 13px; font-family: 'Consolas', 'Courier New', monospace; }
@@ -72,6 +78,9 @@
   .topic-tag[data-topic="checklist"],
   .topic-tag[data-topic="action"],
   .topic-tag[data-topic="pinned"] { display: none; }
+  /* waitlist: keep the sidebar filter chip (.filter-btn) visible, but suppress the inline
+     heading badge — it's tagged on broad sections where a per-header pill would overstate relevance. */
+  .topic-tag[data-topic="waitlist"] { display: none; }
 
   /* Expandable reference sections (<details><summary>) */
   details { margin: 14px 0; border: 1px solid var(--border); border-radius: 4px; background: #fafafa; }
@@ -166,6 +175,9 @@
   .filter-btn[data-topic="participation-info-sheet"] { border-color: #d4b890; color: #6e4a1a; }
   .filter-btn[data-topic="participation-info-sheet"]:hover { background: #f0e6da; opacity: 0.85; }
   .filter-btn[data-topic="participation-info-sheet"].active { background: #f0e6da; border-color: #d4b890; }
+  .filter-btn[data-topic="waitlist"] { border-color: #eeaecd; color: #9d2463; }
+  .filter-btn[data-topic="waitlist"]:hover { background: #fbe3ef; opacity: 0.85; }
+  .filter-btn[data-topic="waitlist"].active { background: #fbe3ef; border-color: #eeaecd; }
 
   .toc-filters-roles { padding-top: 4px; }
   .filter-role { border-color: var(--role-border) !important; color: var(--role-color) !important; }
@@ -231,6 +243,11 @@
   body.has-filters.checklist-mode #content > * { display: none; }
   body.has-filters.checklist-mode #content > h1 { display: revert; }
   body.has-filters.checklist-mode #content > .tag-visible.checklist-visible { display: revert !important; }
+  /* Checklist + filter is an INTERSECTION: a filter match must ALSO be checklist content to show.
+     Without this, the filter's !important reveal (.tag-visible / .tag-visible-shell) would surface
+     non-checklist sections (e.g. Status Definitions, Program Status) as if they were checklist items. */
+  body.has-filters.checklist-mode .tag-visible:not(.checklist-visible),
+  body.has-filters.checklist-mode .tag-visible-shell:not(.checklist-visible) { display: none !important; }
   body.checklist-mode .checklist-hidden { display: none !important; }
   body.checklist-mode details[open] > *:not(summary) { display: none !important; }
   body.checklist-mode details > summary { color: #888; font-style: italic; }
@@ -325,7 +342,7 @@
 </div>
 <div class="toc-filter-group">
   <div class="toc-filter-group-label">Topics</div>
-  <div class="toc-filters"><button class="filter-btn" data-topic="docusign" title="Filter DocuSign sections"><span class="filter-label">DocuSign</span><span class="filter-count"></span></button><button class="filter-btn" data-topic="open-item" title="Filter Open Item sections"><span class="filter-label">Open Item</span><span class="filter-count"></span></button></div>
+  <div class="toc-filters"><button class="filter-btn" data-topic="waitlist" title="Filter Waitlist sections"><span class="filter-label">Waitlist</span><span class="filter-count"></span></button><button class="filter-btn" data-topic="docusign" title="Filter DocuSign sections"><span class="filter-label">DocuSign</span><span class="filter-count"></span></button><button class="filter-btn" data-topic="open-item" title="Filter Open Item sections"><span class="filter-label">Open Item</span><span class="filter-count"></span></button></div>
 </div>
 <div class="toc-filter-group">
   <div class="toc-filter-group-label">Roles</div>
@@ -337,14 +354,14 @@
 </div>
 <div class="toc-search-results" id="toc-search-results" style="display:none"></div>
 <div class="toc-body" id="toc-body">
-  <a href="#open-items-summary" class="toc-h2">Open Items Summary</a>
   <a href="#overview" class="toc-h2">Overview</a>
   <a href="#key-systems-and-tools" class="toc-h3">Key Systems and Tools</a>
   <a href="#division-of-responsibilities" class="toc-h3">Division of Responsibilities</a>
-  <a href="#workflow-summary-age-eligible-children-31-months" class="toc-h3">Workflow Summary: Age-Eligible Children (&lt;=31 months)</a>
+  <a href="#workflow-summary-age-eligible-children-under-32-months" class="toc-h3">Workflow Summary: Age-Eligible Children (under 32 months)</a>
   <a href="#status-definitions" class="toc-h2">Status Definitions</a>
   <a href="#contact-status" class="toc-h3">Contact Status</a>
   <a href="#program-status" class="toc-h3">Program Status</a>
+  <a href="#understanding-the-waitlist-matched-vs-not-provisional-vs-confirmed" class="toc-h3">Understanding the Waitlist: Matched vs. Not, Provisional vs. Confirmed</a>
   <a href="#reporting-considerations-for-program-status" class="toc-h3">Reporting Considerations for Program Status</a>
   <a href="#participation-in-qs-ns-services" class="toc-h2">Participation in QS NS Services</a>
   <a href="#parent-coaching-program" class="toc-h3">Parent Coaching Program</a>
@@ -366,6 +383,8 @@
   <a href="#what-happens" class="toc-h3">What Happens?</a>
   <a href="#qs-clinical-team-review-process" class="toc-h3">QS Clinical Team Review Process</a>
   <a href="#cicc-follow-up-actions" class="toc-h3">CICC Follow-Up Actions</a>
+  <a href="#rc-waitlist-script-generalized" class="toc-h3">RC Waitlist Script (Generalized)</a>
+  <a href="#working-the-waitlist-when-an-opening-arises" class="toc-h3">Working the Waitlist When an Opening Arises</a>
   <a href="#section-4-schedule-meeting-with-resource-coordinator" class="toc-h2">Section 4: Schedule Meeting with Resource Coordinator</a>
   <a href="#section-5-screening-process-undiagnosed-children" class="toc-h2">Section 5: Screening Process (Undiagnosed Children)</a>
   <a href="#section-6-informed-choice-discussion" class="toc-h2">Section 6: Informed Choice Discussion</a>
@@ -417,9 +436,11 @@
   <a href="#email-template-4-reminder-email" class="toc-h3">Email Template 4: Reminder Email</a>
   <a href="#email-template-5-s1-4-scheduling-confirmation" class="toc-h3">Email Template 5: S1-4 Scheduling Confirmation</a>
   <a href="#archive" class="toc-h2">Archive</a>
+  <a href="#end-of-service--not-matched-by-cicc-variants-transitional" class="toc-h3">End-of-Service — "Not Matched by CICC" Variants (transitional)</a>
   <a href="#receipt-and-transfer-of-referrals-to-cicc-transition-period" class="toc-h3">Receipt and Transfer of Referrals to CICC (Transition Period)</a>
   <a href="#consent-withdrawal-handling-transition-period" class="toc-h3">Consent Withdrawal Handling (Transition Period)</a>
   <a href="#end-of-service-outreach--pre-dec-2025-families" class="toc-h3">End-of-Service Outreach — Pre-Dec 2025 Families</a>
+  <a href="#open-items-summary" class="toc-h2">Open Items Summary</a>
 </div>
 </nav>
 <main id="content">
@@ -430,177 +451,6 @@
 <strong>Context:</strong> Following integration with the Provincial Preschool Autism Service's Clinical Intake and Care Coordination (CICC) team, the majority of referral and intake steps (Sections 1-8) are now performed by CICC. The QuickStart (QS) team's direct involvement begins primarily at Section 9, with ongoing responsibility for maintaining and monitoring the Capacity Sharing Excel Sheet throughout.</p>
 </blockquote>
 <hr />
-<hr />
-<h2 id="open-items-summary">Open Items Summary <span class="topic-tag" data-topic="open-item" style="background:#fde8e8;color:#9b1c1c;border:1px solid #f5a3a3">Open Item</span></h2>
-<p>The following open questions and TODOs are collected from throughout this document. Each also appears inline where it is contextually relevant.</p>
-<table>
-<thead>
-<tr>
-<th>#</th>
-<th>Section</th>
-<th>Item</th>
-<th>Owner</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
-<td>3.5</td>
-<td>Add an indicator around how to update Participation Info workbooks for ESDM candidacy</td>
-<td>--</td>
-</tr>
-<tr>
-<td>2</td>
-<td>7</td>
-<td>Greenspace fixed-option question for "Availability of Primary Participating Caregiver" needs to be revised/consolidated</td>
-<td>--</td>
-</tr>
-<tr>
-<td>3</td>
-<td>7</td>
-<td>Identify specific sections of QS NS Service Profile to highlight for each eligibility criterion (caregiver availability, program hours, language, location)</td>
-<td>--</td>
-</tr>
-<tr>
-<td>4</td>
-<td>7</td>
-<td>Confirm: should language field be added to Greenspace?</td>
-<td>--</td>
-</tr>
-<tr>
-<td>5</td>
-<td>9B</td>
-<td>Should admins check feasibility of in-person sessions at this point, or during the intro call?</td>
-<td>Connor</td>
-</tr>
-<tr>
-<td>6</td>
-<td>9B</td>
-<td>Should RC remove Greenspace data fields (age based on referral date, earliest available start date, cohort assignment, age at projected start) when family declines?</td>
-<td>Bethany</td>
-</tr>
-<tr>
-<td>~~7~~</td>
-<td>~~10~~</td>
-<td>~~Intro meeting timing — resolved: 4-6 weeks before cohort start, ideal 6 weeks. See Step 9D.~~</td>
-<td>~~resolved~~</td>
-</tr>
-<tr>
-<td>8</td>
-<td>10</td>
-<td>Possibility of gathering child-specific milestone info closer to start date via forms, and/or having the PC/team lead gather it?</td>
-<td>--</td>
-</tr>
-<tr>
-<td>9</td>
-<td>Community Outreach</td>
-<td>Verify and update outreach document links post-CICC integration; review document content to reflect new referral pathway (referral to PPAS, not directly to QS)</td>
-<td>--</td>
-</tr>
-<tr>
-<td>10</td>
-<td>Status Definitions</td>
-<td>Review whether additional program status values are needed for ESDM-specific pathways (e.g. ESDM Waitlist vs. PC Waitlist distinction in the Participation Info workbook)</td>
-<td>--</td>
-</tr>
-<tr>
-<td>11</td>
-<td>9D</td>
-<td>3-attempt contact policy documented (email-first, 2-day waits, escalation to referral source). Remaining: confirm whether "Unable to Contact" should trigger release of the cohort opening and/or formal notification to CICC</td>
-<td>Connor</td>
-</tr>
-<tr>
-<td>12</td>
-<td>13</td>
-<td>Develop a general FAQ to help QS staff hold realistic conversations about PPAS options, CICC services, timelines, and eligibility</td>
-<td>Bethany</td>
-</tr>
-<tr>
-<td>13</td>
-<td>13</td>
-<td>Obtain realistic timeline guidance from PPAS leadership about typical response times, waitlists, and enrollment windows</td>
-<td>--</td>
-</tr>
-<tr>
-<td>15</td>
-<td>9F</td>
-<td>Confirm whether QS Start Date / QS End Date in Greenspace should be left blank or populated for the unable-to-contact pathway (where no intro meeting occurred)</td>
-<td>Connor / CICC</td>
-</tr>
-<tr>
-<td>16</td>
-<td>9D</td>
-<td>Determine default practice for sending the DocuSign consent envelope when the intro meeting is more than 90 days out (DocuSign's scheduled-send max window is 90 days). Supervisor still owns the task; mechanics TBD</td>
-<td>Connor</td>
-</tr>
-<tr>
-<td>17</td>
-<td>10</td>
-<td>Bring established intro-meeting practices into this wiki (currently covered only in existing onboarding and the QuickStart Intro Meeting OneNote template in the family's SharePoint folder) so the manual is comprehensive — pre-meeting SharePoint folder setup, the meeting's structured agenda, and the in-meeting notes captured in the OneNote template</td>
-<td>Connor</td>
-</tr>
-<tr>
-<td>18</td>
-<td>10</td>
-<td>For medium-long term efficiency, confirm and consolidate who does what for ShareVision updates following the intro meeting (notes upload, community partners section, safety checklist) — current default has supervisor handling all; revisit whether some belong with admin</td>
-<td>Connor</td>
-</tr>
-<tr>
-<td>19</td>
-<td>10</td>
-<td>DocuSign envelope visibility — can zone staff beyond the sender see sent envelopes/status? (account config)</td>
-<td>Connor</td>
-</tr>
-<tr>
-<td>20</td>
-<td>10</td>
-<td>DocuSign session timeout — can the 20-minute logout window be increased?</td>
-<td>Connor</td>
-</tr>
-<tr>
-<td>21</td>
-<td>10</td>
-<td>DocuSign API automation for consent auditing (medium-long term)</td>
-<td>Connor</td>
-</tr>
-<tr>
-<td>22</td>
-<td>11 (Email Template 5)</td>
-<td>Populate the zone-specific office-location details (parking, entry, on-arrival instructions) for each office beyond Halifax, so supervisors in all zones have a ready-made block to substitute into Email Template 5</td>
-<td>Connor / per-zone supervisors</td>
-</tr>
-<tr>
-<td>23</td>
-<td>11</td>
-<td>Assess in the medium-long term whether specific operational portions of Section 11 (Participation Info workbook updates in 11C, Outlook calendar setup in 11D, confirmation-email drafting in 11E) could be workably delegated to <span class="role-badge" data-topic="role-qs-admin" style="background:#2980b9">QS Admin</span> for efficiency — section is currently supervisor-heavy across all steps</td>
-<td>Connor</td>
-</tr>
-<tr>
-<td>24</td>
-<td>11B</td>
-<td>Consider adding assigned-team-member fields (PC / SLP / OT) to the "Referral and Eligibility" tab of the Participation Info workbook, so team assignment is visible alongside contact/program status in a single place (currently split across the "OT &amp; SLP Schedule" and "PC Timelines" tabs)</td>
-<td>Connor</td>
-</tr>
-<tr>
-<td>25</td>
-<td>11C</td>
-<td>By the end of 11C, the child's ShareVision profile has been populated with basic info (Step 9E), post-intro-meeting updates (Step 10 Following), and the QS Team section (11C). Confirm: is anything else missing that hasn't been updated?</td>
-<td>Connor / supervisors / admin</td>
-</tr>
-<tr>
-<td>26</td>
-<td>12</td>
-<td>Section 12 Area 2 (CICC future-services coordination) scaffolded April 2026; substantive content pending resolution of dependent open items (PPAS wait-time matrix, MLA advocacy pathway framing, community resources booklet). Area 1 (HSNS-staffed SLP services) is drafted</td>
-<td>Connor</td>
-</tr>
-<tr>
-<td>27</td>
-<td>13</td>
-<td>Confirm whether to formalize routine ownership of the final remove-client step in Greenspace between <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> and <span class="role-badge" data-topic="role-qs-admin" style="background:#2980b9">QS Admin</span> for Scenarios 1a and 2a, or to keep it flexible. Step requires admin-level Greenspace access (PCs cannot complete it). Scenarios 3a and 4a are already supervisor-owned</td>
-<td>Connor</td>
-</tr>
-</tbody>
-</table>
 <hr />
 <h2 id="overview">Overview <span class="topic-tag" data-topic="core" style="background:#eef1f4;color:#2c3e50;border:1px solid #c8cfd8">Core</span></h2>
 <p>This guide outlines the integrated service match and intro meeting processes between QuickStart Nova Scotia (QSNS) and the Provincial Preschool Autism Service's Clinical Intake and Care Coordination (CICC) team.</p>
@@ -620,7 +470,7 @@
 - Zone-specific tabs with color coding:<br />
   - GREEN: Next available general enrollment spot<br />
   - ORANGE: HELD spot (for aging-out cases)<br />
-  - RED: Child over 31 months at start</p>
+  - RED: Child 32 months or older at start</p>
 <p><strong>3. Communication Channels</strong><br />
 - Referrals via: Fax, email, or phone<br />
 - Follow-up within 72 hours for paper referrals</p>
@@ -634,13 +484,13 @@
 - General maintenance and monitoring of the Capacity Sharing Excel Sheet (ongoing, throughout Sections 1-8)<br />
 - Section 3.5: Review of waitlist provisional cases (QS Clinical Team / Zone Supervisor)<br />
 - Section 9 onward: Receipt of service match, follow-up with family, scheduling and completing intro meeting</p>
-<h3 id="workflow-summary-age-eligible-children-31-months">Workflow Summary: Age-Eligible Children (&lt;=31 months)</h3>
+<h3 id="workflow-summary-age-eligible-children-under-32-months">Workflow Summary: Age-Eligible Children (under 32 months)</h3>
 <p><strong>CICC Admin:</strong><br />
 1. Receive Referral (any PPAS service)<br />
 2. Check existing client (1A)<br />
 3. Complete general profile (1B)<br />
 4. Send receipt confirmation (2)<br />
-5. Age check: &lt;=31 months? (3A) --&gt; YES<br />
+5. Age check: under 32 months? (3A) --&gt; YES<br />
 6. Zone determination &amp; Capacity sheet triage (3B)<br />
 7. Complete QS fields in Greenspace (3C)<br />
 8. Schedule RC meeting (4)</p>
@@ -717,8 +567,12 @@
 </tbody>
 </table>
 <p><em>Note: Historical contact statuses from the pre-CICC process (e.g. "Confirmation of referral sent", "Ineligibility email sent", "ESDM Wait List email sent", "Referral scheduled", "Referral complete") are no longer used. These functions are now handled by CICC during Sections 1-8.</em></p>
-<h3 id="program-status">Program Status</h3>
+<h3 id="program-status">Program Status <span class="topic-tag" data-topic="waitlist" style="background:#fbe3ef;color:#9d2463;border:1px solid #eeaecd">Waitlist</span></h3>
 <p>These designations apply to each program independently (a family may be "Active" in PC and "Waitlist" for ESDM simultaneously).</p>
+<blockquote>
+<p><strong>Two systems of record — keep them in sync.</strong> Each family's program status is held in two places: their GreenSpace profile and the zone Participation Info workbook. Any program-status update this guide directs you to make in GreenSpace must be mirrored in the Participation Info workbook (and vice versa). To avoid repetition, individual steps below generally name only GreenSpace. The exception is families never entered in GreenSpace (e.g. rare <em>Not Matched by CICC</em> cases), for whom the Participation Info workbook is the sole status record. <span class="topic-tag" data-topic="greenspace" style="background:#dcecdf;color:#1f6e3a;border:1px solid #a3cdb0">Greenspace</span> <span class="topic-tag" data-topic="participation-info-sheet" style="background:#f0e6da;color:#6e4a1a;border:1px solid #d4b890">Participation Sheet</span></p>
+<p><strong>GreenSpace fields (as of June 15, 2026 — ESDM integration).</strong> The QuickStart Nova Scotia section of GreenSpace is single-stream: the former <strong>"Parent Coaching Status"</strong> field is renamed <strong>"Program Status"</strong>, and a new <strong>"QS Service Stream"</strong> field (<code>Parent Coaching</code> | <code>ESDM</code>) records which stream a status refers to; the reason dropdown is read in relation to the selected stream. <strong>Convention:</strong> while a child is on the waitlist, leave <strong>QS Service Stream undetermined</strong> — set it only when an actual opening is offered, since a waitlisted child may be matched to either stream. Note that <strong>"Parent Coaching Cohort Assignment"</strong> is PC-specific (ESDM has no cohorts). <span class="topic-tag" data-topic="greenspace" style="background:#dcecdf;color:#1f6e3a;border:1px solid #a3cdb0">Greenspace</span> <span class="topic-tag" data-topic="esdm" style="background:#fce8d4;color:#a85a1a;border:1px solid #f0c098">ESDM</span></p>
+</blockquote>
 <table>
 <thead>
 <tr>
@@ -732,12 +586,16 @@
 <td>Meets program eligibility criteria, but either: (a) it is undetermined whether available openings exist before the child ages out, or (b) only age-based eligibility has been confirmed so far (other criteria remain to be assessed by CICC/RC). This is the initial Greenspace status set by CICC during capacity sheet triage.</td>
 </tr>
 <tr>
-<td><strong>Waitlist Provisional</strong></td>
-<td>Meets age-based eligibility criteria but no general or held opening is available before turning 32 months. QS Clinical Team is reviewing for operationally workable alternatives. Set by CICC Admin during capacity sheet triage (Section 3B, Scenario E).</td>
+<td><strong>Waitlist</strong> <em>(QS workbook status)</em></td>
+<td>Matched to QS and on the waitlist (either stream, up to 37 months of age). <strong>This is the authoritative QS waitlist status</strong> — the QS waitlist <em>is</em> the set of children on the Referral &amp; Eligibility tab with this status. In GreenSpace it corresponds to either "Waitlist provisional" or "Waitlist confirmed" (see <a href="#understanding-the-waitlist-matched-vs-not-provisional-vs-confirmed">Understanding the Waitlist</a> below).</td>
 </tr>
 <tr>
-<td><strong>Waitlist Confirmed</strong></td>
-<td>QS Clinical Team has reviewed the waitlist provisional case and determined that no workable alternative arrangements exist. Child remains on the waitlist in case openings become available before they age out. Referral-order priority applies.</td>
+<td><strong>Waitlist provisional</strong> <em>(GreenSpace / CICC — review state)</em></td>
+<td>CICC placed the child on the waitlist by strict default rules during triage (formal <strong>under-32-months</strong> trigger); the QS team has <strong>not yet reviewed</strong> for operational flexibility (Section 3B, Scenario E). QS review can extend Parent Coaching eligibility to <strong>≤33m15d</strong>. A review state, <strong>not</strong> a match state. Maps to workbook <strong>"Waitlist."</strong></td>
+</tr>
+<tr>
+<td><strong>Waitlist confirmed</strong> <em>(GreenSpace / CICC — review state)</em></td>
+<td>QS reviewed the provisional placement and found <strong>no operational flexibility</strong> (no workable Parent Coaching opening within the QS ceiling of <strong>≤33m15d</strong>; formal CICC rule is under 32 months); the child stays on the waitlist up to 37 months (either stream). A review state — <strong>does not mean "matched."</strong> Maps to workbook <strong>"Waitlist."</strong></td>
 </tr>
 <tr>
 <td><strong>Eligible</strong></td>
@@ -745,7 +603,7 @@
 </tr>
 <tr>
 <td><strong>Ineligible</strong></td>
-<td>Does not meet program eligibility criteria. Reasons include: child does not screen in on MCHAT, family declines participation, child has aged out (32+ months at next available start), or other eligibility criteria not met. Reason should be documented.</td>
+<td>Does not meet program eligibility criteria. Reasons include: child does not screen in on MCHAT, family declines participation, child has aged out (reaches 37 months on the waitlist with no Parent Coaching opening or ESDM spot offered), or other eligibility criteria not met. Reason should be documented.</td>
 </tr>
 <tr>
 <td><strong>Active</strong></td>
@@ -761,6 +619,41 @@
 </tr>
 </tbody>
 </table>
+<h3 id="understanding-the-waitlist-matched-vs-not-provisional-vs-confirmed">Understanding the Waitlist: Matched vs. Not, Provisional vs. Confirmed <span class="topic-tag" data-topic="waitlist" style="background:#fbe3ef;color:#9d2463;border:1px solid #eeaecd">Waitlist</span></h3>
+<p>"Waitlist" carries <strong>two independent distinctions</strong>. Keeping them separate prevents the most common QS-team mix-up — reading "waitlist confirmed" as "matched."</p>
+<table>
+<thead>
+<tr>
+<th>Axis</th>
+<th>Question it answers</th>
+<th>Where it lives</th>
+<th>Values</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Match</strong> <em>(the pivotal QS distinction)</em></td>
+<td>Has the family been matched to QS and accepted?</td>
+<td>Participation Info workbook → <strong>Referral &amp; Eligibility tab</strong> (post-consent)</td>
+<td><strong>Matched</strong> (on the tab, status "Waitlist") vs <strong>not yet matched</strong> (not on the tab)</td>
+</tr>
+<tr>
+<td><strong>Operational review</strong> <em>(CICC phase)</em></td>
+<td>Has QS reviewed CICC's by-the-book placement for operational flexibility?</td>
+<td><strong>Capacity Sharing Sheet</strong> → waitlist-provisional tab (pre-consent; acronym/DOB only)</td>
+<td><strong>Provisional</strong> (not yet reviewed) → <strong>Confirmed</strong> (reviewed, no flexibility), or resolved into an opening</td>
+</tr>
+</tbody>
+</table>
+<p><strong>"Provisional / confirmed" belong to the operational-review axis only</strong> — they say nothing about whether the family is matched. The two axes are independent: a child can be <em>confirmed</em> but not matched (the RC meeting hasn't happened, or the family declined), or <em>matched</em> but still <em>provisional</em> (the supervisor didn't get to review before the RC meeting).</p>
+<p><strong>Key consequences:</strong></p>
+<ul>
+<li><strong>The QS waitlist is one list:</strong> children on the <strong>Referral &amp; Eligibility tab with status "Waitlist"</strong> — recorded in the <strong>Parent Coaching Status (PC STATUS)</strong> column, never the ESDM Status column (see <a href="#step-9b-add-child-to-participation-info-workbook--review-for-operational-considerations">Step 9B</a>). Being on that tab <em>is</em> the match. There is no separate "confirmed" list.</li>
+<li><strong>You cannot read match status off the capacity sheet's provisional tab</strong> — it mixes matched and not-yet-matched children, and (pre-consent) QS cannot tell which is which, or whether an unmatched child's RC meeting simply hasn't happened yet.</li>
+<li><strong>"Waitlist confirmed" ≠ "matched."</strong> If you mean "matched and on our waitlist," say <strong>"on the QS waitlist."</strong></li>
+<li><strong>The GreenSpace prov./confirmed value seeds the QS contact status at transfer:</strong> when the QS admin adds a waitlisted match to the Referral &amp; Eligibility tab, GreenSpace "Waitlist provisional" → contact status <strong>"operational considerations – supervisor review required"</strong> (review still owed); GreenSpace "Waitlist confirmed" → <strong>"assigned from Greenspace"</strong> (review already done). Either way the program status is <strong>"Waitlist."</strong></li>
+</ul>
+<p>See <a href="#step-9b-add-child-to-participation-info-workbook--review-for-operational-considerations">Step 9B</a> for how a matched child is recorded on the waitlist (the single-waitlist convention and tab columns), <a href="#section-35-review-of-waitlist-provisional-cases">Section 3.5</a> for the provisional → confirmed review process (the operational-review axis), and <a href="#working-the-waitlist-when-an-opening-arises">Working the Waitlist When an Opening Arises</a> for how the supervisor works the waitlist (age highlighting) when openings come up. <span class="topic-tag" data-topic="participation-info-sheet" style="background:#f0e6da;color:#6e4a1a;border:1px solid #d4b890">Participation Sheet</span> <span class="topic-tag" data-topic="greenspace" style="background:#dcecdf;color:#1f6e3a;border:1px solid #a3cdb0">Greenspace</span> <span class="topic-tag" data-topic="capacity-sheet" style="background:#fff0d0;color:#7a5c1a;border:1px solid #e0c878">Capacity Sheet</span></p>
 <h3 id="reporting-considerations-for-program-status">Reporting Considerations for Program Status</h3>
 <p>The following nuances affect how program status changes are recorded for reporting purposes:</p>
 <p><strong>Discontinued — timing matters for reporting:</strong></p>
@@ -773,10 +666,10 @@
 <ul>
 <li>Child does not screen in on the MCHAT (during RC screening, Section 5)</li>
 <li>Family chooses not to participate after informed choice discussion (Section 6)</li>
-<li>Child ages out (reaches 32 months with no available opening and no waitlist resolution)</li>
+<li>Child ages out (reaches 37 months on the waitlist with no Parent Coaching opening or ESDM spot offered)</li>
 </ul>
 <blockquote>
-<p><span class="topic-tag" data-topic="open-item" style="background:#fde8e8;color:#9b1c1c;border:1px solid #f5a3a3">Open Item</span> <strong>TODO:</strong> Review whether additional program status values are needed for ESDM-specific pathways (e.g. ESDM Waitlist vs. PC Waitlist distinction in the Participation Info workbook).</p>
+<p><strong>A single "Waitlist" status covers both streams.</strong> There is no separate ESDM waitlist status — the same "Waitlist" value applies whether a child is waiting for a Parent Coaching or an ESDM opening. See the GreenSpace fields note above and <a href="#scenario-3-ineligible--aged-out-by-next-available-start-time">Scenario 3</a>.</p>
 </blockquote>
 <hr />
 <h2 id="participation-in-qs-ns-services">Participation in QS NS Services <span class="topic-tag" data-topic="core" style="background:#eef1f4;color:#2c3e50;border:1px solid #c8cfd8">Core</span></h2>
@@ -785,8 +678,8 @@
 </blockquote>
 <p>Within QuickStart Nova Scotia's umbrella of services, the Parent Coaching program is the main offered service with the largest total capacity. The ESDM Program is a supportive service to help team members in learning ESDM, and as such is subject to significantly more limited capacities. Participation in QuickStart NS Services entails participation in either the Parent Coaching Program or the ESDM Program.</p>
 <p>From an operational perspective, participation is determined by (firstly) reviewing eligibility for the Parent Coach Program and (secondarily) reviewing eligibility for the ESDM Program.</p>
-<h3 id="parent-coaching-program">Parent Coaching Program</h3>
-<p>Participation is primarily determined on a "first-come, first-serve" basis, in accordance with the date of the received referral.</p>
+<h3 id="parent-coaching-program">Parent Coaching Program <span class="topic-tag" data-topic="waitlist" style="background:#fbe3ef;color:#9d2463;border:1px solid #eeaecd">Waitlist</span></h3>
+<p>Participation is primarily determined on a "first-come, first-serve" basis, in accordance with the date of the received service match.</p>
 <p><strong>Cohort structure:</strong> Organized into cohorts that occur roughly monthly, with 10 total cohorts over the course of a calendar year.</p>
 <p><em>Reasoning for 10 yearly cohorts (instead of 12):</em><br />
 - No cohort is scheduled to start within the month of December<br />
@@ -842,21 +735,22 @@
 <p><em>Formulas: Operational Maximum = Active PC FTE x zone caseload rate. Mandate = Op. Max - (0.5 x PC headcount). These are configurable in QSIS Program Management and auto-adjust when staffing changes.</em></p>
 <p><em>Sequencing of cohort sizes (which cohorts are larger vs. smaller) is flexible to meet fluctuations in demand, capacity (e.g. reduced team / staff in training), and balancing of caseloads.</em></p>
 <p><strong>Opening assignment — general vs. held:</strong></p>
-<p>Within each cohort, the majority of openings are assigned on a "first-come, first-serve" basis. A portion of openings are designated as <strong>HELD</strong> to provide flexibility in accommodating received referrals where a child may be nearing 31 months of age and where no openings are available before the child would surpass 31 months.</p>
+<p>Within each cohort, the majority of openings are assigned on a "first-come, first-serve" basis. A portion of openings are designated as <strong>HELD</strong> to provide flexibility in accommodating received referrals where a child may be nearing 32 months of age and where no openings are available before the child would surpass 32 months.</p>
 <p>Typical HELD openings per cohort: Central ~2 per cohort, Provincial zones 0-2 per cohort depending on cohort size.</p>
 <p>Process for assigning held openings:</p>
 <ol>
-<li>Assign to the NEXT child (by order of received referral) who would otherwise be age-ineligible for the PC program if they don't participate in that cohort</li>
+<li>Assign to the NEXT child (by order of received service match) who would otherwise be age-ineligible for the PC program if they don't participate in that cohort</li>
 <li>If no children are currently in that circumstance, continue to hold the opening in that cohort in the event of a subsequent referral meeting that criterion</li>
-<li>Once it is time to move ahead with intro meetings (~6 weeks prior) for the cohort and the held opening has not been filled, contact the next child on the list (in order of received referral) to inquire if they would like to take that spot and start earlier — continue until the spot is filled</li>
+<li>Once it is time to move ahead with intro meetings (~6 weeks prior) for the cohort and the held opening has not been filled, contact the next child on the list (in order of received service match) to inquire if they would like to take that spot and start earlier — continue until the spot is filled</li>
 </ol>
 <p><strong>Average waiting times:</strong></p>
-<p>The Parent Coaching Program aims to maintain an average waiting time of no longer than 2-3 months between the date when it is determined that a child meets the eligibility requirements (during the referral meeting) and the earliest available starting date.</p>
-<p>With this goal:<br />
-- All children who meet eligibility requirements and are <strong>no older than 29 months</strong> at the time of the referral meeting should ideally be provided with a guaranteed opportunity to participate (i.e. a projected cohort assignment)<br />
-- For children who meet eligibility requirements and are <strong>between 30-31 months</strong>, the aim is to provide as many as possible with a guaranteed opportunity. The withheld openings are designated for this purpose. Even with this measure, there may be children in this category where it is not possible to provide a guaranteed opportunity — in these instances, the child would be placed on a <strong>"Wait List"</strong> for the PC program, in the event that a child with a projected cohort assignment withdraws. Wait List children are contacted on a "first-come, first-serve" basis (date of received referral).</p>
-<h3 id="esdm-program">ESDM Program <span class="topic-tag" data-topic="esdm" style="background:#fce8d4;color:#a85a1a;border:1px solid #f0c098">ESDM</span></h3>
-<p>Also primarily determined on a "first-come, first-serve" basis in accordance with the date of the received referral.</p>
+<p>The Parent Coaching Program's <em>ideal</em> is an average waiting time of no longer than 2-3 months between the point a child is determined eligible and the earliest available start date. This remains the target range we aim not to exceed — but it is an ideal rather than the current reality: waiting times are presently well over this across all zones, and there are no immediate capacity-increase options available to close the gap.</p>
+<p>For any child who is under 32 months of age at the time the PPAS referral is received by the CICC team, the aim is to provide as many as possible with a guaranteed opportunity to participate (i.e. a projected cohort assignment). The withheld (HELD) openings are designated for this purpose. Even with this measure, there may be children for whom it is not possible to provide a guaranteed opportunity — in these instances the child is placed on the QS <strong>waitlist</strong> (see <a href="#understanding-the-waitlist-matched-vs-not-provisional-vs-confirmed">Understanding the Waitlist</a>) and is contacted when an opening becomes available, on a "first-come, first-serve" basis by <strong>date of received service match</strong> (see <a href="#working-the-waitlist-when-an-opening-arises">Working the Waitlist When an Opening Arises</a>).</p>
+<h3 id="esdm-program">ESDM Program <span class="topic-tag" data-topic="esdm" style="background:#fce8d4;color:#a85a1a;border:1px solid #f0c098">ESDM</span> <span class="topic-tag" data-topic="waitlist" style="background:#fbe3ef;color:#9d2463;border:1px solid #eeaecd">Waitlist</span></h3>
+<blockquote>
+<p><strong>ESDM access via the QS waitlist (as of June 15, 2026 — ESDM integration).</strong> ESDM is no longer accessed through a separate ESDM intake/waitlist. CICC supports ESDM referrals through the <strong>same QuickStart NS waitlist as Parent Coaching</strong>: children referred under 32 months are first considered for PC, and those who cannot access a PC opening remain on the waitlist where they may be offered a limited ESDM spot <strong>up to 37 months of age</strong> (one waitlist, either stream; families access only one stream). When an ESDM spot opens, QS staff identify eligible children from the waitlist by referral order and contact families directly. Children already on the legacy ESDM waitlist continue to be prioritized until that list is fully served.</p>
+</blockquote>
+<p>Also primarily determined on a "first-come, first-serve" basis in accordance with the date of the received service match.</p>
 <p>The ESDM program is subject to more limited capacities compared to the Parent Coaching Program, and it is anticipated that it will not be possible to offer participation to all referred families who meet eligibility requirements. This is not a main service and is used to support the team in learning ESDM.</p>
 <p><strong>Yearly capacities:</strong></p>
 <table>
@@ -892,15 +786,9 @@
 </table>
 <p><em>ESDM slot equivalency: 1 ESDM family = 2 PC "slots".</em></p>
 <p>Supervisors, SLPs, and OTs are assigned ESDM Program participants as needed for acquisition and maintenance of ESDM Fidelity.</p>
-<p><strong>Organization of ESDM capacity — Central:</strong></p>
-<p>Participation is sub-divided based on the earliest available opening within age brackets:<br />
-- Children 30-34 months (ineligible for PC based on earliest possible starting time): 4 spots yearly<br />
-- Children 35-39 months: 4 spots yearly<br />
-- Children 40-45 months: 4 spots yearly</p>
-<p>Target onboarding rate: ~1 ESDM family monthly (across the whole Central team). Monthly openings alternate between each of the 3 age brackets (e.g., August: 30-34mo, September: 35-39mo, October: 40-45mo, November: 30-34mo, etc.).</p>
-<p><em>Refer to ESDM Program - Waitlist for more background on this selection process.</em></p>
-<p><strong>Organization of ESDM capacity — Provincial (Eastern / Western / Northern):</strong></p>
-<p>Participation is fully determined on a "first-come, first-serve" basis. Unlike Central, age brackets are not applied at this time. Target onboarding rate: 4-6 ESDM families yearly per zone, 2 ESDM families yearly per Parent Coach.</p>
+<p><strong>Selection from the waitlist:</strong></p>
+<p>ESDM has <strong>no age brackets</strong> — enrollment is filled from the <strong>same zone waitlist as Parent Coaching</strong>, in order of date of received service match (first-come, first-serve), with ESDM's wider age ceiling allowing participation <strong>up to 36 months 31 days</strong>. Because a family may access only one stream, a child offered and enrolled in one stream is removed from waitlist consideration for the other. For how the supervisor works the waitlist when an ESDM (or PC) opening arises — including the age highlighting — see <a href="#working-the-waitlist-when-an-opening-arises">Working the Waitlist When an Opening Arises</a>.</p>
+<p>Target onboarding rate: roughly 1 ESDM family monthly across the Central team; 4–6 ESDM families yearly per provincial zone (≈2 per Parent Coach).</p>
 <hr />
 <h2 id="community-outreach">Community Outreach <span class="topic-tag" data-topic="core" style="background:#eef1f4;color:#2c3e50;border:1px solid #c8cfd8">Core</span></h2>
 <blockquote>
@@ -999,12 +887,12 @@
 <p><strong>Responsible:</strong> <span class="role-badge" data-topic="role-cicc-admin" style="background:#c0392b">CICC Admin</span></p>
 </blockquote>
 <h3 id="step-3a-determine-if-qs-assessment-of-candidacy-is-needed">Step 3A: Determine if QS Assessment of Candidacy is Needed</h3>
-<p><strong>Decision Point:</strong> Is the child currently &lt;=31 months old?<br />
+<p><strong>Decision Point:</strong> Is the child currently under 32 months old?<br />
 - <strong>YES</strong> --&gt; Proceed to Step 3B<br />
 - <strong>NO</strong> --&gt; Skip to general non-QuickStart processes</p>
 <hr />
-<h3 id="step-3b-conduct-qs-assessment-of-candidacy">Step 3B: Conduct QS Assessment of Candidacy</h3>
-<p><em>(If child &lt;=31 months)</em></p>
+<h3 id="step-3b-conduct-qs-assessment-of-candidacy">Step 3B: Conduct QS Assessment of Candidacy <span class="topic-tag" data-topic="waitlist" style="background:#fbe3ef;color:#9d2463;border:1px solid #eeaecd">Waitlist</span></h3>
+<p><em>(If child under 32 months)</em></p>
 <p><strong>Part 1: Determine Zone</strong> (<span class="role-badge" data-topic="role-cicc-admin" style="background:#c0392b">CICC Admin</span>)</p>
 <p>Based on family address from Step 1B, identify service zone:</p>
 <table>
@@ -1035,6 +923,9 @@
 </table>
 <p><em>Verify using <a href="https://www.nshealth.ca/about-nova-scotia-health/management-zones">NS Health Management Zones Map</a> if needed.</em></p>
 <p><strong>Part 2: Complete Age-Based Triage Using Capacity Sharing Sheet</strong> (<span class="role-badge" data-topic="role-cicc-admin" style="background:#c0392b">CICC Admin</span>, with <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> review for waitlist provisional cases)</p>
+<blockquote>
+<p><strong>Formal rule (CICC) vs. functional QS threshold.</strong> This capacity-sheet triage applies the <strong>formal under-32-months</strong> rule strictly — a child who cannot be fit into a Parent Coaching opening before turning 32 months goes on the waitlist-provisional tab. On review, the QS Clinical Team <strong>extends Parent Coaching eligibility to ≤33 months 15 days</strong> (see <a href="#section-35-review-of-waitlist-provisional-cases">Section 3.5</a>), so some children waitlisted here at 32–33m15d are later slotted into PC by QS. CICC keeps the formal rule; the ≤33m15d threshold is QS-internal only.</p>
+</blockquote>
 <p>The CICC Admin opens the <a href="https://autismnovascotia.sharepoint.com/:x:/s/QuickStartSupervisors/EcSguQT3-WZLt3VsPpIArOsBDeByvlBBiT67egmO0Bg57Q?e=jbeB0V">Capacity Sharing Sheet</a> in Excel Online (recommended over desktop to avoid version conflicts and accidental sheet locking). Full step-by-step instructions are maintained in the <a href="https://autismnovascotia.sharepoint.com/:x:/s/QuickStartSupervisors/EcSguQT3-WZLt3VsPpIArOsBDeByvlBBiT67egmO0Bg57Q?e=ItdCy3&amp;nav=MTVfezc4QzdDOEI3LTdCMEQtNEM2My04MkJCLUZENTQyQzhFRkM0Qn0">Guidelines tab</a> of the workbook. Summary of the procedure:</p>
 <p><strong>A)</strong> Navigate to the appropriate zone tab (Central, Eastern, Western, or Northern).</p>
 <blockquote>
@@ -1045,8 +936,8 @@
 <p>Child initials convention: first two letters of first name / first two letters of last name / zone initial. Example: "Jacob Wallace" in Central → <strong>JaWa-C</strong>. Date of birth: use the date selector popup when available; if entering manually, use MM/DD/YYYY format exactly.</p>
 <p><strong>D)</strong> Check Column H (child's age at the cohort start date):</p>
 <ul>
-<li><strong>Scenario 1 — No red in Column H:</strong> Child fits in this opening. Keep child in this row, mark "Candidate" as Parent Coach Status in Greenspace, continue with RC scheduling.</li>
-<li><strong>Scenario 2 — Red in Column H:</strong> Child will be over 31 months at this cohort's start date. Copy the child's acronym and DOB from columns E &amp; F, paste into the next closest ORANGE (HELD) row upward. Delete from the original row. Check Column H again in the new row. Repeat upward through HELD openings until finding one with no red (child will still be under 32 months).</li>
+<li><strong>Scenario 1 — No red in Column H:</strong> Child fits in this opening. Keep child in this row, mark "Candidate" as the Program Status in Greenspace, continue with RC scheduling.</li>
+<li><strong>Scenario 2 — Red in Column H:</strong> Child will be 32 months or older at this cohort's start date. Copy the child's acronym and DOB from columns E &amp; F, paste into the next closest ORANGE (HELD) row upward. Delete from the original row. Check Column H again in the new row. Repeat upward through HELD openings until finding one with no red (child will still be under 32 months).</li>
 </ul>
 <p><strong>E)</strong> If no HELD opening works (all ORANGE rows still show red in Column H):</p>
 <ol>
@@ -1058,7 +949,7 @@
 <p><em>After this point, the QS Clinical Team reviews waitlist provisional cases per Section 3.5.</em></p>
 <p><strong>Sheet protection note:</strong> The capacity sharing sheet is protected in all areas except Columns E, F, and I of each zone tab. This prevents accidental changes to formulas and conditional formatting. If changes beyond those columns are required, contact CICC or QS Manager.</p>
 <hr />
-<h3 id="capacity-sharing-sheet--ongoing-qs-supervisor-monitoring">Capacity Sharing Sheet — Ongoing QS Supervisor Monitoring <span class="topic-tag" data-topic="checklist" style="background:#eef1f4;color:#2c3e50;border:1px solid #c8cfd8">Checklist</span> <span class="topic-tag" data-topic="capacity-sheet" style="background:#fff0d0;color:#7a5c1a;border:1px solid #e0c878">Capacity Sheet</span></h3>
+<h3 id="capacity-sharing-sheet--ongoing-qs-supervisor-monitoring">Capacity Sharing Sheet — Ongoing QS Supervisor Monitoring <span class="topic-tag" data-topic="checklist" style="background:#eef1f4;color:#2c3e50;border:1px solid #c8cfd8">Checklist</span> <span class="topic-tag" data-topic="capacity-sheet" style="background:#fff0d0;color:#7a5c1a;border:1px solid #e0c878">Capacity Sheet</span> <span class="topic-tag" data-topic="waitlist" style="background:#fbe3ef;color:#9d2463;border:1px solid #eeaecd">Waitlist</span></h3>
 <blockquote>
 <p><strong>Responsible:</strong> <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span></p>
 <p><strong>Cadence:</strong> Ongoing, beginning as soon as CICC starts adding entries to the capacity sharing sheet (Section 3 onward) and continuing through to receipt of the service match (Section 9).</p>
@@ -1078,12 +969,12 @@
 </ul>
 <p><strong>Where supervisor responsibility ends.</strong> Direct data entry into the capacity sharing sheet remains CICC's responsibility for incoming families. The supervisor's role here is permanent-product review and quality assurance — flagging issues to CICC for correction, not making corrections directly. The exception is the Waitlist Provisional zone-tab updates, which the QS Clinical Team owns per Section 3.5 (e.g., adding the child's acronym and DOB to an identified opening once a workable cohort fit is found).</p>
 <hr />
-<h2 id="section-35-review-of-waitlist-provisional-cases">Section 3.5: Review of Waitlist Provisional Cases <span class="topic-tag" data-topic="checklist" style="background:#eef1f4;color:#2c3e50;border:1px solid #c8cfd8">Checklist</span></h2>
+<h2 id="section-35-review-of-waitlist-provisional-cases">Section 3.5: Review of Waitlist Provisional Cases <span class="topic-tag" data-topic="checklist" style="background:#eef1f4;color:#2c3e50;border:1px solid #c8cfd8">Checklist</span> <span class="topic-tag" data-topic="waitlist" style="background:#fbe3ef;color:#9d2463;border:1px solid #eeaecd">Waitlist</span></h2>
 <blockquote>
 <p><strong>Responsible:</strong> <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> (with Director/Manager support as needed)</p>
 </blockquote>
 <h3 id="when-does-this-apply">When Does This Apply?</h3>
-<p>When a child has no general enrollment or held opening available before turning 32 months of age.</p>
+<p>When a child has no general enrollment or held opening available before turning 32 months of age (the formal CICC trigger; on review the QS Clinical Team may extend Parent Coaching eligibility to ≤33 months 15 days).</p>
 <h3 id="what-happens">What Happens?</h3>
 <p>CICC Admin adds the child to the <a href="https://autismnovascotia.sharepoint.com/:x:/s/QuickStartSupervisors/EcSguQT3-WZLt3VsPpIArOsBDeByvlBBiT67egmO0Bg57Q?e=efgf6u&amp;nav=MTVfezlDOTk4NEFELTNDOUEtNDRDRS1CMThCLUNCOTI1OUI3MDAzOH0">waitlist provisional tab</a> (per Section 2E in the <a href="https://autismnovascotia.sharepoint.com/:x:/s/QuickStartSupervisors/EcSguQT3-WZLt3VsPpIArOsBDeByvlBBiT67egmO0Bg57Q?e=ysfoa8&amp;nav=MTVfezc4QzdDOEI3LTdCMEQtNEM2My04MkJCLUZENTQyQzhFRkM0Qn0">guidelines tab</a>) while QS Clinical team reviews for operational flexibility that may allow program participation.</p>
 <p><strong>Why review at this stage?</strong> Advanced awareness allows the QS team to anticipate time-sensitive arrangements that may be less feasible if flagged only after service matching.</p>
@@ -1099,7 +990,7 @@
 <p><strong>Steps:</strong></p>
 <ol>
 <li><strong>Monitor</strong> the waitlist provisional tab for children in your zone(s)</li>
-<li><strong>Assess</strong> if workable operational arrangements exist to allow participation. Standard target: participation before 32 months of age (≤31m 30d at cohort start). QS Clinical Team has discretion to authorize internal exceptions up to ~33m 15d when operational flexibility makes successful program completion feasible — this is an internal-only threshold, not a published or CICC-facing eligibility limit</li>
+<li><strong>Assess</strong> if workable operational arrangements exist to allow participation. Standard target: Parent Coaching participation before 32 months of age (≤31m 30d at cohort start). QS Clinical Team has discretion to authorize internal exceptions up to ~33m 15d when operational flexibility makes successful program completion feasible — this is an internal-only threshold, not a published or CICC-facing eligibility limit. <strong>ESDM integration:</strong> if no workable Parent Coaching arrangement is found, the child still remains on the waitlist for a possible limited QuickStart NS ESDM spot up to 37 months — so a "waitlist confirmed" outcome keeps the child in consideration for either stream rather than ending QS involvement at the PC age ceiling.</li>
 <li><strong>Plan (optional):</strong><ul>
 <li>Use hidden columns A-D for preliminary mapping (cohort #, start time, notes). <em>Remember to re-hide when done.</em></li>
 <li>If considering an available/unfilled opening already on the zone's tab, put <strong>HOLD</strong> in the "CHILD acronym" column for that opening so it doesn't get filled while you consolidate your review of workable alternatives.</li>
@@ -1109,22 +1000,23 @@
 <p><strong>Document</strong> your consolidated decision in Column I (all cases) &amp; zone tab (if opening was found):</p>
 <p><strong>If opening identified:</strong></p>
 <blockquote>
-<p>Reviewed by [supervisor name] - proceed with parent coach status as "candidate". Added to [ZONE TAB - cohort &amp; opening #]</p>
+<p>Reviewed by [supervisor name] - proceed with program status as "candidate". Added to [ZONE TAB - cohort &amp; opening #]</p>
 <p><em>Then add child's acronym and DOB to the identified opening in the zone tab.</em></p>
 </blockquote>
 <p><strong>If no opening identified:</strong></p>
 <blockquote>
-<p>Reviewed by [supervisor name] - no openings identified, proceed with parent coach status as "waitlist confirmed".</p>
+<p>Reviewed by [supervisor name] - no openings identified, proceed with program status as "waitlist confirmed".</p>
 </blockquote>
 </li>
 </ol>
+<div class="manual-only">
 <h3 id="cicc-follow-up-actions">CICC Follow-Up Actions</h3>
 <blockquote>
 <p><strong>Responsible:</strong> <span class="role-badge" data-topic="role-resource-coordinator" style="background:#8e44ad">Resource Coordinator</span></p>
 </blockquote>
 <p><strong>Before RC call:</strong> RC checks Column I for additional notes when preparing for families with "waitlist provisional" status.</p>
 <p><strong>During RC call:</strong> RC discusses QS based on:<br />
-- <strong>Notes present:</strong> Updated parent coach status from additional notes<br />
+- <strong>Notes present:</strong> Updated program status from additional notes<br />
 - <strong>No notes present:</strong> Waitlist status (QS team hasn't completed review yet)</p>
 <p><strong>After RC call:</strong></p>
 <table>
@@ -1141,14 +1033,65 @@
 </tr>
 <tr>
 <td><strong>Not a service match</strong></td>
-<td>RC deletes child from waitlist provisional tab</td>
+<td>RC deletes child from waitlist provisional tab <em>(proposed — see open item below)</em></td>
 </tr>
 </tbody>
 </table>
-<p><em>Deletion serves as communication to QS team that RC call occurred and child was not a service match (since ineligible children don't appear in QS Greenspace clinic).</em></p>
+<p><em>The intent is that deletion serves as communication to the QS team that the RC call occurred and the child was not a service match (since ineligible children don't appear in QS Greenspace clinic). This signaling mechanism is </em><em>not yet established practice</em><em> — see open item.</em></p>
 <blockquote>
-<p><span class="topic-tag" data-topic="open-item" style="background:#fde8e8;color:#9b1c1c;border:1px solid #f5a3a3">Open Item</span> <strong>OPEN ITEM:</strong> Add an indicator around how to update Participation Info workbooks for ESDM candidacy.</p>
+<p><span class="topic-tag" data-topic="open-item" style="background:#fde8e8;color:#9b1c1c;border:1px solid #f5a3a3">Open Item</span> <strong>OPEN ITEM:</strong> Propose to CICC that the RC delete non-match children from the waitlist provisional tab as the signal to QS that the RC call occurred and the child was not a service match. Not yet established practice — to raise at the next connect with the CICC team.</p>
 </blockquote>
+<h3 id="rc-waitlist-script-generalized">RC Waitlist Script (Generalized) <span class="topic-tag" data-topic="esdm" style="background:#fce8d4;color:#a85a1a;border:1px solid #f0c098">ESDM</span></h3>
+<blockquote>
+<p><strong>Source:</strong> PPAS Service Profile — QuickStart NS ESDM. Generalized waitlist script for waitlist provisional/confirmed children; uses broad, inclusive language and the 37-month waitlist cutoff.</p>
+<p><em>"QuickStart Nova Scotia offers ESDM-based services for young children who are suspected of autism, or who have a provisional or confirmed diagnosis of autism. The Early Start Denver Model is an evidence-based approach that uses naturalistic teaching strategies, embedded within a child's everyday routines — including daily living and play routines — to support development in areas like communication, social skills, and play.</em></p>
+<p><em>There's currently a waitlist for QuickStart's services, and based on current demand, it's unlikely an opening will become available before your child turns 37 months — which is the age cut-off for the waitlist. If an opening does come up before then, the QuickStart team will reach out to you directly to talk through what's available and whether it would be a good fit for your family. If you haven't heard from them by the time your child turns 37 months, that means an opening didn't come up in time.</em></p>
+<p><em>Would you like to be matched to QuickStart and placed on their waitlist?"</em></p>
+<p><em>If the family asks what specifically is offered:</em> <em>"QuickStart offers a few different service options, all built on the Early Start Denver Model. Their team is best positioned to walk you through the specifics — they would do that directly with you if and when an opening comes up."</em></p>
+</blockquote>
+</div>
+<h3 id="working-the-waitlist-when-an-opening-arises">Working the Waitlist When an Opening Arises <span class="topic-tag" data-topic="checklist" style="background:#eef1f4;color:#2c3e50;border:1px solid #c8cfd8">Checklist</span> <span class="topic-tag" data-topic="esdm" style="background:#fce8d4;color:#a85a1a;border:1px solid #f0c098">ESDM</span> <span class="topic-tag" data-topic="capacity-sheet" style="background:#fff0d0;color:#7a5c1a;border:1px solid #e0c878">Capacity Sheet</span> <span class="topic-tag" data-topic="participation-info-sheet" style="background:#f0e6da;color:#6e4a1a;border:1px solid #d4b890">Participation Sheet</span> <span class="topic-tag" data-topic="waitlist" style="background:#fbe3ef;color:#9d2463;border:1px solid #eeaecd">Waitlist</span></h3>
+<blockquote>
+<p><strong>Responsible:</strong> <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span></p>
+</blockquote>
+<p>This is a sub-area of assessing QS candidacy, but it happens <strong>as opportunities arise</strong> rather than at a fixed step — at <strong>any point after a service match is received</strong>, whenever a Parent Coaching or ESDM opening becomes available (e.g., an unexpected PC opening, or a limited ESDM spot). The supervisor works the zone's matched waitlist (Referral &amp; Eligibility tab, status "Waitlist") in <strong>order of date of received service match</strong> (first-come, first-serve), using the age highlighting to see who is eligible for the opening at hand.</p>
+<p><strong>Waitlist age highlighting (conditional formatting):</strong></p>
+<p>Rows with PC-STATUS <strong>"Waitlist"</strong> are automatically highlighted by the child's <strong>current age</strong> (from the tab's current-age column):</p>
+<table>
+<thead>
+<tr>
+<th>Highlight</th>
+<th>Current age</th>
+<th>Still eligible for</th>
+</tr>
+</thead>
+<tbody>
+<tr class="hl-green">
+<td><strong>Green</strong></td>
+<td>33 months 15 days or younger</td>
+<td>a Parent Coaching <strong>or</strong> ESDM opening</td>
+</tr>
+<tr class="hl-yellow">
+<td><strong>Yellow</strong></td>
+<td>older than 33m15d, under 37 months</td>
+<td>an <strong>ESDM</strong> opening only</td>
+</tr>
+<tr class="hl-red">
+<td><strong>Red</strong></td>
+<td>37 months or older</td>
+<td>neither — aged out</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Formal rule vs. QS exception.</strong> The <strong>green</strong> band reflects the QS-side threshold: Parent Coaching eligibility is extended to <strong>≤33 months 15 days</strong> on review, even though the formal CICC rule is under 32 months (see <a href="#section-35-review-of-waitlist-provisional-cases">Section 3.5</a>).</p>
+</blockquote>
+<p><strong>When an opening arises (work in order of date of received service match):</strong></p>
+<ul>
+<li><strong>PC opening</strong> → consider <strong>green</strong> rows; confirm the child will still be <strong>≤33m15d</strong> at the opening (and confirm exact cohort fit by age at start on the Capacity Sheet).</li>
+<li><strong>ESDM opening</strong> → consider <strong>green and yellow</strong> rows (under 37 months).</li>
+<li><strong>Red</strong> → the child has aged out: update the status to <strong>"Ineligible"</strong> and follow the end-of-service steps in <a href="#scenario-3-ineligible--aged-out-by-next-available-start-time">Scenario 3</a>.</li>
+</ul>
 <hr />
 <h2 id="section-4-schedule-meeting-with-resource-coordinator">Section 4: Schedule Meeting with Resource Coordinator</h2>
 <blockquote>
@@ -1168,7 +1111,7 @@
 1. Remove from capacity sharing sheet<br />
 2. Update Greenspace:<br />
     - Add screening note<br />
-    - Parent Coaching Status = "Ineligible"<br />
+    - Program Status = "Ineligible"<br />
     - Remove cohort assignment and start date<br />
 3. Send letter to referral source (cc family)<br />
 4. Provide information on other available services and option to call back after 6 months</p>
@@ -1190,7 +1133,7 @@
 - Start date based on cohort</p>
 <h3 id="step-6b-obtain-decision">Step 6B: Obtain Decision</h3>
 <p><strong>If YES (Family Accepts):</strong><br />
-- Update Parent Coaching Status = "Eligible"<br />
+- Update Program Status = "Eligible"<br />
 - Add Date of Referral to QuickStart (acceptance date)<br />
 - Proceed to Section 7</p>
 <p><strong>If NO (Family Declines):</strong><br />
@@ -1365,7 +1308,49 @@
 <p><strong>Responsible:</strong> <span class="role-badge" data-topic="role-qs-admin" style="background:#2980b9">QS Admin</span></p>
 </blockquote>
 <p>Open the child's Greenspace profile and the Participation Info workbook for the appropriate zone (Referral and Eligibility tab). Add a new row for the service-matched child.</p>
-<p><strong>What to populate:</strong> All columns whose headers are shaded <strong>dark blue</strong> in the Referral and Eligibility tab. The blue-shading is the internal convention indicating "QS Admin transfers this from Greenspace at the time of service match" — including cohort #, child acronym, source of referral, program/contact status indicators, and other key fields agreed for transfer at this stage.</p>
+<p><strong>What to populate.</strong> Add the child as a new row and fill the columns the QS Admin transfers from Greenspace at the time of service match (the internal convention is that these column headers are shaded <strong>dark blue</strong>). <em>Column positions vary across zone workbooks — go by the header label, not the column letter.</em> The Referral and Eligibility tab columns are:</p>
+<table>
+<thead>
+<tr>
+<th>Column (by header)</th>
+<th>What goes here</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>PC Cohort Assignment</strong></td>
+<td>Projected/assigned Parent Coaching cohort # from the Capacity Sheet / Greenspace (blank for waitlisted children with no opening yet)</td>
+</tr>
+<tr>
+<td><strong>Child Initials</strong></td>
+<td>Child acronym</td>
+</tr>
+<tr>
+<td><strong>Date of Received Service Match</strong></td>
+<td>Date CICC matched the child to QS — drives first-come, first-serve waitlist order</td>
+</tr>
+<tr>
+<td><strong>Contact Status</strong></td>
+<td>Contact-status value (see designations below)</td>
+</tr>
+<tr>
+<td><strong>Parent Coaching Status (PC STATUS)</strong></td>
+<td>The QS <strong>program status</strong>, including the single <strong>"Waitlist"</strong> value (see convention below)</td>
+</tr>
+<tr>
+<td><strong>Reason ineligible or discontinued</strong></td>
+<td>Reason, when the status is ineligible/discontinued</td>
+</tr>
+<tr>
+<td><strong>ESDM Status</strong></td>
+<td>ESDM-specific status — populated <strong>only</strong> if/when the child is offered/enrolled in ESDM; <strong>not used for the shared waitlist</strong></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Single-waitlist convention.</strong> A waitlisted child is recorded as <strong>"Waitlist" in the Parent Coaching Status (PC STATUS) column only</strong> — never in the ESDM Status column. The PC-STATUS "Waitlist" <em>is</em> the single QS waitlist (the child is in line for <strong>either</strong> stream); the ESDM Status column is reserved for children actually matched to / participating in ESDM. (The workbook column keeps the name "Parent Coaching Status"; only the GreenSpace field was renamed to "Program Status.") See <a href="#understanding-the-waitlist-matched-vs-not-provisional-vs-confirmed">Understanding the Waitlist</a>. <span class="topic-tag" data-topic="participation-info-sheet" style="background:#f0e6da;color:#6e4a1a;border:1px solid #d4b890">Participation Sheet</span></p>
+</blockquote>
+<p>Waitlist rows are automatically highlighted by current age (green/yellow/red) as a working aid for the supervisor when an opening arises — see <a href="#working-the-waitlist-when-an-opening-arises">Working the Waitlist When an Opening Arises</a>.</p>
 <p><strong>While transferring, review the following in Greenspace for any operational-flag triggers:</strong></p>
 <ol>
 <li><strong>Cohort assignment fields</strong> — earliest available starting date, cohort number, age at start of cohort starting date — <strong>ensure this information matches where the child has been entered in the Capacity Sharing Tool</strong></li>
@@ -1392,12 +1377,12 @@
 <blockquote>
 <p><strong>Note:</strong> Items 3-5 are checks the QS team has internally identified as needing monitoring beyond the agreed CICC operational-flag fields in item 2. Anything flagged in items 3-5 may also constitute an operational consideration requiring supervisor review.</p>
 </blockquote>
-<p><strong>Set the contact status (Column C) as the outcome of the review</strong> — this status is the pivot point for the rest of Section 9:</p>
+<p><strong>Set the Contact Status as the outcome of the review</strong> — this status is the pivot point for the rest of Section 9:</p>
 <ul>
 <li><strong>No operational flags identified</strong> → set status "Assigned from Greenspace" → proceed to Step 9D as usual</li>
 <li><strong>Operational flags identified</strong> → set status "Operational considerations - supervisor review required" → <strong>pause before Step 9D</strong> and flag the zone supervisor (via comment in Excel) to back-review per Step 9C</li>
 </ul>
-<p><strong>Status Designations for Column C:</strong></p>
+<p><strong>Status Designations for the Contact Status column:</strong></p>
 <table>
 <thead>
 <tr>
@@ -1982,21 +1967,20 @@
 <hr />
 <h2 id="section-13-end-of-qs-services--transition-back-to-cicc">Section 13: End of QS Services — Transition Back to CICC <span class="topic-tag" data-topic="checklist" style="background:#eef1f4;color:#2c3e50;border:1px solid #c8cfd8">Checklist</span> <span class="topic-tag" data-topic="ppas" style="background:#ddeaea;color:#1a5a5a;border:1px solid #9fc6c6">PPAS</span></h2>
 <blockquote>
-<p><strong>Responsible:</strong> <span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span> (owns Scenarios 1 and 2 — end-of-service conversations, GreenSpace updates, and PPAS referral form completion. PCs now have GreenSpace accounts for this work); <span class="role-badge" data-topic="role-qs-admin" style="background:#2980b9">QS Admin</span> (submits completed referrals via MoveIt for Scenarios 1b and 2b); <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> (handles Scenarios 3 and 4 — no PC was assigned to these families); <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> or <span class="role-badge" data-topic="role-qs-admin" style="background:#2980b9">QS Admin</span> (completes the <a href="#final-greenspace-step-remove-client-from-quickstart-clinic">final Greenspace remove-client step</a> for any matched-by-CICC closure — requires admin-level Greenspace access, which PCs do not have)</p>
+<p><strong>Responsible:</strong> <span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span> (owns Scenarios 1 and 2 — end-of-service conversations and GreenSpace updates; PCs now have GreenSpace accounts for this work); <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> (handles Scenarios 3 and 4 — no PC was assigned to these families); <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> or <span class="role-badge" data-topic="role-qs-admin" style="background:#2980b9">QS Admin</span> (completes the <a href="#final-greenspace-step-remove-client-from-quickstart-clinic">final Greenspace remove-client step</a> for any closure — requires admin-level Greenspace access, which PCs do not have)</p>
 </blockquote>
 <p>Every family matched to QuickStart has been <strong>handed over</strong> from PPAS's CICC team. Any chain of QS involvement with that family — whether it ends through completion of services, discontinuation, ineligibility following CICC match (e.g., waitlist age-out, ineligibility identified after matching), or inability to contact — must terminate in a <strong>handback</strong> step to CICC.</p>
 <p>This section describes the end-of-service workflow that makes the handback consistent across the full range of terminating scenarios. It is organized around the end-of-service conversation with the family (where one is possible): preparation, the conversation itself, follow-up actions, and reference material supporting all three phases. Some scenarios (e.g., inability to contact) have no family conversation but still require a documented handback — see the <a href="#scenario-quick-reference">Scenario Quick-Reference</a> below for what triggers end-of-service and what QS and CICC each do in each case.</p>
 <p>The Parent Coach has been doing ongoing PPAS-touched care coordination with the family throughout active enrollment (see <a href="#section-12-during-qs-participation--care-coordination-on-ppas-touched-services">Section 12</a>); the closing conversation here picks up from that work and reframes it as a handoff.</p>
 <h3 id="scenario-quick-reference">Scenario Quick-Reference</h3>
-<p>The table below outlines the primary scenarios families may experience at end of service, along with when each occurs, what QS takes action on, and what CICC does. Identify which scenario applies, then jump to the corresponding scenario subsection (1–4) below.</p>
+<p>The table below outlines the four primary scenarios families may experience at end of service, along with when each occurs, what QS takes action on, and what CICC does. Identify which scenario applies, then jump to the corresponding scenario subsection (1–4) below.</p>
 <table>
 <thead>
 <tr>
 <th>#</th>
 <th>QS Program Status</th>
 <th>When This Occurs</th>
-<th>QS Actions (Matched by CICC)</th>
-<th>QS Actions (Not Matched by CICC)</th>
+<th>QS Actions</th>
 </tr>
 </thead>
 <tbody>
@@ -2004,34 +1988,32 @@
 <td><strong>1</strong></td>
 <td><strong>Completed</strong></td>
 <td>Family successfully completes PC or ESDM program</td>
-<td><strong>1a:</strong> In closing sessions (S17–19), <span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span> discusses ongoing care coordination with CICC and how families can reconnect, and updates GreenSpace: parent coach <strong>status</strong>, <strong>Start &amp; End dates</strong>, upload <strong>DC report</strong>, upload <strong>pre- &amp; post-intervention ESDM curriculum checklists</strong></td>
-<td><strong>1b:</strong> In closing sessions (S17–19), <span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span> discusses placing a referral to PPAS (informed-choice conversation). If family consents, <span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span> completes the referral form and provides it to <span class="role-badge" data-topic="role-qs-admin" style="background:#2980b9">QS Admin</span>, who submits it to PPAS via <strong>MoveIt</strong> with the DC report attached. Documentation in ShareVision (family is not in GreenSpace)</td>
+<td>In closing sessions (S17–19), <span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span> discusses ongoing care coordination with CICC and how families can reconnect, and updates GreenSpace: program <strong>status</strong> to <strong>"Completed"</strong>, <strong>Start &amp; End dates</strong>, upload <strong>DC report</strong>, upload <strong>pre- &amp; post-intervention ESDM curriculum checklists</strong></td>
 </tr>
 <tr>
 <td><strong>2</strong></td>
 <td><strong>Discontinued</strong></td>
 <td>Family began QS (S1+) but did not complete — either program-initiated (attendance, non-participation, capacity) or family-initiated (withdrawal)</td>
-<td><strong>2a:</strong> Mirrors Scenario 1a with discontinuation-specific differences: <span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span> uploads <strong>discharge letter</strong> (not DC report); sets parent coach status to <strong>"Discontinued"</strong>; adds contextual note if needed</td>
-<td><strong>2b:</strong> Mirrors Scenario 1b with discontinuation-specific differences: <span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span> completes the referral form and provides it to <span class="role-badge" data-topic="role-qs-admin" style="background:#2980b9">QS Admin</span>, who submits it with the <strong>discharge letter</strong> (not DC report) via MoveIt; documents discontinuation in ShareVision</td>
+<td>Mirrors Scenario 1 with discontinuation-specific differences: <span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span> uploads <strong>discharge letter</strong> (not DC report); sets program status to <strong>"Discontinued"</strong>; adds contextual note if needed</td>
 </tr>
 <tr>
 <td><strong>3</strong></td>
 <td><strong>Ineligible — Aged Out by Next Available Start Time</strong></td>
-<td>Child was service-matched (typically "waitlist confirmed") but ages out (32+ months) before a start date can be offered</td>
-<td><strong>3a:</strong> <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> monitors "waitlist confirmed" families ongoing. When child turns 32+ months: updates parent coach status in GreenSpace to <strong>"Ineligible — aged out by next start date"</strong></td>
-<td><strong>3b:</strong> <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> updates status in ShareVision to reflect ineligibility. No further action</td>
+<td>Child was service-matched and on the QS waitlist but reaches the 37-month waitlist cutoff before a Parent Coaching opening or ESDM spot can be offered</td>
+<td><span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> monitors waitlisted families ongoing (R&amp;E tab, status "Waitlist"). When child reaches 37 months: in GreenSpace sets QS stream <strong>"PC Program"</strong>, program <strong>status "Ineligible"</strong>, reason <strong>"aged out by next start date"</strong>, and records the who/when of the closeout in an <strong>Event Note</strong></td>
 </tr>
 <tr>
 <td><strong>4</strong></td>
 <td><strong>Ineligible Unable to Contact</strong></td>
 <td>Family cannot be reached during contact workflow; program status must be resolved</td>
-<td><strong>4a:</strong> <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> closes contact attempt; documents in GreenSpace + ShareVision. If no prior PPAS referral exists, no further action</td>
-<td><strong>4b:</strong> <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> closes contact attempt; documents in ShareVision. No further action</td>
+<td><span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> closes contact attempt: in GreenSpace sets program <strong>status "Ineligible"</strong>, reason <strong>"unable to contact"</strong>, recorded in an <strong>Event Note</strong>; mirrors in ShareVision if a profile exists. If no prior PPAS referral exists, no further action</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Final step for all Matched-by-CICC closures (1a, 2a, 3a, 4a):</strong> every closure scenario above ends with a final Greenspace <strong>remove-client</strong> step that takes the family out of the QuickStart clinic. This step requires admin-level Greenspace access (PCs cannot complete it) and is owned by <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> or <span class="role-badge" data-topic="role-qs-admin" style="background:#2980b9">QS Admin</span>. See <a href="#final-greenspace-step-remove-client-from-quickstart-clinic">Final Greenspace Step: Remove Client from QuickStart Clinic</a>.</p>
-<p><strong>Note on "Not Matched by CICC" scope</strong> <em>(rare / transitional).</em> The Not-Matched column applies to a small number of active families who entered QS via direct referral (pre-September 2025 integration, still being processed), and to the rare forward case where a family declines PPAS connection but still wants direct QS enrollment. Going forward, CICC-matched is the overwhelming norm. Because Not-Matched families are not in Greenspace under the QS clinic, the remove-client step does not apply to scenarios 1b, 2b, 3b, or 4b.</p>
+<blockquote>
+<p><strong>Not-Matched-by-CICC scenarios →</strong> these are now rare/transitional and live in the Archive. The four scenarios here assume the <strong>CICC-matched</strong> path (the norm post-integration). For the not-matched variants (direct-referral / pre-September-2025 families), see <a href="#end-of-service--not-matched-by-cicc-variants-transitional">Archive: End-of-Service "Not Matched by CICC" Variants</a>.</p>
+</blockquote>
+<p><strong>Final step for every closure (Scenarios 1–4):</strong> every closure scenario above ends with a final Greenspace <strong>remove-client</strong> step that takes the family out of the QuickStart clinic. This step requires admin-level Greenspace access (PCs cannot complete it) and is owned by <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> or <span class="role-badge" data-topic="role-qs-admin" style="background:#2980b9">QS Admin</span>. See <a href="#final-greenspace-step-remove-client-from-quickstart-clinic">Final Greenspace Step: Remove Client from QuickStart Clinic</a>.</p>
 <h3 id="cicc-proactive-contact-rules">CICC Proactive Contact Rules <span class="topic-tag" data-topic="ppas" style="background:#ddeaea;color:#1a5a5a;border:1px solid #9fc6c6">PPAS</span></h3>
 <p>CICC proactively reaches out to families in only three specific circumstances:</p>
 <div class="checklist-keep">
@@ -2041,7 +2023,7 @@
 <li><strong>Child reaches year-of-birth for intensive or ESDM enrollment</strong> — At the appropriate age, CICC proactively reaches out to explore intensive programming or ESDM enrollment opportunities.</li>
 </ol>
 </div>
-<p><strong>What this means for end of QS services.</strong> In all end-of-service scenarios above — <strong>except for Scenarios 1b and 2b</strong> (Not-Matched-by-CICC families where QS places a PPAS referral) — CICC will <strong>not</strong> be immediately and proactively reaching out to the family in response to end of QS services. Reconnection outside of that placed-referral exception must be initiated by the family, or by a later occurrence of one of the circumstances above.</p>
+<p><strong>What this means for end of QS services.</strong> In all end-of-service scenarios above, CICC will <strong>not</strong> be immediately and proactively reaching out to the family in response to end of QS services. Reconnection must be initiated by the family, or by a later occurrence of one of the three circumstances above. (The one exception is the archived not-matched 1b/2b path, where QS places a PPAS referral on the family's behalf — see <a href="#end-of-service--not-matched-by-cicc-variants-transitional">Archive</a>.)</p>
 <blockquote>
 <p><strong>Important:</strong> Do NOT imply to families that CICC will automatically follow up. Be clear: reconnection is proactive only in these three scenarios. In all other cases, the family must reach out or QS must place a referral with the family's consent.</p>
 <p><span class="topic-tag" data-topic="open-item" style="background:#fde8e8;color:#9b1c1c;border:1px solid #f5a3a3">Open Item</span> <strong>OPEN ITEM — FAQ Development (Bethany):</strong> Develop a general FAQ to help QS staff hold realistic conversations about PPAS options, CICC services, timelines, and eligibility. This will reduce inconsistency in staff messaging and give families clearer expectations.</p>
@@ -2052,141 +2034,124 @@
 <p><strong>Responsible:</strong> <span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span> (owns the full workflow — conversation, documentation, and referral form completion for 1b); <span class="role-badge" data-topic="role-qs-admin" style="background:#2980b9">QS Admin</span> (submits the referral package via MoveIt for 1b)</p>
 </blockquote>
 <p>Scenario 1 applies when a family <strong>successfully completes the PC or ESDM program</strong>. The Parent Coach has been actively working with the family through Sessions 1–19 (or ESDM equivalent) and knows the family's context, including their CICC connection status and care-coordination needs from ongoing work per <a href="#section-12-during-qs-participation--care-coordination-on-ppas-touched-services">Section 12</a>.</p>
-<h4 id="before-the-closing-conversation">Before the closing conversation</h4>
 <div class="checklist-only">
 <ul>
 <li><strong>Confirm the family's CICC connection status</strong> using ShareVision and prior program records (typically already known from ongoing care coordination)</li>
 <li><strong>Prepare the Discharge Report</strong> so it's ready to share if consent is given</li>
-<li><strong>Identify whether Scenario 1a or 1b applies</strong> (Matched by CICC vs Not Matched)</li>
-</ul>
-</div>
-<p>The family's CICC connection status has been tracked throughout active enrollment per Section 12 — in most cases the PC can confirm status ahead of the conversation without re-asking the family, via ShareVision notes and prior Greenspace profile entries. The family's own understanding is still verified during the conversation itself, because records and family perception sometimes diverge; defer to the family's report and verify after the call.</p>
-<h4 id="the-closing-conversation-s1719">The closing conversation (S17–19)</h4>
-<div class="checklist-only">
-<ul>
-<li><strong>Open the conversation</strong> and orient the family to next-steps discussion</li>
-<li><strong>Confirm connection status</strong> with the family</li>
-<li><strong>Deliver the appropriate script branch</strong> — see <a href="#reference-family-facing-scripts">Reference: Family-Facing Scripts</a></li>
-<li><strong>Capture consent</strong> on sharing the Discharge Report and (for 1b) on QS placing a PPAS referral on their behalf</li>
-</ul>
-</div>
-<p>The closing conversation is both an operational checkpoint and a supportive handoff. For the full script content — opening, confirming connection status, Connected vs Not Connected branches, the PPAS service overview if the family asks — see <a href="#reference-family-facing-scripts">Reference: Family-Facing Scripts</a>. For phrases to avoid, see <a href="#reference-guardrails--what-not-to-do-or-say">Reference: Guardrails</a>.</p>
-<h4 id="scenario-1a--matched-by-cicc">Scenario 1a — Matched by CICC</h4>
-<div class="checklist-only">
-<ul>
-<li><strong>Update GreenSpace</strong> — <em>Profile &gt; QuickStart Nova Scotia</em> (status, Start &amp; End dates) and <em>Notes page</em> (DC Report attachment, pre- &amp; post-intervention ESDM curriculum checklist attachments)</li>
+<li><strong>Hold the closing conversation (S17–19)</strong> — deliver the appropriate script branch; see <a href="#reference-family-facing-scripts">Reference: Family-Facing Scripts</a></li>
+<li><strong>Capture consent</strong> on sharing the Discharge Report with CICC</li>
+<li><strong>Apply the closeout actions below</strong></li>
 <li><span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> or <span class="role-badge" data-topic="role-qs-admin" style="background:#2980b9">QS Admin</span> <strong>Final step:</strong> <a href="#final-greenspace-step-remove-client-from-quickstart-clinic">Remove client from the QuickStart clinic in Greenspace</a></li>
 </ul>
 </div>
+<h4 id="before-the-closing-conversation">Before the closing conversation</h4>
+<p>The family's CICC connection status has been tracked throughout active enrollment per Section 12 — in most cases the PC can confirm status ahead of the conversation without re-asking the family, via ShareVision notes and prior Greenspace profile entries. The family's own understanding is still verified during the conversation itself, because records and family perception sometimes diverge; defer to the family's report and verify after the call.</p>
+<h4 id="the-closing-conversation-s1719">The closing conversation (S17–19)</h4>
+<blockquote>
+<p><strong>Responsible:</strong> <span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span></p>
+</blockquote>
+<p>The closing conversation is both an operational checkpoint and a supportive handoff. For the full script content — opening, confirming connection status, Connected vs Not Connected branches, the PPAS service overview if the family asks — see <a href="#reference-family-facing-scripts">Reference: Family-Facing Scripts</a>. For phrases to avoid, see <a href="#reference-guardrails--what-not-to-do-or-say">Reference: Guardrails</a>.</p>
+<h4 id="closeout-actions">Closeout actions</h4>
 <p><span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span> updates GreenSpace as follows:</p>
 <p><em>In Profile &gt; QuickStart Nova Scotia:</em></p>
 <ul>
-<li>Update parent coach <strong>status</strong> to reflect program completion</li>
+<li>Ensure the <strong>QS stream</strong> matches the stream the family participated in (<strong>"ESDM Program"</strong> or <strong>"PC Program"</strong>)</li>
+<li>Update the <strong>program status</strong> to <strong>"Completed"</strong></li>
 <li>Update <strong>Start &amp; End dates</strong> (end date = date services concluded)</li>
 </ul>
 <p><em>In the Notes page:</em></p>
+<p>Add a separate <strong>Document</strong> note for each item below (Greenspace requires a <strong>Title</strong> on Document notes, so each is listed in full):</p>
 <ul>
-<li>Add a new note (type: <strong>Document</strong>) and attach the <strong>Discharge Report (DC Report)</strong></li>
-<li>Add a new note (type: <strong>Document</strong>) and attach the <strong>pre-intervention ESDM curriculum checklist</strong> (administered at the start of intervention services)</li>
-<li>Add a new note (type: <strong>Document</strong>) and attach the <strong>post-intervention ESDM curriculum checklist</strong> (re-administered at the end of intervention services)</li>
+<li>Add a <strong>Document</strong> note for the <strong>Discharge Report (DC Report)</strong>:<br />
+<strong>Title:</strong> <code>QuickStart Nova Scotia Completed - Discharge Report</code><br />
+<strong>Comments:</strong> "See attached Discharge Report for more details."<br />
+<strong>Attachment:</strong> the Discharge Report (DC Report)</li>
+<li>Add a <strong>Document</strong> note for the <strong>pre-intervention ESDM curriculum checklist</strong> (administered at the start of intervention services):<br />
+<strong>Title:</strong> <code>QuickStart Nova Scotia Completed - pre-intervention ESDM curriculum checklist</code><br />
+<strong>Comments:</strong> "See attached pre-intervention ESDM curriculum checklist for more details."<br />
+<strong>Attachment:</strong> the pre-intervention ESDM curriculum checklist</li>
+<li>Add a <strong>Document</strong> note for the <strong>post-intervention ESDM curriculum checklist</strong> (re-administered at the end of intervention services):<br />
+<strong>Title:</strong> <code>QuickStart Nova Scotia Completed - post-intervention ESDM curriculum checklist</code><br />
+<strong>Comments:</strong> "See attached post-intervention ESDM curriculum checklist for more details."<br />
+<strong>Attachment:</strong> the post-intervention ESDM curriculum checklist</li>
 </ul>
 <p>If the family consented to sharing the DC Report and ESDM curriculum checklists with CICC, the attachments in the Notes page above serve that purpose. The GreenSpace status update in the QuickStart Nova Scotia section is functionally the handback to CICC.</p>
 <blockquote>
 <p><strong>Privacy:</strong> Never share a Discharge Report or the pre- &amp; post-intervention ESDM curriculum checklists with CICC unless the family has explicitly consented. Obtain written or documented verbal consent before proceeding.</p>
 </blockquote>
 <p>Once the GreenSpace updates above are complete, hand off to <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> or <span class="role-badge" data-topic="role-qs-admin" style="background:#2980b9">QS Admin</span> to complete the <a href="#final-greenspace-step-remove-client-from-quickstart-clinic">final remove-client step</a> — Parent Coaches' clinician-level Greenspace accounts cannot perform this action.</p>
-<h4 id="scenario-1b--not-matched-by-cicc">Scenario 1b — Not Matched by CICC</h4>
-<p><em>(rare / transitional — see scope note below the Scenario Quick-Reference)</em></p>
-<div class="checklist-only">
-<ul>
-<li><strong>If family consents:</strong> <span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span> completes PPAS referral form + DC Report; hands off to <span class="role-badge" data-topic="role-qs-admin" style="background:#2980b9">QS Admin</span> who submits via MoveIt</li>
-<li><strong>If family declines:</strong> provide PPAS contact info for self-referral; document preference in ShareVision</li>
-</ul>
-</div>
-<p><strong>If family consents to connection + sharing the Discharge Report:</strong></p>
-<ol>
-<li><span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span> completes a PPAS Intake Referral Form (or PPAS Autism Diagnosis Form if a new/updated diagnosis applies — see <a href="#reference-ppas-referral-mechanics">Reference: PPAS Referral Mechanics</a>) and attaches the Discharge Report.</li>
-<li><span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span> provides the completed package to <span class="role-badge" data-topic="role-qs-admin" style="background:#2980b9">QS Admin</span>.</li>
-<li><span class="role-badge" data-topic="role-qs-admin" style="background:#2980b9">QS Admin</span> submits the package via <strong>MoveIt</strong> to the appropriate regional PPAS admin:<ul>
-<li><strong>Central &amp; Western zones:</strong> Valeria</li>
-<li><strong>Eastern &amp; Northern zones:</strong> Yuna</li>
-</ul>
-</li>
-<li><span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span> updates program status in ShareVision to reflect that a referral was placed.</li>
-</ol>
-<p><strong>If family declines connection or declines to share the report:</strong></p>
-<p>Provide PPAS contact information so the family can self-refer later if they choose. <span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span> documents the family's preference in ShareVision. No report is shared by QS.</p>
-<blockquote>
-<p><strong>Privacy:</strong> Never share a Discharge Report with PPAS/CICC unless the family has explicitly consented. Obtain written or documented verbal consent before proceeding.</p>
-</blockquote>
 <hr />
 <h3 id="scenario-2-discontinued">Scenario 2: Discontinued <span class="topic-tag" data-topic="greenspace" style="background:#dcecdf;color:#1f6e3a;border:1px solid #a3cdb0">Greenspace</span> <span class="topic-tag" data-topic="sharevision" style="background:#dde8f0;color:#1f4e7a;border:1px solid #a3c0d6">ShareVision</span> <span class="topic-tag" data-topic="moveit" style="background:#e8e0f0;color:#5a3a8a;border:1px solid #c8b0d8">MoveIt</span></h3>
 <blockquote>
 <p><strong>Responsible:</strong> <span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span> (owns the full workflow — conversation, documentation, and referral form completion for 2b); <span class="role-badge" data-topic="role-qs-admin" style="background:#2980b9">QS Admin</span> (submits the referral package via MoveIt for 2b)</p>
 </blockquote>
-<p>Scenario 2 applies when a family <strong>began QS (Session 1+) but did not complete</strong> — either <strong>program-initiated</strong> (attendance, non-participation, capacity reasons) or <strong>family-initiated</strong> (withdrawal). Scenario 2 mirrors Scenario 1 structurally, with discontinuation-specific differences in documentation.</p>
-<p>The closing conversation (where one occurs), script content, and CICC connection status handling are the same as Scenario 1 — see <a href="#scenario-1-completed">Scenario 1</a> and <a href="#reference-family-facing-scripts">Reference: Family-Facing Scripts</a>. Some discontinuations may not involve a closing conversation depending on circumstances (e.g., family-initiated withdrawal without final session); the administrative workflow below still applies.</p>
+<p>Scenario 2 applies when a family <strong>began QS (Session 1+) but did not complete</strong> — either <strong>program-initiated</strong> (attendance, non-participation, capacity reasons) or <strong>family-initiated</strong> (withdrawal). Scenario 2 mirrors Scenario 1 structurally; the differences are in documentation — a <strong>QS Discharge letter</strong> instead of a Discharge Report, and program status <strong>"Discontinued"</strong> with a required <strong>"reason why"</strong> field (full steps in the closeout actions below).</p>
 <div class="checklist-only">
 <ul>
 <li><strong>Closing conversation</strong> (where applicable) — same as Scenario 1; see <a href="#reference-family-facing-scripts">Reference: Family-Facing Scripts</a></li>
-<li><strong>Documentation type</strong> — discharge letter (not DC report)</li>
-<li><strong>Program status</strong> — set to <strong>"Discontinued"</strong></li>
-<li><strong>Contextual note</strong> — add if useful for context</li>
-<li><strong>2a (Matched by CICC):</strong> apply Discontinuation-Specific GreenSpace Updates below</li>
-<li><strong>2b (Not Matched by CICC):</strong> mirrors 1b with discharge letter in place of DC Report</li>
-<li><span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> or <span class="role-badge" data-topic="role-qs-admin" style="background:#2980b9">QS Admin</span> <strong>Final step (2a only):</strong> <a href="#final-greenspace-step-remove-client-from-quickstart-clinic">Remove client from the QuickStart clinic in Greenspace</a></li>
+<li><strong>Apply the closeout actions below</strong> — uses a <strong>discharge letter</strong> (not a DC Report) and program status <strong>"Discontinued"</strong></li>
+<li><span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> or <span class="role-badge" data-topic="role-qs-admin" style="background:#2980b9">QS Admin</span> <strong>Final step:</strong> <a href="#final-greenspace-step-remove-client-from-quickstart-clinic">Remove client from the QuickStart clinic in Greenspace</a></li>
 </ul>
 </div>
-<p><strong>Differences from Scenario 1:</strong></p>
-<ul>
-<li><strong>Documentation type.</strong> Instead of a Discharge Report, the closing documentation is a <strong>QS Discharge letter</strong>. For 2a: the discharge letter is uploaded to GreenSpace. For 2b: the discharge letter is included in the MoveIt package to PPAS (in place of the Discharge Report).</li>
-<li><strong>Program status.</strong> <span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span> sets parent coach status to <strong>"Discontinued"</strong> in GreenSpace (2a) or ShareVision (2b).</li>
-<li><strong>Contextual note.</strong> <span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span> adds a note in GreenSpace/ShareVision describing the reason for discontinuation, where useful.</li>
-</ul>
-<h4 id="discontinuation-specific-greenspace-updates-scenario-2a">Discontinuation-Specific GreenSpace Updates (Scenario 2a) <span class="topic-tag" data-topic="greenspace" style="background:#dcecdf;color:#1f6e3a;border:1px solid #a3cdb0">Greenspace</span></h4>
-<p>For Scenario 2a (family was connected with CICC), <span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span> additionally updates GreenSpace:</p>
-<p><em>In the Notes page:</em></p>
-<ol>
-<li>Add a new note and select <strong>"Document"</strong> as the note type.</li>
-<li><strong>Title:</strong> <code>QuickStart Nova Scotia Discontinued - [reason for discontinuation]</code></li>
-<li><strong>Note body:</strong> "See attached Discharge letter for more details." Expand on the reason for discontinuation if/as necessary.</li>
-<li><strong>Attachment:</strong> Attach the QS Discharge letter.</li>
-</ol>
+<h4 id="the-closing-conversation">The closing conversation</h4>
+<p>The closing conversation (where one occurs), script content, and CICC connection status handling are the same as Scenario 1 — see <a href="#scenario-1-completed">Scenario 1</a> and <a href="#reference-family-facing-scripts">Reference: Family-Facing Scripts</a>. Some discontinuations may not involve a closing conversation depending on circumstances (e.g., family-initiated withdrawal without final session); the administrative workflow below still applies.</p>
+<h4 id="closeout-actions_1">Closeout actions</h4>
+<p><span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span> updates GreenSpace:</p>
 <p><em>In Profile &gt; QuickStart Nova Scotia:</em></p>
-<ol>
-<li>Update the <strong>program status</strong> to "Discontinued".</li>
-<li>Update/input the <strong>reason</strong> for discontinuation.</li>
-<li>Input the date the Discharge letter was provided to the family in the <strong>"QS End Date"</strong> field.</li>
-</ol>
+<ul>
+<li>Ensure the <strong>QS stream</strong> matches the stream the family participated in (<strong>"ESDM Program"</strong> or <strong>"PC Program"</strong>)</li>
+<li>Update the <strong>program status</strong> to <strong>"Discontinued"</strong></li>
+<li>Set the <strong>reason why</strong> to the dropdown option matching the actual reason for discontinuation (varies by case; typically one of the standard dropdown options)</li>
+<li>Input the date the Discharge letter was provided to the family in the <strong>"QS End Date"</strong> field</li>
+</ul>
+<p><em>In the Notes page:</em></p>
+<ul>
+<li>Add a <strong>Document</strong> note for the discharge:<br />
+<strong>Title:</strong> <code>QuickStart Nova Scotia Discontinued - [reason for discontinuation]</code><br />
+<strong>Comments:</strong> "See attached Discharge letter for more details." (expand on the reason for discontinuation if/as necessary)<br />
+<strong>Attachment:</strong> the QS Discharge letter</li>
+</ul>
 <p>Once the GreenSpace updates above are complete, hand off to <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> or <span class="role-badge" data-topic="role-qs-admin" style="background:#2980b9">QS Admin</span> to complete the <a href="#final-greenspace-step-remove-client-from-quickstart-clinic">final remove-client step</a> — Parent Coaches' clinician-level Greenspace accounts cannot perform this action.</p>
-<blockquote>
-<p><span class="topic-tag" data-topic="open-item" style="background:#fde8e8;color:#9b1c1c;border:1px solid #f5a3a3">Open Item</span> <strong>OPEN ITEM:</strong> For Scenario 2b (discontinued families not connected with CICC), the ShareVision-side discharge documentation workflow is not yet fully documented. Likely includes discharge letter creation, reason for discontinuation in ShareVision, program status updated to "Discontinued", and QS End Date. Specific workflow to be confirmed.</p>
-</blockquote>
 <hr />
-<h3 id="scenario-3-ineligible--aged-out-by-next-available-start-time">Scenario 3: Ineligible — Aged Out by Next Available Start Time <span class="topic-tag" data-topic="greenspace" style="background:#dcecdf;color:#1f6e3a;border:1px solid #a3cdb0">Greenspace</span> <span class="topic-tag" data-topic="sharevision" style="background:#dde8f0;color:#1f4e7a;border:1px solid #a3c0d6">ShareVision</span></h3>
+<h3 id="scenario-3-ineligible--aged-out-by-next-available-start-time">Scenario 3: Ineligible — Aged Out by Next Available Start Time <span class="topic-tag" data-topic="greenspace" style="background:#dcecdf;color:#1f6e3a;border:1px solid #a3cdb0">Greenspace</span> <span class="topic-tag" data-topic="esdm" style="background:#fce8d4;color:#a85a1a;border:1px solid #f0c098">ESDM</span> <span class="topic-tag" data-topic="participation-info-sheet" style="background:#f0e6da;color:#6e4a1a;border:1px solid #d4b890">Participation Sheet</span> <span class="topic-tag" data-topic="waitlist" style="background:#fbe3ef;color:#9d2463;border:1px solid #eeaecd">Waitlist</span></h3>
 <blockquote>
 <p><strong>Responsible:</strong> <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> (no PC was assigned; supervisor handles the closeout)</p>
 </blockquote>
-<p>Scenario 3 applies when a family was service-matched to QS — typically with <strong>"waitlist confirmed"</strong> status — but the child <strong>ages out</strong> (reaches 32+ months) before a start date can be offered. Because no PC was ever assigned, <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> handles the closeout.</p>
+<p>Scenario 3 applies when a family was service-matched to QS — and is on the QS waitlist (Referral &amp; Eligibility tab, status <strong>"Waitlist"</strong>) — and stays on the QS-managed waitlist without a start date being offered until the child <strong>ages out</strong> at <strong>37 months</strong> (the waitlist cutoff is 36 months 31 days). While on the waitlist, the child remains eligible for a late Parent Coaching opening or a limited QuickStart NS ESDM spot; once past the 37-month cutoff, no QuickStart NS service can be offered. Because no PC was ever assigned, <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> handles the closeout.</p>
 <div class="checklist-only">
 <ul>
-<li><strong>Monitor "waitlist confirmed" families ongoing</strong> — watch for children approaching the 32-month threshold</li>
-<li><strong>When child turns 32+ months:</strong> apply the closeout actions below</li>
-<li><strong>Notify the family</strong> of the aging-out outcome (see open item)</li>
-<li><strong>Final step (3a only):</strong> <a href="#final-greenspace-step-remove-client-from-quickstart-clinic">Remove client from the QuickStart clinic in Greenspace</a></li>
+<li><strong>Monitor families on the QS waitlist ongoing</strong> (R&amp;E tab, status "Waitlist") — watch for children approaching the 37-month waitlist cutoff</li>
+<li><strong>When child reaches 37 months (no PC opening or ESDM spot offered):</strong> apply the closeout actions below</li>
+<li><strong>Final step:</strong> <a href="#final-greenspace-step-remove-client-from-quickstart-clinic">Remove client from the QuickStart clinic in Greenspace</a></li>
 </ul>
 </div>
 <h4 id="ongoing-watch">Ongoing watch</h4>
-<p><span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> monitors "waitlist confirmed" families on an ongoing basis, watching for children approaching the 32-month threshold. When a child turns 32+ months without a start date having been offered, the family becomes Scenario 3.</p>
-<h4 id="closeout-actions">Closeout actions</h4>
-<p><strong>Scenario 3a (Matched by CICC):</strong> <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> updates GreenSpace <em>Profile &gt; QuickStart Nova Scotia</em> — set parent coach status to <strong>"Ineligible — aged out by next start date"</strong>. The GreenSpace status update is functionally the handback to CICC. As the final step, <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> (or <span class="role-badge" data-topic="role-qs-admin" style="background:#2980b9">QS Admin</span>) completes the <a href="#final-greenspace-step-remove-client-from-quickstart-clinic">remove-client step</a> to take the family out of the QuickStart clinic.</p>
-<p><strong>Scenario 3b (Not Matched by CICC):</strong> <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> updates status in ShareVision to reflect ineligibility. No further action.</p>
-<h4 id="family-notification">Family notification</h4>
+<p><span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> monitors families on the QS waitlist (R&amp;E tab, status "Waitlist") on an ongoing basis, watching for children approaching the 37-month waitlist cutoff. While a child remains on the waitlist (up to 37 months), a late Parent Coaching opening or a limited QuickStart NS ESDM spot may still come up. When a child reaches 37 months without a start date having been offered, the family becomes Scenario 3.</p>
+<h4 id="closeout-actions_2">Closeout actions</h4>
+<p><span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> closes out the aged-out case. GreenSpace profile-status changes are <strong>not</strong> version-tracked — there is no saved record of who changed a status or when — so the Notes-page entry below is what preserves the who/when of the closeout.</p>
+<p><em>In Profile &gt; QuickStart Nova Scotia:</em></p>
+<ul>
+<li>Set the <strong>QS stream</strong> to <strong>"PC Program"</strong> (the stream the waitlisted child was matched to)</li>
+<li>Set the <strong>program status</strong> to <strong>"Ineligible"</strong></li>
+<li>Set the <strong>reason why</strong> to <strong>"aged out by next start date"</strong></li>
+<li>Leave <strong>QS Start/End Date</strong> blank for now (see open item below)</li>
+</ul>
+<p><em>In the Notes page:</em></p>
+<ul>
+<li>Add an <strong>Event Note</strong> recording the closeout:<br />
+<strong>Note text:</strong> "Client was matched to QuickStart NS Services with status waitlist confirmed; aged out prior to next available start date while on waitlist so status changed to ineligible - aged out by next start date"</li>
+</ul>
+<p>An <strong>Event Note</strong> is used because there is no document to attach (the <strong>Document</strong> type requires an attachment). The correct note type is still being confirmed — see open item below.</p>
+<p>The GreenSpace status update, recorded via the Event Note, is functionally the handback to CICC. As the final step, <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> (or <span class="role-badge" data-topic="role-qs-admin" style="background:#2980b9">QS Admin</span>) completes the <a href="#final-greenspace-step-remove-client-from-quickstart-clinic">remove-client step</a> to take the family out of the QuickStart clinic.</p>
 <blockquote>
-<p><span class="topic-tag" data-topic="open-item" style="background:#fde8e8;color:#9b1c1c;border:1px solid #f5a3a3">Open Item</span> <strong>OPEN ITEM:</strong> Current practice for how QS notifies the family of the aging-out outcome is not yet documented here. To be added — typically a brief written or phone notification that the family is no longer eligible for QS, and that they can continue to engage with CICC/PPAS for other services if applicable.</p>
+<p><span class="topic-tag" data-topic="open-item" style="background:#fde8e8;color:#9b1c1c;border:1px solid #f5a3a3">Open Item</span> <strong>OPEN ITEM (note type — Scenarios 3 &amp; 4):</strong> Confirm the correct GreenSpace note type for the Scenario 3/4 closeout record. <strong>Event Note</strong> is used here as a working choice because there is no document to attach (the <strong>Document</strong> type requires an attachment); verify Event Note is appropriate or identify the correct type.</p>
+<p><span class="topic-tag" data-topic="open-item" style="background:#fde8e8;color:#9b1c1c;border:1px solid #f5a3a3">Open Item</span> <strong>OPEN ITEM (QS Start/End Date — Scenarios 3 &amp; 4):</strong> Confirm whether QS Start/End Date in GreenSpace should be left <strong>blank</strong> or <strong>populated</strong> for the no-intro-meeting closeouts (Scenario 3 aged-out and Scenario 4 unable-to-contact). Left blank for now, but a date may be needed for these children to appear in reporting. (See <a href="#open-items-summary">Open Item #15</a>.)</p>
+<p><span class="topic-tag" data-topic="open-item" style="background:#fde8e8;color:#9b1c1c;border:1px solid #f5a3a3">Open Item</span> <strong>OPEN ITEM:</strong> Confirm that holding a waitlisted child as <strong>"Waitlist"</strong> until they surpass 37 months — only then marking <strong>"Ineligible — aged out"</strong> — does not create reporting issues for the <strong>PC program specifically</strong>. This is logical from a single-"Waitlist" management perspective, but verify it doesn't introduce tradeoffs on other PC-program variables/metrics (e.g. how waitlist duration, age-at-status, or aged-out vs. ineligible counts roll up in reporting).</p>
 </blockquote>
+<h4 id="family-notification">Family notification</h4>
+<p>No separate aging-out notification is required — the expectation is already set up front at waitlisting via the <a href="#rc-waitlist-script-generalized">RC Waitlist Script</a>: the family is told it's unlikely an opening will become available, that the QS team will reach out <strong>only if</strong> an opening comes up before the child turns 37 months, and that not hearing from QS by 37 months means no opening became available. The aged-out outcome is therefore the already-communicated default rather than a new notification. Families remain free to engage with CICC/PPAS for other services.</p>
 <hr />
-<h3 id="scenario-4-ineligible-unable-to-contact">Scenario 4: Ineligible Unable to Contact <span class="topic-tag" data-topic="greenspace" style="background:#dcecdf;color:#1f6e3a;border:1px solid #a3cdb0">Greenspace</span> <span class="topic-tag" data-topic="sharevision" style="background:#dde8f0;color:#1f4e7a;border:1px solid #a3c0d6">ShareVision</span></h3>
+<h3 id="scenario-4-ineligible-unable-to-contact">Scenario 4: Ineligible Unable to Contact <span class="topic-tag" data-topic="greenspace" style="background:#dcecdf;color:#1f6e3a;border:1px solid #a3cdb0">Greenspace</span> <span class="topic-tag" data-topic="sharevision" style="background:#dde8f0;color:#1f4e7a;border:1px solid #a3c0d6">ShareVision</span> <span class="topic-tag" data-topic="participation-info-sheet" style="background:#f0e6da;color:#6e4a1a;border:1px solid #d4b890">Participation Sheet</span></h3>
 <blockquote>
 <p><strong>Responsible:</strong> <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> (no PC was assigned; supervisor handles the closeout)</p>
 </blockquote>
@@ -2194,36 +2159,40 @@
 <div class="checklist-only">
 <ul>
 <li><strong>Confirm 9F contact-attempt closeout</strong> has been completed</li>
-<li><strong>Apply the closeout actions below</strong> based on CICC connection status</li>
-<li><strong>Final step (4a only):</strong> <a href="#final-greenspace-step-remove-client-from-quickstart-clinic">Remove client from the QuickStart clinic in Greenspace</a></li>
+<li><strong>Apply the closeout actions below</strong></li>
+<li><strong>Final step:</strong> <a href="#final-greenspace-step-remove-client-from-quickstart-clinic">Remove client from the QuickStart clinic in Greenspace</a></li>
 </ul>
 </div>
 <h4 id="relationship-to-section-9">Relationship to Section 9</h4>
 <p><a href="#step-9f-supervisor-closeout-for-unable-to-contact-cases">Section 9F</a> owns the contact-attempt process and its initial closeout procedures (contact-attempt documentation, flagging the case). Once 9F has been completed unsuccessfully, Section 13 Scenario 4 covers the end-of-service handback to CICC.</p>
-<h4 id="closeout-actions_1">Closeout actions</h4>
-<p><strong>Scenario 4a (Matched by CICC):</strong> <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> closes the contact attempt:</p>
+<h4 id="closeout-actions_3">Closeout actions</h4>
+<p><span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> closes the contact attempt. As in Scenario 3, GreenSpace profile-status changes are not version-tracked, so the Notes-page entry below preserves the who/when of the closeout.</p>
+<p><em>In Profile &gt; QuickStart Nova Scotia:</em></p>
 <ul>
-<li><em>In GreenSpace Profile &gt; QuickStart Nova Scotia:</em> update parent coach status to reflect inability to contact</li>
-<li><em>In the GreenSpace Notes page:</em> add a new note documenting the contact attempts and closeout</li>
-<li>Update ShareVision to mirror the same</li>
+<li>Ensure the <strong>QS stream</strong> matches the stream the family was matched to (<strong>"ESDM Program"</strong> or <strong>"PC Program"</strong>)</li>
+<li>Set the <strong>program status</strong> to <strong>"Ineligible"</strong></li>
+<li>Set the <strong>reason why</strong> to <strong>"unable to contact"</strong></li>
+<li>Leave <strong>QS Start/End Date</strong> blank for now (see the open items under <a href="#scenario-3-ineligible--aged-out-by-next-available-start-time">Scenario 3</a>)</li>
 </ul>
-<p>If no prior PPAS referral exists, no further action. The GreenSpace status update is functionally the handback to CICC. As the final step, <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> (or <span class="role-badge" data-topic="role-qs-admin" style="background:#2980b9">QS Admin</span>) completes the <a href="#final-greenspace-step-remove-client-from-quickstart-clinic">remove-client step</a> to take the family out of the QuickStart clinic.</p>
-<p><strong>Scenario 4b (Not Matched by CICC):</strong> <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> closes the contact attempt and documents in ShareVision. No further action.</p>
-<blockquote>
-<p><span class="topic-tag" data-topic="open-item" style="background:#fde8e8;color:#9b1c1c;border:1px solid #f5a3a3">Open Item</span> <strong>OPEN ITEM:</strong> Confirm the specific GreenSpace status value to use for Scenario 4a (e.g., is there a standardized "Ineligible — Unable to Contact" status, or is it the same status used for ineligible-aged-out? See related Open Item #15 about whether QS Start/End Date should be left blank or populated for the unable-to-contact pathway).</p>
-</blockquote>
+<p><em>In the Notes page:</em></p>
+<ul>
+<li>Add an <strong>Event Note</strong> recording the closeout:<br />
+<strong>Note text:</strong> "Client was matched to QuickStart NS Service with status [specify — eligible or waitlist]; unable to contact based on current contact attempt guidelines" (expand on the details of the contact attempts if/as necessary)</li>
+</ul>
+<p>Then update <strong>ShareVision</strong> to mirror the same (only if a profile exists). As in Scenario 3, an <strong>Event Note</strong> is used because there is no document to attach; the correct note type and the QS Start/End Date handling are still being confirmed — see the open items under <a href="#scenario-3-ineligible--aged-out-by-next-available-start-time">Scenario 3</a>.</p>
+<p>If no prior PPAS referral exists, no further action. The GreenSpace status update, recorded via the Event Note, is functionally the handback to CICC. As the final step, <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> (or <span class="role-badge" data-topic="role-qs-admin" style="background:#2980b9">QS Admin</span>) completes the <a href="#final-greenspace-step-remove-client-from-quickstart-clinic">remove-client step</a> to take the family out of the QuickStart clinic.</p>
 <hr />
 <h3 id="final-greenspace-step-remove-client-from-quickstart-clinic">Final Greenspace Step: Remove Client from QuickStart Clinic <span class="topic-tag" data-topic="checklist" style="background:#eef1f4;color:#2c3e50;border:1px solid #c8cfd8">Checklist</span> <span class="topic-tag" data-topic="greenspace" style="background:#dcecdf;color:#1f6e3a;border:1px solid #a3cdb0">Greenspace</span></h3>
 <blockquote>
 <p><strong>Responsible:</strong> <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> or <span class="role-badge" data-topic="role-qs-admin" style="background:#2980b9">QS Admin</span> (this step requires admin-level Greenspace access; Parent Coaches' clinician-level accounts cannot complete it)</p>
 </blockquote>
-<p>This is the <strong>final step</strong> for every matched-by-CICC closure (Scenarios <strong>1a, 2a, 3a, 4a</strong>). After all other Greenspace, ShareVision, and PPAS-referral actions for the scenario are complete, the family must be <strong>removed from the QuickStart clinic</strong> in Greenspace.</p>
+<p>This is the <strong>final step</strong> for every closure (Scenarios <strong>1–4</strong>). After all other Greenspace and ShareVision actions for the scenario are complete, the family must be <strong>removed from the QuickStart clinic</strong> in Greenspace.</p>
 <p><strong>Why this exists.</strong> When a family is matched to QS, they are added to the QuickStart clinic in Greenspace. Without an explicit removal step at end of service, families remain on the clinic roster after they are no longer participating. Historically neither CICC nor QS owned this cleanup, so it was being missed. This step closes that gap.</p>
 <p><strong>Scope — when it applies:</strong></p>
 <div class="checklist-keep">
 <ul>
-<li><strong>Applies to:</strong> Scenarios <strong>1a, 2a, 3a, 4a</strong> (any matched-by-CICC closure where the family was added to the QuickStart clinic)</li>
-<li><strong>Does not apply to:</strong> Scenarios <strong>1b, 2b, 3b, 4b</strong> (Not-Matched-by-CICC families are not in the QuickStart clinic in Greenspace)</li>
+<li><strong>Applies to:</strong> every closure (Scenarios <strong>1–4</strong>) — the family was added to the QuickStart clinic when matched by CICC.</li>
+<li><strong>Not applicable to:</strong> the archived not-matched variants (those families were never in the QuickStart clinic) — see <a href="#end-of-service--not-matched-by-cicc-variants-transitional">Archive</a>.</li>
 </ul>
 </div>
 <h4 id="permission-requirement">Permission requirement</h4>
@@ -2255,6 +2224,7 @@
 </div>
 <blockquote>
 <p><span class="topic-tag" data-topic="open-item" style="background:#fde8e8;color:#9b1c1c;border:1px solid #f5a3a3">Open Item</span> <strong>OPEN ITEM (<span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> &amp; <span class="role-badge" data-topic="role-qs-admin" style="background:#2980b9">QS Admin</span>):</strong> Confirm routine ownership of this final remove-client step — <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> vs <span class="role-badge" data-topic="role-qs-admin" style="background:#2980b9">QS Admin</span> — for Scenarios 1a and 2a (where the PC has handed off the closeout). For Scenarios 3a and 4a, the supervisor is already the closeout owner and should complete this step directly.</p>
+<p><span class="topic-tag" data-topic="open-item" style="background:#fde8e8;color:#9b1c1c;border:1px solid #f5a3a3">Open Item</span> <strong>OPEN ITEM (Greenspace tags):</strong> Confirm whether removing the <strong>"QS Waitlist"</strong> tag (under the <strong>Manage</strong> tab) should be part of this final remove-client step. The QS team does not actively use Greenspace tags, and it is unclear how the CICC team uses or depends on them — so we are trying to avoid touching them, but clearing the "QS Waitlist" tag at closeout may be necessary. Confirm with CICC before making it a routine step.</p>
 </blockquote>
 <hr />
 <h3 id="reference-family-facing-scripts">Reference: Family-Facing Scripts</h3>
@@ -2287,7 +2257,7 @@
 <p>Option 2: You can reach out to PPAS directly and refer yourself. I can give you their contact info and they'll get you started.</p>
 <p>Which feels better for your family?"</p>
 <ul>
-<li><em>If Option 1:</em> "Do I have your permission to share the report?" → proceed to the Scenario 1b / 2b staff-placed referral workflow.</li>
+<li><em>If Option 1:</em> "Do I have your permission to share the report?" → proceed to the staff-placed referral workflow (now archived — see <a href="#end-of-service--not-matched-by-cicc-variants-transitional">Archive: Not-Matched-by-CICC Variants</a>).</li>
 <li><em>If Option 2:</em> Provide PPAS contact information → document family self-referral preference in ShareVision.</li>
 </ul>
 <p><strong>If NO — family declines connection:</strong></p>
@@ -2512,6 +2482,36 @@ Administrative Support, QuickStart NS</p>
 <blockquote>
 <p><strong>STATUS: HISTORICAL / COMPLETED</strong> -- This section retains historical and time-limited workflows that are no longer active but are kept for reference. Each subsection notes the period it applied to.</p>
 </blockquote>
+<h3 id="end-of-service--not-matched-by-cicc-variants-transitional">End-of-Service — "Not Matched by CICC" Variants (transitional) <span class="topic-tag" data-topic="ppas" style="background:#ddeaea;color:#1a5a5a;border:1px solid #9fc6c6">PPAS</span> <span class="topic-tag" data-topic="moveit" style="background:#e8e0f0;color:#5a3a8a;border:1px solid #c8b0d8">MoveIt</span></h3>
+<blockquote>
+<p><strong>STATUS: TRANSITIONAL</strong> — These "b" variants applied to families who entered QS by <strong>direct referral before the September 2025 CICC integration</strong> (and the rare forward case where a family declines PPAS connection but still wants direct QS enrollment). Such families are <strong>not</strong> in Greenspace under the QS clinic, so the <a href="#final-greenspace-step-remove-client-from-quickstart-clinic">final remove-client step</a> does not apply to them. Going forward all QS families are CICC-matched, so <a href="#section-13-end-of-qs-services--transition-back-to-cicc">Section 13</a> documents only the matched path; these variants are retained for reference while any pre-integration families are still being closed out.</p>
+</blockquote>
+<p><strong>Scenario 1b — Completed, Not Matched by CICC</strong></p>
+<p><em>If family consents to connection + sharing the Discharge Report:</em></p>
+<ol>
+<li><span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span> completes a PPAS Intake Referral Form (or PPAS Autism Diagnosis Form if a new/updated diagnosis applies — see <a href="#reference-ppas-referral-mechanics">Reference: PPAS Referral Mechanics</a>) and attaches the Discharge Report.</li>
+<li><span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span> provides the completed package to <span class="role-badge" data-topic="role-qs-admin" style="background:#2980b9">QS Admin</span>.</li>
+<li><span class="role-badge" data-topic="role-qs-admin" style="background:#2980b9">QS Admin</span> submits the package via <strong>MoveIt</strong> to the appropriate regional PPAS admin:<ul>
+<li><strong>Central &amp; Western zones:</strong> Valeria</li>
+<li><strong>Eastern &amp; Northern zones:</strong> Yuna</li>
+</ul>
+</li>
+<li><span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span> updates program status in ShareVision to reflect that a referral was placed.</li>
+</ol>
+<p><em>If family declines connection or declines to share the report:</em> provide PPAS contact information so the family can self-refer later. <span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span> documents the family's preference in ShareVision. No report is shared by QS.</p>
+<blockquote>
+<p><strong>Privacy:</strong> Never share a Discharge Report with PPAS/CICC unless the family has explicitly consented.</p>
+</blockquote>
+<p><strong>Scenario 2b — Discontinued, Not Matched by CICC</strong></p>
+<p>Mirrors Scenario 1b with the <strong>QS Discharge letter</strong> in place of the Discharge Report: if the family consents, <span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span> completes the PPAS referral form (including the discharge letter) and <span class="role-badge" data-topic="role-qs-admin" style="background:#2980b9">QS Admin</span> submits via MoveIt; if the family declines, provide PPAS contact info for self-referral and document the preference in ShareVision.</p>
+<blockquote>
+<p><span class="topic-tag" data-topic="open-item" style="background:#fde8e8;color:#9b1c1c;border:1px solid #f5a3a3">Open Item</span> <strong>OPEN ITEM:</strong> The ShareVision-side discharge documentation workflow for 2b is not fully documented (likely discharge letter creation, reason for discontinuation in ShareVision, program status "Discontinued", QS End Date). To confirm only if a pre-integration 2b case arises.</p>
+</blockquote>
+<p><strong>Scenario 3b — Aged Out, Not Matched by CICC</strong></p>
+<p><span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> updates the Participation Info workbook to reflect ineligibility. (No ShareVision profile is created for these never-enrolled waitlist families.) No further action.</p>
+<p><strong>Scenario 4b — Unable to Contact, Not Matched by CICC</strong></p>
+<p><span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> closes the contact attempt and updates the Participation Info workbook (ShareVision only if a profile exists). No further action.</p>
+<p><strong>CICC proactive-contact exception (1b/2b).</strong> For these not-matched cases where QS places a PPAS referral on the family's behalf, CICC <em>will</em> proactively reach out — a referral has been placed (the first of the three <a href="#cicc-proactive-contact-rules">CICC Proactive Contact Rules</a>). This is the one end-of-service path that triggers CICC proactive contact.</p>
 <h3 id="receipt-and-transfer-of-referrals-to-cicc-transition-period">Receipt and Transfer of Referrals to CICC (Transition Period)</h3>
 <blockquote>
 <p><strong>Responsible:</strong> <span class="role-badge" data-topic="role-qs-admin" style="background:#2980b9">QS Admin</span></p>
@@ -2591,7 +2591,211 @@ Administrative Support, QuickStart NS</p>
 <p>Best regards,</p>
 <p>[QS Supervisor/Manager Name]<br />
 QuickStart Nova Scotia</p>
-</blockquote></main>
+</blockquote>
+<hr />
+<details>
+<summary><strong>Open Items Summary</strong> — open questions and TODOs collected from throughout this document, for maintainers (click to expand)</summary>
+<h2 id="open-items-summary">Open Items Summary <span class="topic-tag" data-topic="open-item" style="background:#fde8e8;color:#9b1c1c;border:1px solid #f5a3a3">Open Item</span></h2>
+<p>The following open questions and TODOs are collected from throughout this document. Each also appears inline where it is contextually relevant.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Section</th>
+<th>Item</th>
+<th>Owner</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><del>1</del></td>
+<td><del>3.5</del></td>
+<td><del>ESDM candidacy indicator in Participation Info workbook — resolved (ESDM integration): single "Waitlist" status + conditional age-highlighting; see "Working the Waitlist When an Opening Arises"</del></td>
+<td><del>resolved</del></td>
+</tr>
+<tr>
+<td>2</td>
+<td>7</td>
+<td>Greenspace fixed-option question for "Availability of Primary Participating Caregiver" needs to be revised/consolidated</td>
+<td>--</td>
+</tr>
+<tr>
+<td>3</td>
+<td>7</td>
+<td>Identify specific sections of QS NS Service Profile to highlight for each eligibility criterion (caregiver availability, program hours, language, location)</td>
+<td>--</td>
+</tr>
+<tr>
+<td>4</td>
+<td>7</td>
+<td>Confirm: should language field be added to Greenspace?</td>
+<td>--</td>
+</tr>
+<tr>
+<td>5</td>
+<td>9B</td>
+<td>Should admins check feasibility of in-person sessions at this point, or during the intro call?</td>
+<td>Connor</td>
+</tr>
+<tr>
+<td>6</td>
+<td>9B</td>
+<td>Should RC remove Greenspace data fields (age based on referral date, earliest available start date, cohort assignment, age at projected start) when family declines?</td>
+<td>Bethany</td>
+</tr>
+<tr>
+<td><del>7</del></td>
+<td><del>10</del></td>
+<td><del>Intro meeting timing — resolved: 4-6 weeks before cohort start, ideal 6 weeks. See Step 9D.</del></td>
+<td><del>resolved</del></td>
+</tr>
+<tr>
+<td>8</td>
+<td>10</td>
+<td>Possibility of gathering child-specific milestone info closer to start date via forms, and/or having the PC/team lead gather it?</td>
+<td>--</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Community Outreach</td>
+<td>Verify and update outreach document links post-CICC integration; review document content to reflect new referral pathway (referral to PPAS, not directly to QS)</td>
+<td>--</td>
+</tr>
+<tr>
+<td><del>10</del></td>
+<td><del>Status Definitions</del></td>
+<td><del>Review whether additional program status values are needed for ESDM-specific pathways (ESDM Waitlist vs. PC Waitlist distinction)</del> — resolved (ESDM integration): single "Waitlist" status covers both streams</td>
+<td><del>resolved</del></td>
+</tr>
+<tr>
+<td>11</td>
+<td>9D</td>
+<td>3-attempt contact policy documented (email-first, 2-day waits, escalation to referral source). Remaining: confirm whether "Unable to Contact" should trigger release of the cohort opening and/or formal notification to CICC</td>
+<td>Connor</td>
+</tr>
+<tr>
+<td>12</td>
+<td>13</td>
+<td>Develop a general FAQ to help QS staff hold realistic conversations about PPAS options, CICC services, timelines, and eligibility</td>
+<td>Bethany</td>
+</tr>
+<tr>
+<td>13</td>
+<td>13</td>
+<td>Obtain realistic timeline guidance from PPAS leadership about typical response times, waitlists, and enrollment windows</td>
+<td>--</td>
+</tr>
+<tr>
+<td>15</td>
+<td>9F / 13</td>
+<td>Confirm whether QS Start/End Date in Greenspace should be left blank or populated for the no-intro-meeting closeouts — the unable-to-contact pathway (9F / Scenario 4) and the aged-out pathway (Scenario 3). Left blank for now, but a date may be needed for these children to appear in reporting</td>
+<td>Connor / CICC</td>
+</tr>
+<tr>
+<td>16</td>
+<td>9D</td>
+<td>Determine default practice for sending the DocuSign consent envelope when the intro meeting is more than 90 days out (DocuSign's scheduled-send max window is 90 days). Supervisor still owns the task; mechanics TBD</td>
+<td>Connor</td>
+</tr>
+<tr>
+<td>17</td>
+<td>10</td>
+<td>Bring established intro-meeting practices into this wiki (currently covered only in existing onboarding and the QuickStart Intro Meeting OneNote template in the family's SharePoint folder) so the manual is comprehensive — pre-meeting SharePoint folder setup, the meeting's structured agenda, and the in-meeting notes captured in the OneNote template</td>
+<td>Connor</td>
+</tr>
+<tr>
+<td>18</td>
+<td>10</td>
+<td>For medium-long term efficiency, confirm and consolidate who does what for ShareVision updates following the intro meeting (notes upload, community partners section, safety checklist) — current default has supervisor handling all; revisit whether some belong with admin</td>
+<td>Connor</td>
+</tr>
+<tr>
+<td>19</td>
+<td>10</td>
+<td>DocuSign envelope visibility — can zone staff beyond the sender see sent envelopes/status? (account config)</td>
+<td>Connor</td>
+</tr>
+<tr>
+<td>20</td>
+<td>10</td>
+<td>DocuSign session timeout — can the 20-minute logout window be increased?</td>
+<td>Connor</td>
+</tr>
+<tr>
+<td>21</td>
+<td>10</td>
+<td>DocuSign API automation for consent auditing (medium-long term)</td>
+<td>Connor</td>
+</tr>
+<tr>
+<td>22</td>
+<td>11 (Email Template 5)</td>
+<td>Populate the zone-specific office-location details (parking, entry, on-arrival instructions) for each office beyond Halifax, so supervisors in all zones have a ready-made block to substitute into Email Template 5</td>
+<td>Connor / per-zone supervisors</td>
+</tr>
+<tr>
+<td>23</td>
+<td>11</td>
+<td>Assess in the medium-long term whether specific operational portions of Section 11 (Participation Info workbook updates in 11C, Outlook calendar setup in 11D, confirmation-email drafting in 11E) could be workably delegated to <span class="role-badge" data-topic="role-qs-admin" style="background:#2980b9">QS Admin</span> for efficiency — section is currently supervisor-heavy across all steps</td>
+<td>Connor</td>
+</tr>
+<tr>
+<td>24</td>
+<td>11B</td>
+<td>Consider adding assigned-team-member fields (PC / SLP / OT) to the "Referral and Eligibility" tab of the Participation Info workbook, so team assignment is visible alongside contact/program status in a single place (currently split across the "OT &amp; SLP Schedule" and "PC Timelines" tabs)</td>
+<td>Connor</td>
+</tr>
+<tr>
+<td>25</td>
+<td>11C</td>
+<td>By the end of 11C, the child's ShareVision profile has been populated with basic info (Step 9E), post-intro-meeting updates (Step 10 Following), and the QS Team section (11C). Confirm: is anything else missing that hasn't been updated?</td>
+<td>Connor / supervisors / admin</td>
+</tr>
+<tr>
+<td>26</td>
+<td>12</td>
+<td>Section 12 Area 2 (CICC future-services coordination) scaffolded April 2026; substantive content pending resolution of dependent open items (PPAS wait-time matrix, MLA advocacy pathway framing, community resources booklet). Area 1 (HSNS-staffed SLP services) is drafted</td>
+<td>Connor</td>
+</tr>
+<tr>
+<td>27</td>
+<td>13</td>
+<td>Confirm whether to formalize routine ownership of the final remove-client step in Greenspace between <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> and <span class="role-badge" data-topic="role-qs-admin" style="background:#2980b9">QS Admin</span> for Scenarios 1a and 2a, or to keep it flexible. Step requires admin-level Greenspace access (PCs cannot complete it). Scenarios 3a and 4a are already supervisor-owned</td>
+<td>Connor</td>
+</tr>
+<tr>
+<td>28</td>
+<td>3.5</td>
+<td>Propose to CICC: RC deletes non-match children from the waitlist provisional tab as the signal to QS that the RC call occurred and the child was not a service match — not yet established practice</td>
+<td>Connor / CICC</td>
+</tr>
+<tr>
+<td>29</td>
+<td>13 (Scenario 3)</td>
+<td>Confirm that holding a waitlisted child as "Waitlist" until they surpass 37 months before marking "Ineligible — aged out" does not cause reporting issues for the PC program specifically (e.g. waitlist duration, age-at-status, aged-out vs. ineligible counts). Logical from single-"Waitlist" management; verifying it doesn't introduce tradeoffs from other reporting perspectives</td>
+<td>Connor</td>
+</tr>
+<tr>
+<td><del>30</del></td>
+<td><del>13 (Scenarios 3–4)</del></td>
+<td><del>Document the exact operationalized GreenSpace steps for the Scenario 3 and 4 closeouts, to match the step-level specificity of Scenarios 1–2</del> — resolved: Scenarios 3 &amp; 4 now document the QS stream / program status / reason fields and the Event Note text; residual note-type confirmation tracked in #31</td>
+<td><del>resolved</del></td>
+</tr>
+<tr>
+<td>31</td>
+<td>13 (Scenarios 3–4)</td>
+<td>Confirm the correct GreenSpace note type for the Scenario 3/4 closeout record. <strong>Event Note</strong> is the working choice (no document to attach; the Document type requires an attachment); verify Event Note is appropriate or identify the correct type</td>
+<td>Connor</td>
+</tr>
+<tr>
+<td>32</td>
+<td>13 (Remove Client)</td>
+<td>Confirm whether removing the <strong>"QS Waitlist"</strong> tag (Manage tab) should be part of the final remove-client step. QS doesn't actively use Greenspace tags and it's unclear how CICC uses/depends on them; avoid touching them unless confirmed necessary with CICC</td>
+<td>Connor / CICC</td>
+</tr>
+</tbody>
+</table>
+</details></main>
 <script>
 
 (function() {
@@ -2599,7 +2803,10 @@ QuickStart Nova Scotia</p>
   const links = document.querySelectorAll('#sidebar-toc .toc-body a');
   function updateActive() {
     let current = '';
-    headings.forEach(h => { if (h.getBoundingClientRect().top <= 80) current = h.id; });
+    headings.forEach(h => {
+      if (h.offsetParent === null) return;            // skip hidden headings (e.g. in checklist mode)
+      if (h.getBoundingClientRect().top <= 100) current = h.id;
+    });
     links.forEach(a => { a.classList.toggle('active', a.getAttribute('href') === '#' + current); });
   }
   window.addEventListener('scroll', updateActive);
@@ -2694,8 +2901,10 @@ QuickStart Nova Scotia</p>
   function jumpToResult(i) {
     if (i < 0 || i >= currentMatches.length) return;
     const m = currentMatches[i];
-    const target = m.heading || m.el;
-    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // Scroll to the actual matched element (centered) — not the section heading — so the
+    // matched text is in view rather than potentially off-screen below the header.
+    const target = m.el || m.heading;
+    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
     m.el.classList.remove('search-flash');
     void m.el.offsetWidth;
     m.el.classList.add('search-flash');
@@ -3176,11 +3385,14 @@ QuickStart Nova Scotia</p>
         child.classList.add('checklist-hidden');
         return;
       }
-      // Bold-only paragraphs (e.g. **Community outreach:**) act as subheads — keep
+      // Bold-only paragraphs (e.g. **Community outreach:**) act as subheads — keep.
+      // Italic-only paragraphs ending in a colon (e.g. *In the Notes page:*) are
+      // tab-area / pathway labels that group the checkboxes beneath them — also keep.
       if (child.matches('p')) {
         const text = (child.textContent || '').trim();
         const onlyChild = child.children.length === 1 ? child.children[0] : null;
         if (onlyChild && onlyChild.tagName === 'STRONG' && (onlyChild.textContent || '').trim() === text) return;
+        if (onlyChild && onlyChild.tagName === 'EM' && (onlyChild.textContent || '').trim() === text && text.endsWith(':')) return;
       }
       // Inline <!-- action --> override: paragraph or element tagged action stays visible
       if (child.querySelector && child.querySelector('.topic-tag[data-topic="action"]')) return;
@@ -3195,6 +3407,7 @@ QuickStart Nova Scotia</p>
     // Clear prior marks
     content.querySelectorAll('.checklist-visible').forEach(e => e.classList.remove('checklist-visible'));
     content.querySelectorAll('.checklist-hidden').forEach(e => e.classList.remove('checklist-hidden'));
+    document.querySelectorAll('#sidebar-toc .toc-body a.toc-unreachable').forEach(a => a.classList.remove('toc-unreachable'));
     if (!mode) return;
 
     // Mark checklist-tagged wrappers (and their headings) visible,
@@ -3296,6 +3509,12 @@ QuickStart Nova Scotia</p>
       if (!hasContent) h.classList.add('checklist-hidden');
     });
 
+    // Sidebar: dim/disable TOC links whose target section isn't shown in checklist (not navigable).
+    document.querySelectorAll('#sidebar-toc .toc-body a').forEach(a => {
+      const t = document.getElementById(a.getAttribute('href').slice(1));
+      a.classList.toggle('toc-unreachable', !(t && t.offsetParent !== null));
+    });
+
     // Restore checkbox state for all list items
     restoreCheckState();
   }
@@ -3355,11 +3574,37 @@ QuickStart Nova Scotia</p>
   /* ---- VIEW toggle ---- */
   function setView(view) {
     const checklist = view === 'checklist';
+
+    // Capture the section currently at the top of the viewport (and its offset) so the
+    // toggle re-anchors there instead of "jumping" when content above is shown/hidden.
+    const allHeadings = Array.from(document.querySelectorAll('#content h2[id], #content h3[id]'));
+    let anchor = null;
+    for (const h of allHeadings) {
+      if (h.offsetParent === null) continue;
+      if (h.getBoundingClientRect().top <= 100) anchor = h; else break;
+    }
+    const prevTop = anchor ? anchor.getBoundingClientRect().top : 0;
+
     document.body.classList.toggle('checklist-mode', checklist);
     viewButtons.forEach(b => b.classList.toggle('active', b.dataset.view === view));
     applyChecklist();
     // Re-run filter logic so fragment-noise is suppressed/restored as mode changes.
     if (window.__qsApplyFilters) window.__qsApplyFilters();
+
+    // Re-anchor scroll to the same section, or the nearest visible one if it's hidden in this view.
+    if (anchor) {
+      let target = anchor;
+      if (target.offsetParent === null) {
+        const i = allHeadings.indexOf(anchor);
+        target = null;
+        for (let j = i + 1; j < allHeadings.length && !target; j++) if (allHeadings[j].offsetParent !== null) target = allHeadings[j];
+        for (let j = i - 1; j >= 0 && !target; j--) if (allHeadings[j].offsetParent !== null) target = allHeadings[j];
+      }
+      if (target === anchor) window.scrollBy(0, target.getBoundingClientRect().top - prevTop);
+      else if (target) target.scrollIntoView({ block: 'start' });
+    }
+    window.dispatchEvent(new Event('scroll'));   // refresh the active sidebar link
+
     // Persist to URL
     const url = new URL(window.location.href);
     if (checklist) url.searchParams.set('view', 'checklist');
