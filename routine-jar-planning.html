@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Routine &amp; JAR Planning — QuickStart NS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal: #00a5b5; --teal-dk: #008a98; --teal-lt: #e0f5f7;
+    --g50:#fafafa; --g100:#f5f5f5; --g200:#eeeeee; --g300:#e0e0e0; --g400:#bdbdbd;
+    --g500:#9e9e9e; --g600:#757575; --g700:#616161; --g800:#424242; --g900:#212121;
+    --shadow: 0 1px 3px rgba(0,0,0,.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family:'DM Sans',-apple-system,'Segoe UI',sans-serif; background:var(--g50); color:var(--g900); line-height:1.5; }
+  .topbar { background:#fff; border-bottom:3px solid var(--teal); padding:16px 28px; }
+  .topbar-inner { max-width:1180px; margin:0 auto; display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap; }
+  .topbar h1 { font-size:20px; font-weight:700; }
+  .topbar .sub { font-size:13px; color:var(--g500); margin-top:2px; max-width:560px; }
+  .topbar-actions { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  main { max-width:1180px; margin:0 auto; padding:20px 28px 60px; }
+
+  .btn { padding:8px 16px; font-size:12px; font-weight:600; border:none; border-radius:6px; cursor:pointer; font-family:inherit; }
+  .btn-primary { background:var(--teal); color:#fff; }
+  .btn-ghost { background:#fff; color:var(--g700); border:1px solid var(--g300); font-weight:500; }
+  .btn-link { background:none; border:none; color:var(--g500); font-size:11px; cursor:pointer; font-family:inherit; padding:0; }
+
+  .meta-row { display:flex; gap:12px; align-items:flex-end; margin-bottom:16px; flex-wrap:wrap; }
+  .field-label { font-size:12px; font-weight:600; color:var(--g700); display:block; margin-bottom:4px; }
+  .inp { width:100%; padding:7px 10px; font-size:13px; font-family:inherit; border:1px solid var(--g300); border-radius:6px; background:#fff; color:var(--g900); }
+  .inp:focus { outline:none; border-color:var(--teal); box-shadow:0 0 0 2px var(--teal-lt); }
+  textarea.inp { resize:vertical; font-size:12px; }
+
+  /* Goals reference banner */
+  .goals-box { margin-bottom:16px; }
+  .goal-chips { display:flex; gap:6px; flex-wrap:wrap; padding:8px 12px; background:var(--teal-lt); border-radius:6px; border:1px solid var(--g200); align-items:center; }
+  .goal-chip { display:inline-block; padding:3px 10px; border-radius:12px; font-size:11px; font-weight:500; color:var(--teal-dk); background:#fff; border:1px solid var(--g300); }
+  .goal-chip .x { margin-left:6px; cursor:pointer; color:var(--g400); font-weight:700; }
+  .goal-chip .x:hover { color:#dc2626; }
+
+  /* Collapsed routine row */
+  .routine-collapsed { background:#fff; border-radius:8px; border:1px solid var(--g200); padding:12px 16px; margin-bottom:8px; cursor:pointer; display:flex; align-items:center; gap:12px; transition:border-color .12s; }
+  .routine-collapsed:hover { border-color:var(--teal) !important; }
+  .routine-collapsed .rname { font-size:14px; font-weight:600; color:var(--g800); flex:1; }
+  .chip { display:inline-block; padding:3px 10px; border-radius:12px; font-size:10px; font-weight:600; white-space:nowrap; }
+
+  /* Expanded card */
+  .card { background:#fff; border-radius:8px; border:1px solid var(--g200); padding:20px; margin-bottom:12px; }
+  .section { margin-bottom:16px; padding:16px; background:var(--g50); border-radius:8px; border:1px solid var(--g200); }
+  .sec-title { font-size:13px; font-weight:700; color:var(--teal-dk); }
+  .btn-group { display:flex; gap:6px; flex-wrap:wrap; }
+  .opt-btn { padding:5px 12px; border-radius:6px; font-size:11px; font-weight:500; cursor:pointer; border:1px solid var(--g300); background:#fff; color:var(--g600); font-family:inherit; transition:all .12s; }
+  .help-box { margin-bottom:10px; padding:10px 14px; background:#fff; border-radius:6px; font-size:12px; color:var(--g600); line-height:1.7; border:1px solid var(--g200); }
+  .banner { margin-bottom:10px; padding:12px 16px; border-radius:6px; font-size:12px; line-height:1.6; }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .grid2tight { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+
+  .jar-sec { margin-bottom:12px; padding-left:8px; border-left:3px solid; }
+  .jar-sec .head { display:flex; align-items:center; gap:8px; margin-bottom:4px; flex-wrap:wrap; }
+  .jar-sec .head .t { font-size:13px; font-weight:700; }
+  .jar-sec .head .s { font-size:11px; color:var(--g400); font-style:italic; }
+  .prompts { margin-bottom:6px; padding:6px 10px; background:var(--g50); border-radius:4px; font-size:11px; color:var(--g500); line-height:1.7; font-style:italic; }
+  .mini-label { font-size:10px; font-weight:600; color:var(--g400); margin-bottom:2px; text-transform:uppercase; letter-spacing:0.5px; display:block; }
+  .q-label { font-size:12px; font-weight:600; color:var(--g700); display:block; margin-bottom:4px; line-height:1.45; }
+  .goal-hint { padding:6px 10px; background:#dcfce7; border:1px solid #86efac; border-radius:4px; font-size:11px; color:#15803d; line-height:1.6; margin-bottom:6px; }
+
+  /* Dimensions grid */
+  .dim-wrap { display:grid; grid-template-columns:24px 1fr; }
+  .dim-cells { display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr); gap:4px; }
+  .dim-cell { padding:10px 6px; border-radius:6px; cursor:pointer; font-family:inherit; transition:all .15s; text-align:center; line-height:1.3; border:1px solid var(--g200); background:#fff; }
+  .dim-cell .gs { font-size:10px; font-weight:600; color:var(--g600); margin-bottom:1px; }
+  .dim-cell .fl { font-size:9px; opacity:0.8; color:var(--g500); }
+  .dim-cell.sel { border:2px solid #7c3aed; background:#ede9fe; box-shadow:0 0 0 2px #c4b5fd; }
+  .dim-cell.sel .gs, .dim-cell.sel .fl { color:#7c3aed; }
+  .axis-label { font-size:10px; font-weight:700; color:#7c3aed; text-transform:uppercase; letter-spacing:0.8px; text-align:center; margin-bottom:4px; }
+  .axis-end { font-size:10px; color:#7c3aed; font-weight:600; white-space:nowrap; }
+
+  .empty { text-align:center; padding:48px; color:var(--g400); }
+
+  /* Modal */
+  .modal-bg { position:fixed; inset:0; background:rgba(0,0,0,.3); z-index:2600; display:flex; align-items:center; justify-content:center; }
+  .modal { background:#fff; border-radius:10px; padding:24px; max-width:340px; box-shadow:0 8px 24px rgba(0,0,0,.15); }
+
+  .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:var(--g800); color:#fff; padding:10px 20px; border-radius:6px; font-size:13px; z-index:3000; opacity:0; transition:opacity .25s; pointer-events:none; }
+  .toast.show { opacity:1; }
+
+  .footer-note { max-width:1180px; margin:0 auto; padding:0 28px 32px; }
+  .interim-note { background:var(--teal-lt); border:1px solid var(--teal); border-radius:6px; padding:10px 14px; font-size:12px; color:var(--g800); }
+</style>
+</head>
+<body>
+<style>.qs-home-pill{position:fixed;bottom:14px;left:14px;z-index:9999;background:#008a98;color:#fff;padding:6px 12px;border-radius:999px;font-family:'DM Sans','Segoe UI',sans-serif;font-size:12px;font-weight:600;text-decoration:none;box-shadow:0 2px 6px rgba(0,0,0,.25);opacity:.92;}.qs-home-pill:hover{opacity:1;}@media print{.qs-home-pill{display:none!important;}}</style><a class="qs-home-pill" href="index.html">&larr; All Tools</a>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div>
+      <h1>Routine &amp; JAR Planning</h1>
+      <div class="sub">Map the child&rsquo;s naturally occurring routines and plan how to embed teaching opportunities using the Joint Activity Routine.</div>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn btn-ghost" onclick="printOverview()">Print Routine Overview</button>
+      <button class="btn btn-ghost" onclick="exportJSON()">Export</button>
+      <button class="btn btn-ghost" onclick="document.getElementById('importFile').click()">Import</button>
+      <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
+      <button class="btn btn-primary" onclick="addRoutine()">+ Add Routine</button>
+    </div>
+  </div>
+</div>
+
+<main>
+  <div class="meta-row">
+    <div style="flex:1; min-width:220px;">
+      <label class="field-label">Child&rsquo;s name</label>
+      <input class="inp" id="childName" placeholder="Child's first name" oninput="state.childName=this.value; persist();" onchange="render()">
+    </div>
+  </div>
+
+  <!-- Goals reference (optional) -->
+  <div class="goals-box" id="goalsBox"></div>
+
+  <div id="routineList"></div>
+</main>
+
+<div class="footer-note">
+  <div class="interim-note">
+    <strong>Interim tool.</strong> This planner mirrors the Routine &amp; JAR Planning page of the upcoming QuickStart Information System (QSIS) — same workflow, same framework (ANS <em>Advanced Applications of the Joint Activity Routine</em>). Data stays in this browser; use Export to save or share a file.
+  </div>
+</div>
+
+<div id="modalRoot"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ════════════════════════════════════════════════════════════
+   Constants — ported verbatim from QSIS cpvData.js /
+   staffFidelityData.js (RoutineJarPlanningPage v2)
+   ════════════════════════════════════════════════════════════ */
+
+const FREQUENCY_OPTIONS = [
+  { value:"multiple-daily", label:"Multiple times daily" },
+  { value:"daily",          label:"Daily" },
+  { value:"few-per-week",   label:"A few times per week" },
+  { value:"occasionally",   label:"Occasionally" },
+];
+
+/* Decision table from Advanced Applications of the JAR, Section 4 p.38 */
+const JAR_DECISION_TABLE = [
+  { engagement:"independent", direction:"stay-same",           fit:"no-fit",  label:"JAR does not fit",      projection:"Independent",              desc:"Focus on maintaining HRE without shared engagement. Use rapport-building only to regulate and support independence." },
+  { engagement:"independent", direction:"toward-shared",       fit:"not-yet", label:"Not ready for JAR yet", projection:"Supported (2–3 months)", desc:"Focus on Steps 1–3 of rapport-building as the foundation for future shared engagement." },
+  { engagement:"independent", direction:"toward-independence", fit:"no-fit",  label:"JAR does not fit",      projection:"Independent",              desc:"Routine is appropriately independent. Focus on supporting HRE and building personal independence skills." },
+  { engagement:"supported",   direction:"toward-independence", fit:"no-fit",  label:"JAR does not fit",      projection:"Supported → Independent", desc:"The developmental goal is greater independence. Continue supporting HRE while helping the child take on more of the routine themselves." },
+  { engagement:"supported",   direction:"toward-shared",       fit:"may-fit", label:"JAR may fit",           projection:"Shared",                   desc:"If the learner is consistently HRE and welcomes your participation, this is a strong candidate for a JAR." },
+  { engagement:"supported",   direction:"stay-same",           fit:"not-yet", label:"Not ready for JAR yet", projection:"Supported",                desc:"Focus on rapport-building; use shared moments to scaffold success within the routine." },
+  { engagement:"shared",      direction:"stay-same",           fit:"strong",  label:"Strong JAR fit",        projection:"Shared",                   desc:"When shared engagement is developmentally appropriate and the learner is ready, JARs can support growth and enjoyment." },
+  { engagement:"shared",      direction:"toward-shared",       fit:"strong",  label:"Strong JAR fit",        projection:"Shared",                   desc:"Already shared engagement — continue building within the JAR framework." },
+  { engagement:"shared",      direction:"toward-independence", fit:"no-fit",  label:"JAR does not fit",      projection:"Supported → Independent", desc:"The routine is transitioning away from shared engagement. Focus instead on supporting independence with a warm, regulating presence." },
+];
+
+const ENGAGEMENT_OPTIONS = [
+  { value:"shared",      label:"Shared",      desc:"Both child and adult have active roles, sharing and taking turns. True joint engagement with mutual awareness." },
+  { value:"supported",   label:"Supported",   desc:"Adult scaffolds the child’s participation. Child participates but needs help to maintain engagement." },
+  { value:"independent", label:"Independent", desc:"Child does it on their own. May involve proximity but not active joint engagement." },
+];
+
+const DIRECTION_OPTIONS = [
+  { value:"toward-shared",       label:"Toward Shared Engagement", desc:"Increase joint participation, turn-taking, co-construction." },
+  { value:"stay-same",           label:"Stay About the Same",      desc:"Current level of engagement is appropriate for now." },
+  { value:"toward-independence", label:"Toward Independence",      desc:"Child does more on their own, reduce scaffolding." },
+];
+
+const HRE_STATUS_OPTIONS = [
+  { value:"consistent", label:"Yes, usually HRE", color:"#16a34a", bg:"#dcfce7" },
+  { value:"emerging",   label:"Sometimes HRE",    color:"#d97706", bg:"#fef3c7" },
+  { value:"not-yet",    label:"Not yet HRE",      color:"#dc2626", bg:"#fee2e2" },
+];
+
+const HRE_DEFINITIONS = [
+  { term:"Happy",   desc:"Look for the presence of smiles, laughter, or any individual-specific indications of joy and contentment." },
+  { term:"Relaxed", desc:"Look for the absence of stress signals — no signs of anxiety, tension, frustration, or dysregulation." },
+  { term:"Engaged", desc:"Look for active participation in an activity or interaction, showing curiosity and a willingness to explore. Engagement is about sustained attention and interaction with the environment, people, or tasks at hand." },
+];
+
+const FLEXIBILITY_OPTIONS = [
+  { value:"flexible",        label:"Open / Flexible" },
+  { value:"semi-structured", label:"Semi-Structured" },
+  { value:"structured",      label:"Highly Structured" },
+];
+
+const GROUP_SIZE_OPTIONS = [
+  { value:"individual",  label:"1-on-1" },
+  { value:"small-group", label:"Small Group" },
+  { value:"large-group", label:"Large Group" },
+];
+
+const ESTABLISHMENT_LEVELS = [
+  { value:"green",  label:"Well-established",     color:"#16a34a", bg:"#dcfce7" },
+  { value:"yellow", label:"Somewhat established", color:"#d97706", bg:"#fef3c7" },
+  { value:"red",    label:"Not yet established",  color:"#dc2626", bg:"#fee2e2" },
+];
+
+const ESTABLISHMENT_GUIDANCE = {
+  green:  "Ready for specific developmental goals. Embed teaching opportunities for identified goals.",
+  yellow: "Continue building consistency. Focus on consolidating the child’s active participation before adding new teaching goals.",
+  red:    "Focus on establishing this step first. Work on building the child’s understanding of their role and the back-and-forth interaction.",
+};
+
+const FIT_COLORS = {
+  "strong":  { bg:"#dcfce7", border:"#16a34a", text:"#15803d" },
+  "may-fit": { bg:"#fef3c7", border:"#d97706", text:"#92400e" },
+  "not-yet": { bg:"#f1f5f9", border:"#64748b", text:"#475569" },
+  "no-fit":  { bg:"#fee2e2", border:"#dc2626", text:"#991b1b" },
+};
+
+const THEME_GREENS = ["#16a34a","#22c55e","#4ade80","#86efac","#bbf7d0","#dcfce7"];
+
+const JAR_SETUP_PROMPTS = [
+  { label:"Step 1 — Is the child Happy, Relaxed, and Engaged (HRE)?", sub:[
+    "Are preferred materials and activities available?",
+    "Is the child attending to the activity?",
+    "Is the child motivated by the activity?",
+    "Is the child attending to and motivated by you being part of the activity?",
+  ]},
+  { label:"Step 2 — Did you prepare to step into the spotlight of the child’s HRE?", sub:[
+    "Reducing potential distractions",
+    "Face-to-face positioning at their level",
+    "Remaining sensitive & responsive to the child’s comfort zone",
+  ]},
+  { label:"Step 3 — Did you join in by following the child’s lead?", sub:[
+    "Active listening — noticing the child’s goals within the activity",
+    "Narrating what is happening",
+    "Offering help — making success easy",
+    "Imitating the child’s actions, sounds, or words",
+    "Being the giver of good things!",
+  ]},
+];
+
+const JAR_INITIAL_THEME_PROMPTS = [
+  "What are you doing together? Can you name the theme?",
+  "Can you name your active role?",
+  "Can you name the child’s active role?",
+  "Is there shared awareness of one another’s roles?",
+  "Is the back-and-forth within those roles consistent?",
+  "Does the child understand what to expect within the activity?",
+];
+
+const JAR_PROGRESSION_PROMPTS = [
+  "How do your active roles change or progress?",
+  "Can you name the new theme?",
+  "Can you name your new active role?",
+  "Can you name the child’s new active role?",
+  "Is there shared awareness of the new roles?",
+  "Was this a variation (change) or elaboration (addition) of the previous theme?",
+];
+
+const JAR_CLOSING_PROMPTS = [
+  "Was there a clear end to the activity and transition to something else?",
+  "Type of closing: child was ready to move on / activity becoming repetitive / losing teaching value",
+  "Was the child HRE during the closing and transition?",
+  "If the child was not ready to move on, were adjustments made to support the transition?",
+];
+
+function getJarFit(engagement, direction) {
+  if (!engagement || !direction) return null;
+  return JAR_DECISION_TABLE.find(r => r.engagement === engagement && r.direction === direction) || null;
+}
+
+function mkTheme() { return { notes:"", teaching:"", adultRole:"", childRole:"", sharedAwareness:"", establishment:"" }; }
+
+function mkRoutine() {
+  const now = new Date().toISOString();
+  return {
+    id: "jr-" + Date.now() + "-" + Math.random().toString(36).slice(2,6),
+    name:"", description:"", whenOccurs:"", frequency:"", caregiver:"",
+    hreStatus:"", hreHelps:"", hreAvoid:"",
+    currentEngagement:"", strengthsEmerging:"", directionOfGrowth:"", jarFitNotes:"",
+    flexibility:"", groupSize:"",
+    jarPlan: { setup:"", setupTeaching:"", themes:[mkTheme()], closing:"", closingTeaching:"" },
+    addedAt: now, updatedAt: now,
+  };
+}
+
+/* ════════════════════════════════════════════════════════════
+   State & persistence
+   ════════════════════════════════════════════════════════════ */
+
+const LS_KEY = "qs-routine-jar-planning";
+let state = { childName:"", goals:[], routines:[] };
+let expanded = null;            // id of expanded routine
+let ui = {};                    // per-routine UI toggles {id: {showHreDefs, showHelp, showPrompts:{}}}
+let showGoals = false;
+
+function persist() {
+  try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch(e) {}
+}
+function load() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (raw) state = Object.assign({ childName:"", goals:[], routines:[] }, JSON.parse(raw));
+  } catch(e) {}
+}
+function touch(r) { r.updatedAt = new Date().toISOString(); }
+
+function esc(s) {
+  return String(s == null ? "" : s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+/* Caregiver-name reframe: the JAR's adult is the caregiver who shares the
+   routine, not the clinician. Falls back to generic "you"/"the child". */
+function cgOf(r) { const c = (r.caregiver || "").trim(); return c || null; }
+function childRef() { return (state.childName || "").trim() || null; }
+
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 1800);
+}
+
+/* ════════════════════════════════════════════════════════════
+   Goals reference (optional — most users reference goals in
+   their existing Word/Excel tools; this never blocks planning)
+   ════════════════════════════════════════════════════════════ */
+
+function renderGoals() {
+  const box = document.getElementById("goalsBox");
+  const n = state.goals.length;
+  let html = '<button class="btn-link" style="font-weight:600;color:var(--teal-dk);font-size:12px;margin-bottom:4px;" onclick="showGoals=!showGoals;renderGoals();">' +
+    (showGoals ? "▲" : "▼") + " Goals reference (" + n + ") <span style='font-weight:400;color:var(--g400)'>— optional</span></button>";
+  if (showGoals) {
+    html += '<div class="goal-chips">';
+    state.goals.forEach((g, i) => {
+      const txt = (g.domain ? "<strong>" + esc(g.domain) + ":</strong> " : "") + esc(g.description.length > 60 ? g.description.slice(0,57) + "…" : g.description);
+      html += '<span class="goal-chip">' + txt + '<span class="x" onclick="removeGoal(' + i + ')" title="Remove">&times;</span></span>';
+    });
+    html += '<button class="btn-link" style="font-size:11px;" onclick="addGoalManual()">+ add goal</button>';
+    html += '<button class="btn-link" style="font-size:11px;" onclick="document.getElementById(\'goalsImportFile\').click()">import from Goal Writing Tool</button>';
+    html += '<input type="file" id="goalsImportFile" accept=".json" style="display:none" onchange="importGoalsJSON(event)">';
+    html += '</div>';
+  }
+  box.innerHTML = html;
+}
+
+function addGoalManual() {
+  const d = prompt("Goal description (short):");
+  if (!d) return;
+  const dom = prompt("Domain (optional, e.g. Expressive Communication):") || "";
+  state.goals.push({ domain: dom, description: d });
+  persist(); renderGoals();
+}
+
+function removeGoal(i) {
+  state.goals.splice(i, 1);
+  persist(); renderGoals();
+}
+
+function importGoalsJSON(ev) {
+  const file = ev.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(reader.result);
+      const goals = (data.goals || []).map(g => ({
+        domain: g.domain || "",
+        description: g.milestoneDesc || g.description || g.milestone || g.behavior || "(untitled goal)",
+      }));
+      if (!goals.length) { alert("No goals found in that file."); return; }
+      state.goals = goals;
+      if (data.childName && !state.childName) {
+        state.childName = data.childName;
+        document.getElementById("childName").value = data.childName;
+      }
+      persist(); showGoals = true; renderGoals();
+      showToast(goals.length + " goal" + (goals.length !== 1 ? "s" : "") + " imported");
+    } catch(e) { alert("Could not read that file as Goal Writing Tool JSON."); }
+  };
+  reader.readAsText(file);
+  ev.target.value = "";
+}
+
+/* ════════════════════════════════════════════════════════════
+   Routine list rendering
+   ════════════════════════════════════════════════════════════ */
+
+function getUI(id) {
+  /* prompts.theme0 defaults open — guidance-in-place for the initial theme */
+  if (!ui[id]) ui[id] = { showHreDefs:false, showHelp:false, prompts:{ theme0:true } };
+  return ui[id];
+}
+
+function render() {
+  renderGoals();
+  const list = document.getElementById("routineList");
+
+  if (!state.routines.length) {
+    list.innerHTML =
+      '<div class="empty">' +
+      '<div style="font-size:32px;margin-bottom:8px;">🔄</div>' +
+      '<div style="font-size:14px;font-weight:600;color:var(--g600);margin-bottom:4px;">No routines mapped yet</div>' +
+      '<div style="font-size:13px;margin-bottom:16px;">Add a routine to start planning JAR-based teaching opportunities within the child’s daily activities.</div>' +
+      '<button class="btn btn-primary" onclick="addRoutine()">+ Add First Routine</button>' +
+      '<div style="margin-top:10px;"><button class="btn-link" onclick="loadExamples()">or load worked examples from the Educator Binder</button></div></div>';
+    return;
+  }
+
+  let html = "";
+  state.routines.forEach(r => {
+    html += (expanded === r.id) ? renderExpanded(r) : renderCollapsed(r);
+  });
+  html += '<div style="text-align:center;margin-top:10px;"><button class="btn-link" onclick="loadExamples()">load worked examples from the Educator Binder</button></div>';
+  list.innerHTML = html;
+}
+
+function renderCollapsed(r) {
+  const fit = getJarFit(r.currentEngagement, r.directionOfGrowth);
+  const hre = HRE_STATUS_OPTIONS.find(h => h.value === r.hreStatus);
+  const freq = FREQUENCY_OPTIONS.find(f => f.value === r.frequency);
+  const borderColor = fit ? FIT_COLORS[fit.fit].border : "var(--g200)";
+
+  let right = "";
+  if (freq) right += '<span style="font-size:11px;color:var(--g400);">' + esc(freq.label) + '</span>';
+  if (hre) right += '<span class="chip" style="color:' + hre.color + ';background:' + hre.bg + ';">HRE: ' + esc(hre.label) + '</span>';
+  if (fit) right += '<span style="font-size:11px;font-weight:600;color:' + FIT_COLORS[fit.fit].text + ';">● ' + esc(fit.label) + '</span>';
+  else if (r.hreStatus === "not-yet") right += '<span style="font-size:11px;color:#dc2626;font-weight:600;">Focus: Finding HRE</span>';
+  else right += '<span style="font-size:11px;color:var(--g400);">Not assessed</span>';
+
+  return '<div class="routine-collapsed" style="border-color:' + borderColor + ';" onclick="expandRoutine(\'' + r.id + '\')">' +
+    '<span class="rname">' + esc(r.name || "Untitled routine") + '</span>' + right +
+    '<span style="font-size:12px;color:var(--g400);">▼</span></div>';
+}
+
+function renderExpanded(r) {
+  const u = getUI(r.id);
+  const fit = getJarFit(r.currentEngagement, r.directionOfGrowth);
+  const hreReady = r.hreStatus === "consistent" || r.hreStatus === "emerging";
+  const fitOk = fit && (fit.fit === "strong" || fit.fit === "may-fit");
+  const jar = r.jarPlan;
+  const themes = jar.themes && jar.themes.length ? jar.themes : [mkTheme()];
+
+  let h = '<div class="card">';
+
+  /* header */
+  h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">' +
+    '<button class="btn-link" style="font-size:12px;display:flex;align-items:center;gap:4px;" onclick="collapseRoutine()">▲ Collapse</button>' +
+    '<span>' +
+    '<button class="btn-link" style="font-size:12px;color:var(--teal-dk);margin-right:14px;" onclick="printRoutine(\'' + r.id + '\')">🖶 Print JAR plan</button>' +
+    '<button class="btn-link" style="font-size:12px;color:#dc2626;" onclick="confirmDelete(\'' + r.id + '\')">🗑 Delete</button>' +
+    '</span></div>';
+
+  /* Once the JAR fit is determined, the mapping half is mostly set-once —
+     fold it to a summary band so the JAR plan becomes the working surface. */
+  const mapFolded = fitOk && !u.mapOpen;
+  if (mapFolded) {
+    const hreOpt = HRE_STATUS_OPTIONS.find(x => x.value === r.hreStatus);
+    const fcol = FIT_COLORS[fit.fit];
+    h += '<div onclick="toggleUI(\'' + r.id + '\',\'mapOpen\')" ' +
+      'style="cursor:pointer;background:var(--g50);border:1px solid var(--g200);border-radius:8px;padding:10px 14px;margin-bottom:14px;" ' +
+      'onmouseenter="this.style.borderColor=\'var(--teal)\'" onmouseleave="this.style.borderColor=\'var(--g200)\'">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">' +
+      '<span style="font-size:10px;font-weight:700;letter-spacing:0.8px;color:var(--g500);text-transform:uppercase;">Routine Mapping</span>' +
+      '<span style="font-size:11px;color:var(--teal-dk);font-weight:600;">edit</span></div>' +
+      '<div style="font-size:13px;font-weight:600;color:var(--g800);">' + esc(r.name || "Untitled routine") +
+      (cgOf(r) ? ' <span style="font-weight:400;color:var(--g500);">&middot; with ' + esc(cgOf(r)) + '</span>' : '') +
+      (r.whenOccurs ? ' <span style="font-weight:400;color:var(--g500);">&middot; ' + esc(r.whenOccurs) + '</span>' : '') +
+      (r.frequency ? ' <span style="font-weight:400;color:var(--g500);">&middot; ' + labelOf(FREQUENCY_OPTIONS, r.frequency) + '</span>' : '') + '</div>' +
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;align-items:center;">' +
+      (hreOpt ? '<span class="chip" style="color:' + hreOpt.color + ';background:' + hreOpt.bg + ';">HRE: ' + esc(hreOpt.label) + '</span>' : '') +
+      '<span class="chip" style="color:var(--teal-dk);background:var(--teal-lt);">' + labelOf(ENGAGEMENT_OPTIONS, r.currentEngagement) + '</span>' +
+      '<span class="chip" style="color:var(--teal-dk);background:var(--teal-lt);">' + labelOf(DIRECTION_OPTIONS, r.directionOfGrowth) + '</span>' +
+      '<span class="chip" style="color:' + fcol.text + ';background:' + fcol.bg + ';border:1px solid ' + fcol.border + ';">&#9679; ' + esc(fit.label) + '</span>' +
+      ((r.groupSize || r.flexibility) ? '<span class="chip" style="color:#7c3aed;background:#ede9fe;">' + labelOf(GROUP_SIZE_OPTIONS, r.groupSize) + ' / ' + labelOf(FLEXIBILITY_OPTIONS, r.flexibility) + '</span>' : '') +
+      '</div></div>';
+  } else {
+
+  /* 1. Routine identity */
+  h += '<div style="margin-bottom:14px;"><label class="field-label">Routine Name</label>' +
+    '<input class="inp" value="' + esc(r.name) + '" placeholder="e.g., Morning dressing, Snack time, Bubble play" oninput="upd(\'' + r.id + '\',\'name\',this.value)" id="rn-' + r.id + '"></div>';
+  h += '<div style="margin-bottom:14px;"><label class="field-label">Brief description <span style="font-weight:400;color:var(--g400);">(what happens during this routine?)</span></label>' +
+    '<textarea class="inp" rows="2" placeholder="e.g., Family eats lunch together at the kitchen table. Older sibling also present." oninput="upd(\'' + r.id + '\',\'description\',this.value)">' + esc(r.description) + '</textarea></div>';
+  h += '<div style="display:grid;grid-template-columns:1fr 1fr auto;gap:14px;margin-bottom:16px;">' +
+    '<div><label class="field-label">Who shares this routine with the child?</label>' +
+    '<input class="inp" value="' + esc(r.caregiver) + '" placeholder="e.g., Mom, Dad, Grandma" oninput="upd(\'' + r.id + '\',\'caregiver\',this.value)" onchange="render()"></div>' +
+    '<div><label class="field-label">When does this typically occur?</label>' +
+    '<input class="inp" value="' + esc(r.whenOccurs) + '" placeholder="e.g., After breakfast, Before bed, During daycare pickup" oninput="upd(\'' + r.id + '\',\'whenOccurs\',this.value)"></div>' +
+    '<div><label class="field-label">How often?</label><select class="inp" style="min-width:170px;" onchange="updSel(\'' + r.id + '\',\'frequency\',this.value)">' +
+    '<option value="">Select...</option>' +
+    FREQUENCY_OPTIONS.map(f => '<option value="' + f.value + '"' + (r.frequency === f.value ? " selected" : "") + '>' + esc(f.label) + '</option>').join("") +
+    '</select></div></div>';
+
+  /* 2. HRE section */
+  h += '<div class="section">';
+  h += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;">' +
+    '<span class="sec-title">Is the child Happy, Relaxed, and Engaged (HRE) in this routine?</span>' +
+    '<button class="btn-link" onclick="toggleUI(\'' + r.id + '\',\'showHreDefs\')">' + (u.showHreDefs ? "hide definitions" : "what is HRE?") + '</button></div>';
+  if (u.showHreDefs) {
+    h += '<div class="help-box">' +
+      HRE_DEFINITIONS.map(d => '<div style="margin-bottom:4px;"><strong>' + d.term + ':</strong> ' + esc(d.desc) + '</div>').join("") +
+      '<div style="margin-top:6px;font-size:11px;color:var(--g400);font-style:italic;">HRE may or may not involve social interaction at first — either way is a valuable starting point.</div></div>';
+  }
+  h += '<div style="margin-bottom:10px;"><div class="btn-group">' +
+    HRE_STATUS_OPTIONS.map(o => optBtn(r.hreStatus === o.value, o.color, o.bg, o.label, "selOpt('" + r.id + "','hreStatus','" + o.value + "')")).join("") +
+    '</div>' +
+    '<div style="font-size:11px;color:var(--g500);font-style:italic;margin-top:6px;line-height:1.5;">Signs of readiness for shared engagement: consistently HRE in the routine &middot; comfortable when you step into the spotlight of their engagement &middot; open to your participation &middot; your presence is becoming part of what makes the routine feel good</div>' +
+    '</div>';
+
+  if (r.hreStatus === "not-yet") {
+    h += '<div class="banner" style="background:#fee2e2;border:1px solid #fecaca;color:#991b1b;">' +
+      '<strong>You have found your focus: finding HRE.</strong> Before anything else, the child needs to be Happy, Relaxed, and Engaged in this routine. Focus on the 3 steps of rapport building: (1) notice/find HRE, (2) get ready to step into the spotlight of their HRE, (3) actively join in by following their lead. The JAR does not apply until HRE is established. ' +
+      '<button class="btn-link" style="color:#991b1b;text-decoration:underline;" onclick="toggleUI(\'' + r.id + '\',\'showDilemma\')">' + (u.showDilemma ? "hide" : "why rapport first?") + '</button>' +
+      (u.showDilemma
+        ? '<div style="margin-top:8px;padding-top:8px;border-top:1px solid #fecaca;font-weight:400;">When we offer help, we&rsquo;re asking the child to do something that feels harder &mdash; or at least different &mdash; so even well-meant help can feel worse before it feels better. A child resisting isn&rsquo;t rejecting the caregiver; it&rsquo;s a sign the helper hasn&rsquo;t yet become part of what feels good. Rapport-building tips that balance: it makes you someone the child genuinely wants to engage with &mdash; which is the condition that makes help work.</div>'
+        : '') +
+      '</div>';
+  }
+  if (r.hreStatus === "emerging") {
+    h += '<div class="banner" style="background:#fef3c7;border:1px solid #fde68a;color:#92400e;">' +
+      '<strong>HRE is sometimes present.</strong> You may be able to proceed, but be aware that you may need to spend more time building consistency in finding and sustaining HRE across the child’s participation in this routine before figuring out next steps.</div>';
+  }
+
+  h += '<div class="grid2" style="margin-bottom:8px;">' +
+    '<div class="goal-hint" style="margin-bottom:0;"><strong>What helps:</strong> have plenty of the child&rsquo;s preferred things and activities available &middot; be present and available to respond to the child&rsquo;s initiations for attention, help, or engagement &middot; honor all reasonable requests</div>' +
+    '<div class="goal-hint" style="margin-bottom:0;background:#fee2e2;border-color:#fecaca;color:#991b1b;"><strong>What to avoid:</strong> touching/taking the child&rsquo;s toys or items unless following their lead &middot; unnecessary demands (questions, instructions, corrections) &middot; stopping the child from leaving (unless safety or a pre-established boundary)</div></div>';
+  h += '<div class="grid2">' +
+    '<div><label class="field-label">What helps find HRE in this routine?</label>' +
+    '<textarea class="inp" rows="2" placeholder="Materials, positioning, timing..." oninput="upd(\'' + r.id + '\',\'hreHelps\',this.value)">' + esc(r.hreHelps) + '</textarea></div>' +
+    '<div><label class="field-label">What to avoid?</label>' +
+    '<textarea class="inp" rows="2" placeholder="Demands, transitions, distractions..." oninput="upd(\'' + r.id + '\',\'hreAvoid\',this.value)">' + esc(r.hreAvoid) + '</textarea></div></div>';
+  h += '</div>'; /* end HRE section */
+
+  /* divider: pause and consider */
+  if (hreReady) {
+    h += '<div style="margin:16px 0;padding:14px 18px;background:#eff6ff;border-radius:6px;border:1px dashed #93c5fd;font-size:12px;color:#1e40af;line-height:1.7;">' +
+      '<strong>Pause and consider:</strong> Not every routine in a child’s day is meant to be shaped into a shared back-and-forth interaction. For any child, daily activities involve a working balance of <em>shared engagement</em> (done with others) and <em>independent engagement</em> (done alone). This balance varies from child to child and shifts over time as their skills, confidence, and developmental expectations change. The next section helps you consider this child and this routine — <strong>does the JAR fit?</strong></div>';
+  }
+
+  /* 3. Does the JAR fit? */
+  if (hreReady) {
+    h += '<div class="section">';
+    h += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">' +
+      '<span class="sec-title">Does the JAR Fit?</span>' +
+      '<button class="btn-link" onclick="toggleUI(\'' + r.id + '\',\'showHelp\')">' + (u.showHelp ? "hide help" : "show help") + '</button></div>';
+    if (u.showHelp) {
+      h += '<div class="help-box"><div style="margin-bottom:8px;"><strong>Current Engagement</strong> — How does the child currently participate in this routine?</div>' +
+        ENGAGEMENT_OPTIONS.map(o => '<div style="padding-left:12px;margin-bottom:2px;"><strong>' + o.label + ':</strong> ' + esc(o.desc) + '</div>').join("") +
+        '<div style="margin-top:8px;margin-bottom:8px;"><strong>Direction of Growth</strong> — Where is this routine expected to move in the next learning environment?</div>' +
+        DIRECTION_OPTIONS.map(o => '<div style="padding-left:12px;margin-bottom:2px;"><strong>' + o.label + ':</strong> ' + esc(o.desc) + '</div>').join("") +
+        '</div>';
+    }
+    h += '<div style="margin-bottom:10px;"><label class="field-label">Current Engagement</label>' +
+      '<div style="font-size:11px;color:var(--g500);font-style:italic;margin-bottom:6px;">How does the child currently participate in this routine?</div>' +
+      '<div class="btn-group">' +
+      ENGAGEMENT_OPTIONS.map(o => optBtn(r.currentEngagement === o.value, "var(--teal-dk)", "var(--teal-lt)", o.label, "selOpt('" + r.id + "','currentEngagement','" + o.value + "')")).join("") +
+      '</div></div>';
+    /* Unpacks the nature of current successful participation — the hinge between
+       the engagement answer and the direction-of-growth call (binder p.37) */
+    h += '<div style="margin-bottom:10px;"><label class="field-label">Current Successful Participation</label>' +
+      '<div style="font-size:11px;color:var(--g500);font-style:italic;margin-bottom:6px;">Since they&rsquo;re HRE (or getting there) in this routine, they&rsquo;re already participating successfully in some way. What&rsquo;s the child doing &mdash; or starting to do &mdash; that&rsquo;s making it work?</div>' +
+      '<textarea class="inp" rows="2" placeholder="e.g., comes to the sink on their own; copies single actions; waits for their turn; tolerates help..." oninput="upd(\'' + r.id + '\',\'strengthsEmerging\',this.value)">' + esc(r.strengthsEmerging || "") + '</textarea></div>';
+
+    h += '<div style="margin-bottom:10px;"><label class="field-label">Direction of Growth</label>' +
+      '<div style="font-size:11px;color:var(--g500);font-style:italic;margin-bottom:6px;">If that successful participation continues to build, what does it look like in 3 months&rsquo; time? Is this routine heading toward shared engagement, toward independence, or staying about where it is (the balance is already right)?</div>' +
+      '<div class="btn-group">' +
+      DIRECTION_OPTIONS.map(o => optBtn(r.directionOfGrowth === o.value, "var(--teal-dk)", "var(--teal-lt)", o.label, "selOpt('" + r.id + "','directionOfGrowth','" + o.value + "')")).join("") +
+      '</div></div>';
+
+    if (fit) {
+      const fc = FIT_COLORS[fit.fit];
+      h += '<div style="padding:12px 16px;border-radius:6px;font-size:12px;line-height:1.6;background:' + fc.bg + ';border:1px solid ' + fc.border + ';color:' + fc.text + ';">' +
+        '<div style="font-weight:700;margin-bottom:4px;">' + esc(fit.label) + '</div><div>' + esc(fit.desc) + '</div>' +
+        '<div style="margin-top:6px;font-size:11px;opacity:0.8;">2–3 month projection: ' + esc(fit.projection) + '</div></div>';
+      h += '<div style="margin-top:10px;"><label class="field-label">Notes on fit</label>' +
+        '<textarea class="inp" rows="2" placeholder="Why does / doesn\'t the JAR fit this routine?" oninput="upd(\'' + r.id + '\',\'jarFitNotes\',this.value)">' + esc(r.jarFitNotes) + '</textarea></div>';
+    }
+    h += '</div>'; /* end fit section */
+  }
+
+  /* 4. Dimensions grid */
+  if (fitOk) {
+    h += '<div class="section"><div class="sec-title" style="margin-bottom:4px;">Routine Dimensions</div>' +
+      '<div style="font-size:11px;color:var(--g500);margin-bottom:12px;">Where does this routine fall along these two dimensions? This helps orient how to apply the JAR framework.</div>';
+    h += '<div class="dim-wrap">';
+    h += '<div></div>';
+    h += '<div style="margin-bottom:8px;padding:0 2px;"><div class="axis-label">Level of Flexibility</div>' +
+      '<div style="display:flex;align-items:center;padding:0 4px;"><span class="axis-end">Open</span>' +
+      '<span style="flex:1;height:2px;margin:0 6px;background:linear-gradient(to right,#c4b5fd,#7c3aed);border-radius:1px;"></span>' +
+      '<span style="font-size:10px;color:#7c3aed;">▶</span><span class="axis-end" style="margin-left:2px;">Structured</span></div></div>';
+    h += '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding-right:4px;">' +
+      '<span class="axis-end">1:1</span>' +
+      '<div style="flex:1;width:2px;margin:4px 0;background:linear-gradient(to bottom,#c4b5fd,#7c3aed);border-radius:1px;"></div>' +
+      '<span style="font-size:10px;color:#7c3aed;">▼</span>' +
+      '<span class="axis-end" style="writing-mode:vertical-lr;transform:rotate(180deg);margin-top:2px;letter-spacing:0.5px;">Group</span></div>';
+    h += '<div class="dim-cells">';
+    GROUP_SIZE_OPTIONS.forEach(gs => {
+      FLEXIBILITY_OPTIONS.forEach(fl => {
+        const sel = r.flexibility === fl.value && r.groupSize === gs.value;
+        h += '<button class="dim-cell' + (sel ? " sel" : "") + '" onclick="selDim(\'' + r.id + '\',\'' + fl.value + '\',\'' + gs.value + '\')">' +
+          '<div class="gs">' + esc(gs.label) + '</div><div class="fl">' + esc(fl.label) + '</div></button>';
+      });
+    });
+    h += '</div></div>';
+
+    /* The grid answers back — guidance varies by where the routine lands.
+       (Binder pp. 26–29: the JAR is one common frame across the FULL routine
+       space, not just open 1:1 play — structured routines need it most.) */
+    if (r.flexibility) {
+      if (r.flexibility === "flexible") {
+        h += '<div style="margin-top:10px;padding:10px 14px;background:#f5f3ff;border:1px solid #ddd6fe;border-radius:6px;font-size:12px;color:#5b21b6;line-height:1.6;">' +
+          '<strong>Open routine.</strong> Maximum room to follow the child&rsquo;s lead — themes and progressions can grow directly out of what the child does. The main risk is staying here: remember that most of a family&rsquo;s shared day is <em>not</em> open play, and the same JAR frame applies to their structured routines too.</div>';
+      } else {
+        h += '<div style="margin-top:10px;padding:10px 14px;background:#f5f3ff;border:1px solid #ddd6fe;border-radius:6px;font-size:12px;color:#5b21b6;line-height:1.6;">' +
+          '<strong>' + (r.flexibility === "structured" ? "Structured routine — less flexibility does not mean no flexibility." : "Semi-structured routine — the frame is the same, with some adaptation.") + '</strong> The JAR applies here just as fundamentally as in play; these are often the routines where families most need support. Reflect with the caregiver:' +
+          '<div style="margin-top:6px;">&bull; What are the current boundaries of participating in this routine that the child is required to follow &mdash; and why?</div>' +
+          '<div>&bull; What typically makes the child HRE, and what can be workably and appropriately integrated into the routine to help them find HRE while participating?</div>' +
+          '<div style="margin-top:6px;">In the JAR plan below, the <strong>theme and its progressions are often naturally built around the routine&rsquo;s sequence of required steps</strong> &mdash; consider one theme entry per step, asking the role questions for each. The closing is often the routine&rsquo;s natural final step.</div></div>';
+      }
+      if (r.groupSize === "small-group" || r.groupSize === "large-group") {
+        h += '<div style="margin-top:6px;padding:8px 14px;background:#f5f3ff;border:1px solid #ddd6fe;border-radius:6px;font-size:12px;color:#5b21b6;line-height:1.6;">' +
+          '<strong>Group routine.</strong> Shared engagement may be distributed across people &mdash; siblings and other family members can hold active roles too. Name their roles in the theme entries alongside the caregiver&rsquo;s and child&rsquo;s.</div>';
+      }
+    }
+    h += '</div>';
+  }
+
+  /* mapping open + fit settled → offer to fold it back down */
+  if (fitOk) {
+    h += '<div style="text-align:right;margin-bottom:8px;"><button class="btn-link" style="font-size:11px;color:var(--teal-dk);" onclick="toggleUI(\'' + r.id + '\',\'mapOpen\')">&#9650; fold mapping to summary</button></div>';
+  }
+  } /* end mapping (unfolded) branch */
+
+  /* 5. JAR plan */
+  if (fitOk) {
+    h += '<div style="margin-bottom:16px;"><div style="font-size:14px;font-weight:700;color:var(--teal-dk);margin-bottom:8px;">JAR Plan</div>';
+    h += '<div style="margin-bottom:14px;padding:10px 14px;background:#eff6ff;border-radius:6px;border:1px solid #bfdbfe;font-size:12px;line-height:1.6;color:#1e40af;">' +
+      '<strong>4-Part JAR Framework:</strong> It always starts with the <strong>Setup</strong> (finding HRE and building rapport). Setup and <strong>Closing &amp; Transition</strong> bookend a middle portion of <strong>co-construction</strong> — establishing an initial theme with possible progressions (variations or elaborations). The minimal frame for teaching is Setup → Theme → Closing.</div>';
+
+    /* Setup */
+    h += jarSection(r.id, "setup", "Setup", "Finding HRE & building rapport", "#2563eb", JAR_SETUP_PROMPTS, jar.setup, jar.setupTeaching);
+
+    /* Co-construction */
+    h += '<div style="margin-bottom:12px;margin-left:4px;padding-left:12px;border-left:3px solid #16a34a;">' +
+      '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:#16a34a;margin-bottom:8px;">Co-construction — build the theme of the activity</div>' +
+      ((r.flexibility === "structured" || r.flexibility === "semi-structured")
+        ? '<div style="font-size:11px;color:#5b21b6;font-style:italic;margin-bottom:8px;">Structured routine: consider one theme entry per step of the routine&rsquo;s natural sequence &mdash; initial theme = first step, each progression = the next step.</div>'
+        : '');
+    themes.forEach((t, idx) => {
+      h += jarThemeSection(r.id, idx, t, themes.length);
+    });
+    h += '<button class="btn-link" style="font-size:11px;color:#16a34a;border:1px dashed #86efac;border-radius:4px;padding:4px 12px;margin-bottom:4px;" onclick="addTheme(\'' + r.id + '\')">+ Add theme progression</button></div>';
+
+    /* Closing */
+    h += jarSection(r.id, "closing", "Closing & Transition", "Ending the activity & moving on", "#dc2626", JAR_CLOSING_PROMPTS, jar.closing, jar.closingTeaching);
+    h += '</div>';
+  }
+
+  /* not-yet / no-fit guidance */
+  if (fit && fit.fit === "not-yet") {
+    h += '<div class="banner" style="background:#f1f5f9;border:1px solid #94a3b8;color:#475569;margin-bottom:16px;">' +
+      '<strong>Focus on building rapport first.</strong> When the child is consistently HRE and showing readiness for shared engagement in this routine, return here to build a JAR. In the meantime, use the 3 steps of rapport building: (1) notice/find HRE, (2) get ready to step into the spotlight of their HRE, (3) actively join in by following their lead.</div>';
+  }
+  if (fit && fit.fit === "no-fit") {
+    h += '<div class="banner" style="background:#fef2f2;border:1px solid #fecaca;color:#991b1b;margin-bottom:16px;">' +
+      '<strong>JAR planning is not needed for this routine.</strong> The child’s current engagement level and direction of growth suggest this routine should not be shaped into a shared back-and-forth interaction right now. Focus on maintaining HRE and supporting the child’s current trajectory.</div>';
+  }
+
+  /* footer */
+  h += '<div style="font-size:11px;color:var(--g400);margin-top:8px;padding-top:8px;border-top:1px solid var(--g100);">' +
+    'Added ' + fmtDate(r.addedAt) + (r.updatedAt && r.updatedAt !== r.addedAt ? ' · Last updated ' + fmtDate(r.updatedAt) : '') + '</div>';
+
+  h += '</div>'; /* end card */
+  return h;
+}
+
+function optBtn(active, color, bg, label, onclick) {
+  const style = active
+    ? 'border-color:' + color + ';background:' + bg + ';color:' + color + ';font-weight:700;'
+    : '';
+  return '<button class="opt-btn" style="' + style + '" onclick="' + onclick + '">' + esc(label) + '</button>';
+}
+
+function promptsHTML(prompts) {
+  return '<div class="prompts">' + prompts.map(p => {
+    if (typeof p === "string") return '<div>• ' + esc(p) + '</div>';
+    return '<div><div>• ' + esc(p.label) + '</div>' + (p.sub || []).map(s => '<div style="padding-left:16px;">– ' + esc(s) + '</div>').join("") + '</div>';
+  }).join("") + '</div>';
+}
+
+/* Question phrasing & example placeholders carried over from the original
+   JAR Practice Sheet — fields coach the framework while asking. */
+const JAR_SECTION_CFG = {
+  setup: {
+    q:  (cg, ch) => "How does this routine typically get started? Does " + (ch || "the child") + " initiate it, or are they interested/motivated to participate when " + (cg ? cg + " suggests" : "you suggest") + " it?",
+    ph: "Describe what this looks like... For example: 'When hands are sticky, child goes to the sink' or 'Child willingly follows when I suggest washing hands'",
+    tph: "What will you focus on during setup? e.g., building rapport, ensuring the child is Happy, Relaxed, and Engaged before the activity begins",
+    tHint: null,
+  },
+  closing: {
+    q:  () => "How does the activity end and transition to something else?",
+    ph: "Describe how this routine naturally ends and what comes next. For example: 'Hands are dry and we leave the bathroom' or 'Child finishes eating and we clean up together'",
+    tph: "What specific skills can you work on during closing/transition?",
+    tHint: "Possible goals: following instructions for the next activity · personal independence in cleanup · communication about what comes next",
+  },
+};
+
+function jarSection(rid, key, title, subtitle, color, prompts, value, teachingValue) {
+  const u = getUI(rid);
+  const showP = !!u.prompts[key];
+  const r = findRoutine(rid);
+  const cfg = { ...JAR_SECTION_CFG[key], q: JAR_SECTION_CFG[key].q(r ? cgOf(r) : null, childRef()) };
+  let h = '<div class="jar-sec" style="border-left-color:' + color + ';">';
+  h += '<div class="head"><span class="t" style="color:' + color + ';">' + esc(title) + '</span>' +
+    '<span class="s">' + esc(subtitle) + '</span>' +
+    '<button class="btn-link" onclick="togglePrompts(\'' + rid + '\',\'' + key + '\')">' + (showP ? "hide prompts" : "show prompts") + '</button></div>';
+  if (showP) h += promptsHTML(prompts);
+  h += '<div style="margin-bottom:8px;"><span class="q-label">' + esc(cfg.q) + '</span>' +
+    '<textarea class="inp" rows="3" placeholder="' + esc(cfg.ph) + '" oninput="updJar(\'' + rid + '\',\'' + key + '\',this.value)">' + esc(value) + '</textarea></div>';
+  h += '<div><span class="mini-label">Teaching opportunities</span>' +
+    (cfg.tHint ? '<div class="goal-hint">' + esc(cfg.tHint) + '</div>' : '') +
+    '<textarea class="inp" rows="2" placeholder="' + esc(cfg.tph) + '" oninput="updJar(\'' + rid + '\',\'' + key + 'Teaching\',this.value)">' + esc(teachingValue) + '</textarea></div>';
+  h += '</div>';
+  return h;
+}
+
+/* Establishment-adaptive teaching question — the establishment level changes
+   what the teaching field asks (mechanism from the original JAR Practice Sheet). */
+function themeTeachingPlaceholder(level, idx) {
+  if (level === "green")  return idx === 0 ? "What specific developmental or functional goals will you target?" : "Specific skills to teach at this step...";
+  if (level === "yellow") return idx === 0 ? "How will you strengthen the child's understanding of their role?" : "How will you strengthen this step?";
+  if (level === "red")    return idx === 0 ? "What will you do to establish clearer roles and shared awareness?" : "How will you establish this step?";
+  return "Select an establishment level above to tailor this question — or note goals here...";
+}
+
+function jarThemeSection(rid, idx, theme, themeCount) {
+  const u = getUI(rid);
+  const key = "theme" + idx;
+  const showP = !!u.prompts[key];
+  const color = THEME_GREENS[Math.min(idx, THEME_GREENS.length - 1)];
+  const title = idx === 0 ? "Initial Theme" : "Progression " + (idx + 1);
+  const subtitle = idx === 0 ? "First successful back-and-forth interaction" : "How do your active roles change/progress?";
+  const prompts = idx === 0 ? JAR_INITIAL_THEME_PROMPTS : JAR_PROGRESSION_PROMPTS;
+  const est = ESTABLISHMENT_LEVELS.find(e => e.value === theme.establishment);
+
+  let h = '<div class="jar-sec" style="border-left-color:' + color + ';position:relative;">';
+  h += '<div class="head"><span class="t" style="color:' + color + ';">' + title + '</span>' +
+    '<span class="s">' + subtitle + '</span>' +
+    '<button class="btn-link" onclick="togglePrompts(\'' + rid + '\',\'' + key + '\')">' + (showP ? "hide prompts" : "show prompts") + '</button></div>';
+  if (idx > 0) {
+    h += '<button class="btn-link" style="position:absolute;top:0;right:0;font-size:11px;color:#dc2626;padding:2px 6px;" title="Remove this progression" onclick="removeTheme(\'' + rid + '\',' + idx + ')">×</button>';
+  }
+  if (showP) h += promptsHTML(prompts);
+
+  /* establishment */
+  h += '<div style="margin-bottom:8px;"><span class="q-label">How well-established is this step?</span><div class="btn-group" style="gap:4px;">' +
+    ESTABLISHMENT_LEVELS.map(e => optBtn(theme.establishment === e.value, e.color, e.bg, e.label, "selTheme('" + rid + "'," + idx + ",'establishment','" + e.value + "')")).join("") +
+    '</div></div>';
+  if (est) {
+    h += '<div style="margin-bottom:8px;padding:6px 10px;border-radius:4px;font-size:11px;line-height:1.5;background:' + est.bg + ';color:' + est.color + ';border:1px solid ' + est.color + '40;">' +
+      ESTABLISHMENT_GUIDANCE[est.value] + '</div>';
+  }
+
+  /* step description */
+  const descQ  = idx === 0 ? "How would you describe this initial step in the routine?" : "What is the next step in the routine? Briefly describe:";
+  const descPh = idx === 0 ? "e.g., 'Picking up coat and putting it on' or 'Pumping soap on hands'" : "e.g., 'Zipping up coat' or 'Rinsing hands under water'";
+  h += '<div style="margin-bottom:8px;"><span class="q-label">' + descQ + '</span>' +
+    '<textarea class="inp" rows="2" placeholder="' + esc(descPh) + '" oninput="updTheme(\'' + rid + '\',' + idx + ',\'notes\',this.value)">' + esc(theme.notes) + '</textarea></div>';
+
+  /* roles — full questions with worked examples; phrased for the routine's caregiver */
+  const rOwner = findRoutine(rid);
+  const cg = rOwner ? cgOf(rOwner) : null;
+  const ch = childRef();
+  const adultQ = cg ? "What is " + esc(cg) + "&rsquo;s active role in this step?" : "What is YOUR active role in this step?";
+  const adultPh = cg ? "What does " + cg + " do? For example: 'I hold up the coat' or 'I pump the soap'" : "What do you do? For example: 'I hold up the coat' or 'I pump the soap'";
+  const childQ = ch ? "What is " + esc(ch) + "&rsquo;s active role in this step?" : "What is the CHILD&rsquo;s active role in this step?";
+  h += '<div class="grid2tight" style="margin-bottom:8px;">' +
+    '<div><span class="q-label">' + adultQ + '</span>' +
+    '<textarea class="inp" rows="2" placeholder="' + esc(adultPh) + '" oninput="updTheme(\'' + rid + '\',' + idx + ',\'adultRole\',this.value)">' + esc(theme.adultRole) + '</textarea></div>' +
+    '<div><span class="q-label">' + childQ + '</span>' +
+    '<textarea class="inp" rows="2" placeholder="What does the child do? For example: \'Child puts arms in sleeves\' or \'Child rubs hands together\'" oninput="updTheme(\'' + rid + '\',' + idx + ',\'childRole\',this.value)">' + esc(theme.childRole) + '</textarea></div></div>';
+  h += '<div style="margin-bottom:8px;"><span class="q-label">Is there shared awareness of each other&rsquo;s roles?</span>' +
+    '<textarea class="inp" rows="2" placeholder="Do you both understand what you\'re doing together? For example: \'Child watches me and then takes their turn\' or \'We make eye contact and smile during the activity\'" oninput="updTheme(\'' + rid + '\',' + idx + ',\'sharedAwareness\',this.value)">' + esc(theme.sharedAwareness) + '</textarea></div>';
+
+  /* teaching — establishment-adaptive question */
+  h += '<div><span class="mini-label">Teaching opportunities</span>' +
+    (theme.establishment === "green" && idx === 0
+      ? '<div class="goal-hint"><strong>Ready for specific developmental goals!</strong> Consider working on: receptive language (following instructions) · expressive language (requesting, commenting) · personal independence skills · motor skills related to the activity · social interaction and joint attention</div>'
+      : '') +
+    '<textarea class="inp" rows="2" placeholder="' + esc(themeTeachingPlaceholder(theme.establishment, idx)) + '" oninput="updTheme(\'' + rid + '\',' + idx + ',\'teaching\',this.value)">' + esc(theme.teaching) + '</textarea></div>';
+
+  h += '</div>';
+  return h;
+}
+
+/* ════════════════════════════════════════════════════════════
+   State mutations
+   ════════════════════════════════════════════════════════════ */
+
+function findRoutine(id) { return state.routines.find(r => r.id === id); }
+
+/* text input — update state silently (no re-render: preserves focus) */
+function upd(id, field, val) {
+  const r = findRoutine(id); if (!r) return;
+  r[field] = val; touch(r); persist();
+}
+function updSel(id, field, val) {
+  const r = findRoutine(id); if (!r) return;
+  r[field] = val; touch(r); persist(); render();
+}
+/* option buttons — re-render (conditional sections may change) */
+function selOpt(id, field, val) {
+  const r = findRoutine(id); if (!r) return;
+  r[field] = val; touch(r); persist(); render();
+}
+function selDim(id, flexibility, groupSize) {
+  const r = findRoutine(id); if (!r) return;
+  r.flexibility = flexibility; r.groupSize = groupSize; touch(r); persist(); render();
+}
+function updJar(id, field, val) {
+  const r = findRoutine(id); if (!r) return;
+  r.jarPlan[field] = val; touch(r); persist();
+}
+function updTheme(id, idx, field, val) {
+  const r = findRoutine(id); if (!r) return;
+  if (!r.jarPlan.themes[idx]) return;
+  r.jarPlan.themes[idx][field] = val; touch(r); persist();
+}
+function selTheme(id, idx, field, val) {
+  const r = findRoutine(id); if (!r) return;
+  if (!r.jarPlan.themes[idx]) return;
+  r.jarPlan.themes[idx][field] = val; touch(r); persist(); render();
+}
+function addTheme(id) {
+  const r = findRoutine(id); if (!r) return;
+  r.jarPlan.themes.push(mkTheme()); touch(r); persist(); render();
+}
+function removeTheme(id, idx) {
+  const r = findRoutine(id); if (!r) return;
+  if (r.jarPlan.themes.length <= 1) return;
+  r.jarPlan.themes.splice(idx, 1); touch(r); persist(); render();
+}
+
+function addRoutine() {
+  const r = mkRoutine();
+  state.routines.push(r);
+  expanded = r.id;
+  persist(); render();
+  setTimeout(() => { const el = document.getElementById("rn-" + r.id); if (el) el.focus(); }, 80);
+}
+
+/* Worked examples from the Educator Binder (pp. 46, 49–50), reframed for
+   caregiver/child. Two hand-washing scenarios show the SAME routine at
+   different child stages; shoes shows a structured daily-living routine. */
+function loadExamples() {
+  const ex1 = Object.assign(mkRoutine(), {
+    name: "Hand washing (example — further along)", caregiver: "Mom",
+    description: "Washing hands at the sink before meals and when hands get sticky.",
+    whenOccurs: "Before meals; when hands are sticky", frequency: "multiple-daily",
+    hreStatus: "consistent",
+    hreHelps: "Water play feels good; child likes the soap foam; letting them start the water",
+    hreAvoid: "Rushing; grabbing their hands to scrub for them",
+    currentEngagement: "shared",
+    strengthsEmerging: "Initiates the routine when hands are sticky; sometimes says 'wash hands'. Emerging: two-word requests; lathering independently",
+    directionOfGrowth: "stay-same",
+    jarFitNotes: "A routine that stays shared in family life for now; child enjoys doing it together",
+    flexibility: "semi-structured", groupSize: "individual",
+    jarPlan: {
+      setup: "When hands are sticky, child goes over to the sink & will sometimes say 'wash hands'",
+      setupTeaching: "Supporting initiation; expressive communication — requesting help",
+      themes: [
+        { notes: "Lathering soap on hands", adultRole: "Mom pumps the soap", childRole: "Child lathers soap onto hands", sharedAwareness: "Child holds hands out as soon as Mom reaches for the pump", establishment: "green", teaching: "Expressive: 'soap', 'rub', 'push'; following instructions; personal independence in lathering" },
+        { notes: "Rinsing under water", adultRole: "Mom turns on the faucet", childRole: "Child rubs hands under the water", sharedAwareness: "Child waits at the faucet and looks to Mom", establishment: "green", teaching: "Expressive: 'on', 'water', 'wash hands'; following instructions" },
+        { notes: "Drying hands", adultRole: "Mom turns off the faucet", childRole: "Child dries hands on the towel", sharedAwareness: "Child reaches for the towel when the water stops", establishment: "yellow", teaching: "Expressive: 'off', 'dry hands'; personal independence" },
+      ],
+      closing: "Hands are dry and no longer sticky (natural end); leave the sink area together (natural transition)",
+      closingTeaching: "Following instructions to move to the next activity; personal independence",
+    },
+  });
+  const ex2 = Object.assign(mkRoutine(), {
+    name: "Hand washing (example — earlier stage)", caregiver: "Dad",
+    description: "Same routine, earlier stage — child learning through watching and copying Dad.",
+    whenOccurs: "When hands are sticky", frequency: "daily",
+    hreStatus: "emerging",
+    hreHelps: "Child likes watching the water; going together rather than being sent",
+    hreAvoid: "Hand-over-hand without warning; too many verbal instructions",
+    currentEngagement: "supported",
+    strengthsEmerging: "Willingly follows Dad to the sink when proposed; watches closely and copies some actions. Emerging: imitation of single actions; turn-taking",
+    directionOfGrowth: "toward-shared",
+    jarFitNotes: "Child welcomes Dad's participation — strong candidate to build toward shared",
+    flexibility: "semi-structured", groupSize: "individual",
+    jarPlan: {
+      setup: "When hands are sticky, child expresses discomfort & willingly follows Dad to the sink when proposed",
+      setupTeaching: "Building rapport within the routine; responding to 'wash hands?'",
+      themes: [
+        { notes: "Pumping soap — Dad models, child copies", adultRole: "Dad pumps soap on his own hands first", childRole: "Child watches & pumps soap on their hands", sharedAwareness: "Child looks at Dad's hands, then their own", establishment: "yellow", teaching: "Imitation; fine motor; expressive: 'soap', 'push'" },
+        { notes: "Lathering — child is happy & relaxed during this step but not yet engaged", adultRole: "Dad lathers soap into child's hands with full prompting", childRole: "Child allows help, not yet active", sharedAwareness: "Not yet — work on active participation", establishment: "red", teaching: "Work on active participation in this step before adding skill targets" },
+        { notes: "Washing under water — Dad models, child copies", adultRole: "Dad washes/scrubs his hands under the water", childRole: "Child watches & washes their hands too", sharedAwareness: "Emerging — child checks Dad's hands while copying", establishment: "yellow", teaching: "Imitation; fine motor; expressive: 'on', 'water', 'wash hands'" },
+      ],
+      closing: "Hands are dry and no longer sticky (natural end); leave the sink area (natural transition)",
+      closingTeaching: "Imitation — drying hands like Dad; expressive: 'off', 'dry hands'",
+    },
+  });
+  const ex3 = Object.assign(mkRoutine(), {
+    name: "Putting on shoes (example)", caregiver: "Grandma",
+    description: "Getting shoes on before going outside.",
+    whenOccurs: "Before heading outside", frequency: "daily",
+    hreStatus: "consistent",
+    hreHelps: "Child loves going outside — shoes signal something good is coming",
+    hreAvoid: "Long waits once shoes are on",
+    currentEngagement: "shared",
+    strengthsEmerging: "Initiates by sitting on the bench when shoes appear. Emerging: pulling laces tight; pushing heel in",
+    directionOfGrowth: "stay-same",
+    jarFitNotes: "Stays a shared dressing routine for now while independence skills emerge",
+    flexibility: "structured", groupSize: "individual",
+    jarPlan: {
+      setup: "Child sees the shoes and sits down on the bench (initiates the routine this way)",
+      setupTeaching: "",
+      themes: [
+        { notes: "Foot into shoe", adultRole: "Grandma holds up the shoe", childRole: "Child provides their foot", sharedAwareness: "Child lifts their foot as soon as the shoe appears", establishment: "green", teaching: "Fine motor & imitation within the daily living skill" },
+        { notes: "Tightening laces", adultRole: "Grandma finishes tying the laces", childRole: "Child pulls the laces tight", sharedAwareness: "Turn-taking — child pulls, then hands over", establishment: "yellow", teaching: "Fine motor; sequencing; expressive: 'pull', 'tie'" },
+      ],
+      closing: "Natural closing and transition once shoes are on — head outside",
+      closingTeaching: "Following instructions for the transition; communication about what comes next",
+    },
+  });
+  state.routines.push(ex1, ex2, ex3);
+  persist(); render();
+  showToast("3 example routines loaded (from the Educator Binder)");
+}
+function expandRoutine(id) { expanded = id; render(); }
+function collapseRoutine() { expanded = null; render(); }
+
+function confirmDelete(id) {
+  const r = findRoutine(id); if (!r) return;
+  const root = document.getElementById("modalRoot");
+  root.innerHTML = '<div class="modal-bg" onclick="closeModal()"><div class="modal" onclick="event.stopPropagation()">' +
+    '<div style="font-size:15px;font-weight:700;margin-bottom:8px;">Delete routine?</div>' +
+    '<div style="font-size:13px;color:var(--g600);margin-bottom:16px;">This will permanently remove &ldquo;' + esc(r.name || "this routine") + '&rdquo; and its JAR plan.</div>' +
+    '<div style="display:flex;gap:8px;justify-content:flex-end;">' +
+    '<button class="btn btn-ghost" onclick="closeModal()">Cancel</button>' +
+    '<button class="btn" style="background:#dc2626;color:#fff;" onclick="doDelete(\'' + id + '\')">Delete</button></div></div></div>';
+}
+function closeModal() { document.getElementById("modalRoot").innerHTML = ""; }
+function doDelete(id) {
+  state.routines = state.routines.filter(r => r.id !== id);
+  if (expanded === id) expanded = null;
+  closeModal(); persist(); render();
+}
+
+function fmtDate(iso) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  return d.toLocaleDateString("en-CA", { year:"numeric", month:"short", day:"numeric" });
+}
+
+/* ════════════════════════════════════════════════════════════
+   Export / Import
+   ════════════════════════════════════════════════════════════ */
+
+function exportJSON() {
+  const data = { tool:"routine-jar-planning", version:1, exportedAt:new Date().toISOString(),
+    childName:state.childName, goals:state.goals, routines:state.routines };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type:"application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "routine_jar_planning_" + (state.childName || "unnamed").replace(/\s+/g, "_") + ".json";
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast("Exported");
+}
+
+function importJSON(ev) {
+  const file = ev.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(reader.result);
+      if (Array.isArray(data.routines)) {
+        /* planner file */
+        state = { childName: data.childName || "", goals: data.goals || [], routines: data.routines };
+        document.getElementById("childName").value = state.childName;
+        expanded = null; persist(); render();
+        showToast("Plan imported");
+      } else if (Array.isArray(data.goals)) {
+        /* Goal Writing Tool file — import goals only */
+        state.goals = data.goals.map(g => ({
+          domain: g.domain || "",
+          description: g.milestoneDesc || g.description || g.milestone || g.behavior || "(untitled goal)",
+        }));
+        if (data.childName && !state.childName) {
+          state.childName = data.childName;
+          document.getElementById("childName").value = data.childName;
+        }
+        showGoals = true; persist(); render();
+        showToast("Goals imported from Goal Writing Tool file");
+      } else {
+        alert("Unrecognized file format.");
+      }
+    } catch(e) { alert("Could not read that file."); }
+  };
+  reader.readAsText(file);
+  ev.target.value = "";
+}
+
+/* ════════════════════════════════════════════════════════════
+   Print views
+   ════════════════════════════════════════════════════════════ */
+
+/* Print styling follows the Educator Binder's JAR Practice Sheets:
+   blue title band; Setup=blue, Theme=green, Closing=red phase rows. */
+const PRINT_CSS =
+  "body{font-family:'DM Sans','Segoe UI',sans-serif;color:#212121;margin:28px;line-height:1.5;font-size:12px;}" +
+  ".band{background:#1d6fb8;color:#fff;font-size:16px;font-weight:700;text-align:center;padding:10px 16px;border-radius:4px;margin-bottom:10px;}" +
+  "h2{font-size:14px;color:#008a98;margin:18px 0 6px;}" +
+  ".meta{font-size:11px;color:#757575;margin-bottom:12px;}" +
+  ".activity-name{font-size:13px;font-weight:700;color:#1d6fb8;margin-bottom:6px;}" +
+  "table{border-collapse:collapse;width:100%;margin-top:8px;}" +
+  "th,td{border:1px solid #c9d6e4;padding:6px 8px;font-size:11px;text-align:left;vertical-align:top;}" +
+  "th{background:#e8f1fa;color:#1d6fb8;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;vertical-align:top;}" +
+  "th .qhdr{display:block;font-style:italic;font-weight:400;text-transform:none;letter-spacing:0;color:#3b6ea5;margin-top:3px;font-size:10px;line-height:1.4;}" +
+  ".phase{font-weight:700;text-align:center;vertical-align:middle;font-size:11px;letter-spacing:0.5px;}" +
+  ".phase-setup{color:#1d6fb8;background:#e8f1fa;}" +
+  ".phase-theme{color:#16a34a;background:#ecf7ee;}" +
+  ".phase-closing{color:#dc2626;background:#fdecec;}" +
+  ".vert{writing-mode:vertical-rl;transform:rotate(180deg);margin:0 auto;letter-spacing:1px;white-space:nowrap;}" +
+  ".gq{font-style:italic;color:#3b6ea5;line-height:1.5;}" +
+  ".sublbl{font-size:9px;font-weight:700;letter-spacing:0.6px;display:block;margin-bottom:2px;}" +
+  ".box{border:1px solid #e0e0e0;border-radius:6px;padding:10px 12px;margin-bottom:8px;}" +
+  ".lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#9e9e9e;display:block;margin-bottom:1px;}" +
+  ".chipline{font-size:11px;margin:2px 0;}" +
+  "@media print{body{margin:10mm;}}";
+
+function openPrint(title, bodyHTML, extraCss) {
+  const w = window.open("", "_blank");
+  w.document.write("<!DOCTYPE html><html><head><meta charset='utf-8'><title>" + esc(title) + "</title><style>" + PRINT_CSS + (extraCss || "") + "</style></head><body>" + bodyHTML + "<script>window.onload=function(){window.print();}<\/script></body></html>");
+  w.document.close();
+}
+
+function labelOf(options, value) {
+  const o = options.find(x => x.value === value);
+  return o ? o.label : "—";
+}
+
+/* terse one-cell rendering of a theme for the Multiple Activities map */
+function themeTerse(t, cg, ch) {
+  const parts = [];
+  if (t.notes) parts.push(esc(t.notes));
+  if (t.adultRole) parts.push("<strong>" + esc(cg || "Adult") + ":</strong> " + esc(t.adultRole));
+  if (t.childRole) parts.push("<strong>" + esc(ch || "Child") + ":</strong> " + esc(t.childRole));
+  if (t.sharedAwareness) parts.push("<em>" + esc(t.sharedAwareness) + "</em>");
+  return parts.join("<br>") || "—";
+}
+
+function printOverview() {
+  if (!state.routines.length) { alert("No routines to print yet."); return; }
+  const ch = childRef();
+  const today = new Date().toLocaleDateString("en-CA", {year:"numeric",month:"long",day:"numeric"});
+
+  let b = "<div class='band'>JAR Practice Sheet (Multiple Activities)</div>" +
+    "<div class='meta'>" + esc(state.childName || "Child") + " · " + today + " · QuickStart NS — Routine & JAR Planning</div>";
+
+  const jarRoutines = state.routines.filter(r => {
+    const f = getJarFit(r.currentEngagement, r.directionOfGrowth);
+    return f && (f.fit === "strong" || f.fit === "may-fit");
+  });
+
+  if (jarRoutines.length) {
+    b += "<table><tr>" +
+      "<th style='width:11%'>List the Activity</th>" +
+      "<th style='width:15%'>Setup<span class='qhdr'>" + esc(ch || "Child") + " initiates the routine? OR is interested/motivated to participate when proposed?</span></th>" +
+      "<th style='width:19%'>Initial Theme<span class='qhdr'>What is the caregiver's initial active role? What is " + esc(ch || "the child") + "'s? Is there shared awareness of one another's roles?</span></th>" +
+      "<th style='width:19%'>Elaborate<span class='qhdr'>How do the active roles change/progress during the routine?</span></th>" +
+      "<th style='width:16%'>Closing &amp; Transition<span class='qhdr'>How does the activity end/wrap up, and transition into something else?</span></th>" +
+      "<th style='width:20%'>Teaching Opportunities<span class='qhdr'>What kind of teaching opportunities may naturally arise within the back-and-forth interactions of the activity?</span></th></tr>";
+    jarRoutines.forEach(r => {
+      const cg = cgOf(r);
+      const themes = r.jarPlan.themes && r.jarPlan.themes.length ? r.jarPlan.themes : [];
+      const elaborate = themes.slice(1).map((t, i) => "<span class='sublbl' style='color:#16a34a;'>STEP " + (i + 2) + "</span>" + themeTerse(t, cg, ch)).join("<br>") || "—";
+      const teach = [r.jarPlan.setupTeaching]
+        .concat(themes.map(t => t.teaching))
+        .concat([r.jarPlan.closingTeaching])
+        .filter(Boolean).map(esc).join(" · ") || "—";
+      b += "<tr><td><strong>" + esc(r.name || "Untitled") + "</strong>" +
+        (cg ? "<br><span style='color:#757575;'>with " + esc(cg) + "</span>" : "") + "</td>" +
+        "<td>" + (r.jarPlan.setup ? esc(r.jarPlan.setup) : "—") + "</td>" +
+        "<td>" + (themes[0] ? themeTerse(themes[0], cg, ch) : "—") + "</td>" +
+        "<td>" + elaborate + "</td>" +
+        "<td>" + (r.jarPlan.closing ? esc(r.jarPlan.closing) : "—") + "</td>" +
+        "<td>" + teach + "</td></tr>";
+    });
+    b += "</table>";
+  } else {
+    b += "<div class='box'>No routines with a JAR plan yet — the map below shows where each routine currently stands.</div>";
+  }
+
+  /* PC-facing status table — all routines, including not-yet / no-fit */
+  b += "<h2>Routine Status Overview (all routines)</h2>";
+  b += "<table><tr><th>Routine</th><th>When / How often</th><th>HRE status</th><th>Engagement</th><th>Direction of growth</th><th>JAR fit</th><th>Dimensions</th></tr>";
+  state.routines.forEach(r => {
+    const fit = getJarFit(r.currentEngagement, r.directionOfGrowth);
+    const dims = (r.groupSize || r.flexibility)
+      ? labelOf(GROUP_SIZE_OPTIONS, r.groupSize) + " / " + labelOf(FLEXIBILITY_OPTIONS, r.flexibility)
+      : "—";
+    b += "<tr><td><strong>" + esc(r.name || "Untitled") + "</strong>" + (r.description ? "<br>" + esc(r.description) : "") + "</td>" +
+      "<td>" + esc(r.whenOccurs || "") + (r.frequency ? "<br>" + labelOf(FREQUENCY_OPTIONS, r.frequency) : "") + "</td>" +
+      "<td>" + (r.hreStatus ? labelOf(HRE_STATUS_OPTIONS, r.hreStatus) : "—") + "</td>" +
+      "<td>" + (r.currentEngagement ? labelOf(ENGAGEMENT_OPTIONS, r.currentEngagement) : "—") + "</td>" +
+      "<td>" + (r.directionOfGrowth ? labelOf(DIRECTION_OPTIONS, r.directionOfGrowth) : "—") + "</td>" +
+      "<td>" + (fit ? esc(fit.label) : (r.hreStatus === "not-yet" ? "Focus: Finding HRE" : "Not assessed")) + "</td>" +
+      "<td>" + dims + "</td></tr>";
+  });
+  b += "</table>";
+
+  openPrint("JAR Practice Sheet (Multiple Activities) — " + (state.childName || "Child"), b, "@page{size:landscape;}");
+}
+
+function printRoutine(id) {
+  const r = findRoutine(id); if (!r) return;
+  const fit = getJarFit(r.currentEngagement, r.directionOfGrowth);
+  const fitOk = fit && (fit.fit === "strong" || fit.fit === "may-fit");
+  const themes = r.jarPlan.themes && r.jarPlan.themes.length ? r.jarPlan.themes : [];
+
+  const cg = cgOf(r);
+  const ch = childRef();
+
+  let b = "<div class='band'>JAR Practice Sheet (Single Activity)</div>" +
+    "<div class='activity-name'>ACTIVITY NAME: " + esc(r.name || "Untitled routine") +
+    (r.whenOccurs || r.frequency ? " <span style='font-weight:400;color:#757575;'>(" + [esc(r.whenOccurs), r.frequency ? labelOf(FREQUENCY_OPTIONS, r.frequency) : ""].filter(Boolean).join(" · ") + ")</span>" : "") + "</div>" +
+    "<div class='meta'>" + esc(state.childName || "Child") + (cg ? " · shared with " + esc(cg) : "") + " · " + new Date().toLocaleDateString("en-CA", {year:"numeric",month:"long",day:"numeric"}) + " · QuickStart NS — Routine & JAR Planning</div>";
+
+  if (fitOk) {
+    /* family-facing sheet stays clean like the binder's — one context line */
+    b += "<div class='chipline' style='margin-bottom:4px;color:#757575;'>" +
+      (r.hreStatus ? "HRE: " + labelOf(HRE_STATUS_OPTIONS, r.hreStatus) + " · " : "") +
+      esc(fit.label) +
+      ((r.groupSize || r.flexibility) ? " · " + labelOf(GROUP_SIZE_OPTIONS, r.groupSize) + " / " + labelOf(FLEXIBILITY_OPTIONS, r.flexibility) : "") +
+      "</div>";
+  } else {
+    /* no JAR table to print — full clinical context instead */
+    b += "<div class='box'>";
+    if (r.description) b += "<div class='chipline'><span class='lbl'>Description</span>" + esc(r.description) + "</div>";
+    b += "<div class='chipline'><span class='lbl'>HRE status</span>" + (r.hreStatus ? labelOf(HRE_STATUS_OPTIONS, r.hreStatus) : "—") + "</div>";
+    if (r.hreHelps) b += "<div class='chipline'><span class='lbl'>What helps find HRE</span>" + esc(r.hreHelps) + "</div>";
+    if (r.hreAvoid) b += "<div class='chipline'><span class='lbl'>What to avoid</span>" + esc(r.hreAvoid) + "</div>";
+    b += "</div>";
+    if (fit) {
+      b += "<div class='box'><div class='chipline'><span class='lbl'>JAR fit assessment</span><strong>" + esc(fit.label) + "</strong> — " +
+        labelOf(ENGAGEMENT_OPTIONS, r.currentEngagement) + " engagement, " + labelOf(DIRECTION_OPTIONS, r.directionOfGrowth).toLowerCase() + "</div>" +
+        "<div class='chipline'>" + esc(fit.desc) + "</div>" +
+        "<div class='chipline' style='color:#757575;'>2–3 month projection: " + esc(fit.projection) + "</div>" +
+        (r.jarFitNotes ? "<div class='chipline'><span class='lbl'>Notes on fit</span>" + esc(r.jarFitNotes) + "</div>" : "") +
+        "</div>";
+    }
+  }
+
+  if (fitOk) {
+    /* Single Activity sheet layout (Educator Binder p.47):
+       Phase | Guiding Questions | What does it look like? | Teaching Opportunities
+       — the questions print on the sheet, so the filled artifact is self-teaching. */
+    b += "<table><tr><th style='width:9%'></th><th style='width:25%'>Guiding Questions</th><th style='width:36%'>What does it look like?</th><th style='width:30%'>Teaching Opportunities</th></tr>";
+
+    const setupQ = JAR_SECTION_CFG.setup.q(cg, ch);
+    b += "<tr><td class='phase phase-setup'>SETUP</td>" +
+      "<td class='gq'>" + esc(setupQ) + "</td>" +
+      "<td>" + (r.jarPlan.setup ? esc(r.jarPlan.setup) : "—") + "</td>" +
+      "<td>" + (r.jarPlan.setupTeaching ? esc(r.jarPlan.setupTeaching) : "Build rapport and ensure " + esc(ch || "the child") + " is Happy, Relaxed, and Engaged") + "</td></tr>";
+
+    themes.forEach((t, idx) => {
+      const est = ESTABLISHMENT_LEVELS.find(e => e.value === t.establishment);
+      let gq, sub;
+      if (idx === 0) {
+        sub = "INITIAL THEME";
+        gq = "What is " + (cg ? esc(cg) + "&rsquo;s" : "your") + " initial active role in the routine?<br>" +
+             "What is " + (ch ? esc(ch) + "&rsquo;s" : "the child&rsquo;s") + " initial active role?<br>" +
+             "Is there shared awareness of one another&rsquo;s roles?";
+      } else {
+        sub = "ELABORATE";
+        gq = "How do your active roles change/progress?";
+      }
+      let mid = "";
+      if (est) mid += "<span style='color:" + est.color + ";font-weight:700;font-size:9px;'>&#9679; " + est.label + "</span><br>";
+      if (t.notes) mid += esc(t.notes) + "<br>";
+      if (t.adultRole) mid += "<strong>" + esc(cg || "Adult") + ":</strong> " + esc(t.adultRole) + "<br>";
+      if (t.childRole) mid += "<strong>" + esc(ch || "Child") + ":</strong> " + esc(t.childRole) + "<br>";
+      if (t.sharedAwareness) mid += "<strong>Shared awareness:</strong> " + esc(t.sharedAwareness);
+      b += "<tr>" +
+        (idx === 0 ? "<td class='phase phase-theme' rowspan='" + themes.length + "'><span class='vert'>BUILD THE THEME OF THE ACTIVITY</span></td>" : "") +
+        "<td><span class='sublbl' style='color:#16a34a;'>" + sub + "</span><span class='gq'>" + gq + "</span></td>" +
+        "<td>" + (mid || "—") + "</td>" +
+        "<td>" + (t.teaching ? esc(t.teaching) : "—") + "</td></tr>";
+    });
+
+    b += "<tr><td class='phase phase-closing'>CLOSING &amp; TRANSITION</td>" +
+      "<td class='gq'>How does the activity end/wrap up, and transition into something else?</td>" +
+      "<td>" + (r.jarPlan.closing ? esc(r.jarPlan.closing) : "—") + "</td>" +
+      "<td>" + (r.jarPlan.closingTeaching ? esc(r.jarPlan.closingTeaching) : "—") + "</td></tr>";
+    b += "</table>";
+  }
+
+  if (fit && fit.fit === "not-yet") {
+    b += "<div class='box' style='background:#f1f5f9;'><strong>Focus on building rapport first.</strong> When the child is consistently HRE and showing readiness for shared engagement in this routine, return to build a JAR. In the meantime, use the 3 steps of rapport building: (1) notice/find HRE, (2) get ready to step into the spotlight of their HRE, (3) actively join in by following their lead.</div>";
+  }
+  if (fit && fit.fit === "no-fit") {
+    b += "<div class='box' style='background:#fef2f2;'><strong>JAR planning is not needed for this routine.</strong> Focus on maintaining HRE and supporting the child's current trajectory.</div>";
+  }
+
+  openPrint("JAR Plan — " + (r.name || "Untitled"), b);
+}
+
+/* ════════════════════════════════════════════════════════════
+   UI toggles & init
+   ════════════════════════════════════════════════════════════ */
+
+function toggleUI(id, key) { const u = getUI(id); u[key] = !u[key]; render(); }
+function togglePrompts(id, key) { const u = getUI(id); u.prompts[key] = !u.prompts[key]; render(); }
+
+load();
+document.getElementById("childName").value = state.childName || "";
+render();
+</script>
+</body>
+</html>

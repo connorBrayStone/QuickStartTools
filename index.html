@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QuickStart NS Tools</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal: #00a5b5;
+    --teal-dk: #008a98;
+    --teal-lt: #e0f5f7;
+    --green: #7cb342;
+    --g50: #fafafa;
+    --g100: #f5f5f5;
+    --g200: #eeeeee;
+    --g300: #e0e0e0;
+    --g500: #9e9e9e;
+    --g600: #757575;
+    --g700: #616161;
+    --g800: #424242;
+    --g900: #212121;
+    --shadow: 0 1px 3px rgba(0,0,0,.08);
+    --radius: 6px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', -apple-system, 'Segoe UI', sans-serif;
+    background: var(--g50);
+    color: var(--g900);
+    line-height: 1.5;
+  }
+  header {
+    background: #fff;
+    border-bottom: 3px solid var(--teal);
+    padding: 24px 32px 18px;
+  }
+  .header-inner { max-width: 1080px; margin: 0 auto; }
+  header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--g900);
+  }
+  header h1 .accent { color: var(--teal); }
+  header p {
+    margin-top: 4px;
+    font-size: 14px;
+    color: var(--g600);
+  }
+  main {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 24px 32px 8px;
+  }
+  .group { margin-bottom: 28px; }
+  .group h2 {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--teal-dk);
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--g200);
+  }
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 14px;
+  }
+  .card {
+    display: block;
+    background: #fff;
+    border: 1px solid var(--g200);
+    border-left: 4px solid var(--teal);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    text-decoration: none;
+    color: inherit;
+    box-shadow: var(--shadow);
+    transition: box-shadow 0.12s, transform 0.12s, border-color 0.12s;
+  }
+  .card:hover {
+    box-shadow: 0 3px 10px rgba(0,0,0,.12);
+    transform: translateY(-1px);
+    border-left-color: var(--teal-dk);
+  }
+  .card h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--g900);
+    margin-bottom: 3px;
+  }
+  .card h3 .arrow {
+    color: var(--teal);
+    font-weight: 700;
+    float: right;
+  }
+  .card p {
+    font-size: 13px;
+    color: var(--g600);
+  }
+  .proto-badge {
+    display: inline-block;
+    padding: 1px 8px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #92600a;
+    background: #fce4b8;
+    vertical-align: 2px;
+  }
+  footer {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 14px 32px 32px;
+  }
+  .interim-note {
+    background: var(--teal-lt);
+    border: 1px solid var(--teal);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    font-size: 13px;
+    color: var(--g800);
+  }
+  .interim-note strong { color: var(--teal-dk); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <h1>QuickStart NS <span class="accent">Tools</span></h1>
+    <p>Quick access to QuickStart Nova Scotia's working tools and references for the senior team.</p>
+  </div>
+</header>
+
+<main>
+
+  <section class="group">
+    <h2>Process &amp; Reference</h2>
+    <div class="cards">
+      <a class="card" href="ServiceMatch%26IntroMeeting.html">
+        <h3>Service Match &amp; Intro Meeting Wiki <span class="arrow">&rarr;</span></h3>
+        <p>Supervisor reference for the CICC/PPAS service-match-to-intro-meeting workflow — with role filters, checklist mode, and search.</p>
+      </a>
+      <a class="card" href="PPASConsentStaffGuide.html">
+        <h3>PPAS Consent — Staff Guide <span class="arrow">&rarr;</span></h3>
+        <p>Staff guide to the PPAS Integrated Service Delivery Consent form: what it covers and how to walk families through it.</p>
+      </a>
+    </div>
+  </section>
+
+  <section class="group">
+    <h2>Clinical Tools</h2>
+    <div class="cards">
+      <a class="card" href="Goal%20Writing%20Tool.html">
+        <h3>ESDM Goal Writing Tool <span class="arrow">&rarr;</span></h3>
+        <p>Drafting tool for writing ESDM goals and objectives.</p>
+      </a>
+      <a class="card" href="routine-jar-planning.html">
+        <h3>Routine &amp; JAR Planning <span class="arrow">&rarr;</span></h3>
+        <p>Map a child's routines and plan teaching opportunities with the Joint Activity Routine — HRE check, JAR-fit assessment, and 4-part plan in one flow. Mirrors the QSIS workflow.</p>
+      </a>
+      <a class="card" href="ABC%20Flowchart%20Tool.html">
+        <h3>ABC Flowchart <span class="arrow">&rarr;</span></h3>
+        <p>Differential reinforcement planner: antecedent &rarr; behaviour tiers &rarr; consequence.</p>
+      </a>
+      <a class="card" href="slp_ot_prep_checklist%20(6).html">
+        <h3>SLP/OT Pre-Session Prep Checklist <span class="arrow">&rarr;</span></h3>
+        <p>Preparation checklist for SLP/OT consultation sessions.</p>
+      </a>
+      <a class="card" href="SLP%20OT%20fidelity%20checklist.html">
+        <h3>SLP/OT Fidelity Checklist <span class="arrow">&rarr;</span></h3>
+        <p>Fidelity self-check for SLP/OT consultation sessions.</p>
+      </a>
+    </div>
+  </section>
+
+  <section class="group">
+    <h2>Planning &amp; Admin</h2>
+    <div class="cards">
+      <a class="card" href="caseloadanalyzer.html">
+        <h3>PC Caseload Analyzer <span class="arrow">&rarr;</span></h3>
+        <p>Visualize Parent Coach caseloads, timelines, and capacity.</p>
+      </a>
+      <a class="card" href="qs_staff_directory%20(7).html">
+        <h3>Staff Directory <span class="arrow">&rarr;</span></h3>
+        <p>QuickStart Nova Scotia staff directory.</p>
+      </a>
+      <a class="card" href="travel_calculator_v4.html">
+        <h3>Travel Calculator <span class="proto-badge">Prototype</span> <span class="arrow">&rarr;</span></h3>
+        <p>Travel time and expense calculator. Not in active use — illustrates a proposed organization of the "lesser of" principle for the organization to consider.</p>
+      </a>
+      <a class="card" href="ans_accrual_calculator.html">
+        <h3>Vacation &amp; Sick Accrual Calculator <span class="arrow">&rarr;</span></h3>
+        <p>ANS vacation and sick time accrual calculator.</p>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="interim-note">
+    <strong>Interim tools.</strong> These standalone tools bridge the gap until the QuickStart Information System (QSIS) launches — most of this functionality consolidates into QSIS at that point.
+  </div>
+</footer>
+
+</body>
+</html>
