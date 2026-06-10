@@ -386,8 +386,11 @@ function importGoalsJSON(ev) {
    ════════════════════════════════════════════════════════════ */
 
 function getUI(id) {
-  /* prompts.theme0 defaults open — guidance-in-place for the initial theme */
-  if (!ui[id]) ui[id] = { showHreDefs:false, showHelp:false, prompts:{ theme0:true } };
+  /* prompts.theme0 defaults open — guidance-in-place for the initial theme.
+     mapOpen defaults true — fold state is decided as a snapshot in
+     expandRoutine(), never live mid-edit (completing the fit or picking a
+     dimension must not yank the mapping/guidance away while it's being read). */
+  if (!ui[id]) ui[id] = { showHreDefs:false, showHelp:false, prompts:{ theme0:true }, mapOpen:true };
   return ui[id];
 }
 
@@ -927,7 +930,20 @@ function loadExamples() {
   persist(); render();
   showToast("3 example routines loaded (from the Educator Binder)");
 }
-function expandRoutine(id) { expanded = id; render(); }
+function expandRoutine(id) {
+  /* Snapshot the fold state at expansion: fold only if the WHOLE mapping is
+     already settled (fit verdict + dimensions picked). In-card edits never
+     re-fold; the fold applies on the next open or via the manual fold link. */
+  const r = findRoutine(id);
+  if (r) {
+    const fit = getJarFit(r.currentEngagement, r.directionOfGrowth);
+    const fitOk = fit && (fit.fit === "strong" || fit.fit === "may-fit");
+    const mappingSettled = fitOk && r.flexibility && r.groupSize;
+    getUI(id).mapOpen = !mappingSettled;
+  }
+  expanded = id;
+  render();
+}
 function collapseRoutine() { expanded = null; render(); }
 
 function confirmDelete(id) {
