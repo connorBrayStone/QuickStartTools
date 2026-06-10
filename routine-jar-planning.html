@@ -28,6 +28,15 @@
   .btn-ghost { background:#fff; color:var(--g700); border:1px solid var(--g300); font-weight:500; }
   .btn-link { background:none; border:none; color:var(--g500); font-size:11px; cursor:pointer; font-family:inherit; padding:0; }
 
+  /* Child tabs — one per child on the caseload */
+  .child-tabs { display:flex; gap:6px; flex-wrap:wrap; align-items:flex-end; margin-bottom:16px; border-bottom:2px solid var(--g200); }
+  .child-tab { padding:7px 14px; font-size:13px; font-weight:600; color:var(--g600); background:var(--g100); border:1px solid var(--g200); border-bottom:none; border-radius:8px 8px 0 0; cursor:pointer; margin-bottom:-2px; font-family:inherit; }
+  .child-tab:hover { color:var(--teal-dk); }
+  .child-tab.active { background:#fff; color:var(--teal-dk); border-color:var(--g300); border-bottom:2px solid #fff; }
+  .child-tab.add { background:none; border:1px dashed var(--g300); color:var(--g500); font-weight:500; }
+  .child-tab .x { margin-left:8px; color:var(--g400); font-weight:700; }
+  .child-tab .x:hover { color:#dc2626; }
+
   .meta-row { display:flex; gap:12px; align-items:flex-end; margin-bottom:16px; flex-wrap:wrap; }
   .field-label { font-size:12px; font-weight:600; color:var(--g700); display:block; margin-bottom:4px; }
   .inp { width:100%; padding:7px 10px; font-size:13px; font-family:inherit; border:1px solid var(--g300); border-radius:6px; background:#fff; color:var(--g900); }
@@ -111,10 +120,12 @@
 </div>
 
 <main>
+  <div class="child-tabs" id="childTabs"></div>
+
   <div class="meta-row">
     <div style="flex:1; min-width:220px;">
       <label class="field-label">Child&rsquo;s name</label>
-      <input class="inp" id="childName" placeholder="Child's first name" oninput="state.childName=this.value; persist();" onchange="render()">
+      <input class="inp" id="childName" placeholder="Child's first name" oninput="state.childName=this.value; persist(); renderTabs();" onchange="render()">
     </div>
   </div>
 
@@ -287,19 +298,107 @@ function mkRoutine() {
    ════════════════════════════════════════════════════════════ */
 
 const LS_KEY = "qs-routine-jar-planning";
-let state = { childName:"", goals:[], routines:[] };
+/* Multi-child store: one tab per child on the PC's caseload.
+   `state` is always an ALIAS to the active child's document, so all
+   routine/print/fold logic operates on it unchanged. */
+let store = null;
+let state = null;               // active child document (alias into store.children)
 let expanded = null;            // id of expanded routine
-let ui = {};                    // per-routine UI toggles {id: {showHreDefs, showHelp, showPrompts:{}}}
+let ui = {};                    // per-routine UI toggles {id: {showHreDefs, showHelp, prompts:{}, mapOpen}}
 let showGoals = false;
 
-function persist() {
-  try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch(e) {}
+function mkChild() {
+  return { id: "ch-" + Date.now() + "-" + Math.random().toString(36).slice(2,5),
+           childName:"", goals:[], routines:[] };
 }
+
+function persist() {
+  try { localStorage.setItem(LS_KEY, JSON.stringify(store)); } catch(e) {}
+}
+
 function load() {
   try {
     const raw = localStorage.getItem(LS_KEY);
-    if (raw) state = Object.assign({ childName:"", goals:[], routines:[] }, JSON.parse(raw));
+    if (raw) {
+      const data = JSON.parse(raw);
+      if (Array.isArray(data.children)) {
+        store = data;
+      } else {
+        /* migrate the old single-child format into the first tab */
+        const c = Object.assign(mkChild(), {
+          childName: data.childName || "", goals: data.goals || [], routines: data.routines || [] });
+        store = { children: [c], activeId: c.id };
+      }
+    }
   } catch(e) {}
+  if (!store || !Array.isArray(store.children) || !store.children.length) {
+    const c = mkChild();
+    store = { children: [c], activeId: c.id };
+  }
+  if (!store.children.find(c => c.id === store.activeId)) store.activeId = store.children[0].id;
+  state = store.children.find(c => c.id === store.activeId);
+}
+
+/* ── Child tabs ── */
+
+function renderTabs() {
+  const el = document.getElementById("childTabs");
+  let h = "";
+  store.children.forEach(c => {
+    const active = c.id === store.activeId;
+    h += '<span class="child-tab' + (active ? " active" : "") + '" onclick="switchChild(\'' + c.id + '\')">' +
+      esc(c.childName || "Unnamed child") +
+      (active && store.children.length > 1
+        ? '<span class="x" title="Remove this child&rsquo;s map" onclick="event.stopPropagation();confirmDeleteChild(\'' + c.id + '\')">&times;</span>'
+        : '') +
+      '</span>';
+  });
+  h += '<button class="child-tab add" onclick="addChild()">+ Add child</button>';
+  el.innerHTML = h;
+}
+
+function switchChild(id) {
+  const c = store.children.find(x => x.id === id);
+  if (!c) return;
+  store.activeId = id;
+  state = c;
+  expanded = null;
+  showGoals = false;
+  persist();
+  document.getElementById("childName").value = state.childName || "";
+  renderTabs();
+  render();
+}
+
+function addChild() {
+  const c = mkChild();
+  store.children.push(c);
+  switchChild(c.id);
+  document.getElementById("childName").focus();
+}
+
+function confirmDeleteChild(id) {
+  const c = store.children.find(x => x.id === id);
+  if (!c) return;
+  const root = document.getElementById("modalRoot");
+  root.innerHTML = '<div class="modal-bg" onclick="closeModal()"><div class="modal" onclick="event.stopPropagation()">' +
+    '<div style="font-size:15px;font-weight:700;margin-bottom:8px;">Remove this child&rsquo;s map?</div>' +
+    '<div style="font-size:13px;color:var(--g600);margin-bottom:16px;">This permanently removes &ldquo;' + esc(c.childName || "Unnamed child") + '&rdquo; and all ' + c.routines.length + ' mapped routine' + (c.routines.length !== 1 ? 's' : '') + ' from this browser. Export first if you want a backup file.</div>' +
+    '<div style="display:flex;gap:8px;justify-content:flex-end;">' +
+    '<button class="btn btn-ghost" onclick="closeModal()">Cancel</button>' +
+    '<button class="btn" style="background:#dc2626;color:#fff;" onclick="doDeleteChild(\'' + id + '\')">Remove</button></div></div></div>';
+}
+
+function doDeleteChild(id) {
+  store.children = store.children.filter(c => c.id !== id);
+  if (!store.children.length) store.children.push(mkChild());
+  if (store.activeId === id) store.activeId = store.children[0].id;
+  state = store.children.find(c => c.id === store.activeId);
+  closeModal();
+  persist();
+  document.getElementById("childName").value = state.childName || "";
+  renderTabs();
+  render();
 }
 function touch(r) { r.updatedAt = new Date().toISOString(); }
 
@@ -373,7 +472,7 @@ function importGoalsJSON(ev) {
         state.childName = data.childName;
         document.getElementById("childName").value = data.childName;
       }
-      persist(); showGoals = true; renderGoals();
+      persist(); showGoals = true; renderTabs(); renderGoals();
       showToast(goals.length + " goal" + (goals.length !== 1 ? "s" : "") + " imported");
     } catch(e) { alert("Could not read that file as Goal Writing Tool JSON."); }
   };
@@ -994,11 +1093,12 @@ function importJSON(ev) {
     try {
       const data = JSON.parse(reader.result);
       if (Array.isArray(data.routines)) {
-        /* planner file */
-        state = { childName: data.childName || "", goals: data.goals || [], routines: data.routines };
-        document.getElementById("childName").value = state.childName;
-        expanded = null; persist(); render();
-        showToast("Plan imported");
+        /* planner file → import as a NEW child tab (never overwrites the active one) */
+        const c = Object.assign(mkChild(), {
+          childName: data.childName || "", goals: data.goals || [], routines: data.routines });
+        store.children.push(c);
+        switchChild(c.id);
+        showToast("Imported as new child tab");
       } else if (Array.isArray(data.goals)) {
         /* Goal Writing Tool file — import goals only */
         state.goals = data.goals.map(g => ({
@@ -1009,7 +1109,7 @@ function importJSON(ev) {
           state.childName = data.childName;
           document.getElementById("childName").value = data.childName;
         }
-        showGoals = true; persist(); render();
+        showGoals = true; persist(); renderTabs(); render();
         showToast("Goals imported from Goal Writing Tool file");
       } else {
         alert("Unrecognized file format.");
@@ -1234,6 +1334,7 @@ function togglePrompts(id, key) { const u = getUI(id); u.prompts[key] = !u.promp
 
 load();
 document.getElementById("childName").value = state.childName || "";
+renderTabs();
 render();
 </script>
 </body>
