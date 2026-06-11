@@ -789,7 +789,7 @@
         
         <div class="content">
             <div class="ds-tabs" id="dsTabs"></div>
-            <div class="ds-hint">Datasets (e.g., a zone’s current caseload, or a what-if scenario) are saved in this browser automatically. Double-click a tab to rename it; use Save Data for a file backup.</div>
+            <div class="ds-hint">One tab per Parent Coach — keep each team member’s caseload and switch between them (or add a what-if scenario). Saved in this browser automatically. Double-click a tab to rename; use Save Data for a file backup.</div>
             <div class="input-section">
                 <h2>Family Caseload Input</h2>
                 <div class="threshold-info">
@@ -2132,7 +2132,7 @@
 
         function mkDataset(name) {
             return { id: "ds-" + Date.now() + "-" + Math.random().toString(36).slice(2, 5),
-                     name: name || "New dataset", includeFollowups: true, families: [] };
+                     name: name || "New PC", includeFollowups: true, families: [] };
         }
 
         function dsActive() { return dstore.datasets.find(d => d.id === dstore.activeId); }
@@ -2211,7 +2211,7 @@
                 h += '<span class="ds-tab' + (active ? " active" : "") + '" onclick="dsSwitch(&quot;' + d.id + '&quot;)" ondblclick="dsRename(&quot;' + d.id + '&quot;)" title="Double-click to rename">' +
                     dsEsc(d.name || "Unnamed") +
                     (active && dstore.datasets.length > 1
-                        ? '<span class="x" title="Remove this dataset" onclick="event.stopPropagation();dsRemove(&quot;' + d.id + '&quot;)">&times;</span>'
+                        ? '<span class="x" title="Remove this tab" onclick="event.stopPropagation();dsRemove(&quot;' + d.id + '&quot;)">&times;</span>'
                         : "") +
                     "</span>";
             });
@@ -2232,9 +2232,9 @@
 
         function dsAdd() {
             dsSave();
-            const name = prompt('Name for the new dataset (e.g., "Central - current", "What-if Sept cohort"):', "New dataset");
+            const name = prompt('Name for the new tab (usually the Parent Coach, e.g., "Danielle H." - or a what-if scenario):', "New PC");
             if (name === null) return;
-            const d = mkDataset(name.trim() || "New dataset");
+            const d = mkDataset(name.trim() || "New PC");
             dstore.datasets.push(d);
             dstore.activeId = d.id;
             dsLoadIntoDOM(d);
@@ -2257,7 +2257,7 @@
             if (!d) return;
             if (!confirm('Remove "' + d.name + '" and its ' + d.families.length + ' families from this browser? Use Save Data first if you want a file backup.')) return;
             dstore.datasets = dstore.datasets.filter(x => x.id !== id);
-            if (!dstore.datasets.length) dstore.datasets.push(mkDataset("Dataset 1"));
+            if (!dstore.datasets.length) dstore.datasets.push(mkDataset("PC 1"));
             if (dstore.activeId === id) {
                 dstore.activeId = dstore.datasets[0].id;
                 dsLoadIntoDOM(dsActive());
@@ -2272,7 +2272,7 @@
                 if (raw) dstore = JSON.parse(raw);
             } catch (e) {}
             if (!dstore || !Array.isArray(dstore.datasets) || !dstore.datasets.length) {
-                dstore = { datasets: [mkDataset("Dataset 1")], activeId: null };
+                dstore = { datasets: [mkDataset("PC 1")], activeId: null };
                 dstore.activeId = dstore.datasets[0].id;
             }
             if (!dstore.datasets.find(d => d.id === dstore.activeId)) dstore.activeId = dstore.datasets[0].id;
