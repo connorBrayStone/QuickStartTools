@@ -767,7 +767,17 @@
         .timeline-cell.followup {
             background: #fbbf24;
         }
-    </style>
+    
+        /* Dataset tabs — one per zone / scenario, persisted in this browser */
+        .ds-tabs { display:flex; gap:6px; flex-wrap:wrap; align-items:flex-end; margin:0 0 6px; border-bottom:2px solid #e2e8f0; }
+        .ds-tab { padding:7px 14px; font-size:13px; font-weight:600; color:#6c757d; background:#f8f9fa; border:1px solid #e2e8f0; border-bottom:none; border-radius:8px 8px 0 0; cursor:pointer; margin-bottom:-2px; font-family:inherit; }
+        .ds-tab:hover { color:#008a98; }
+        .ds-tab.active { background:#fff; color:#008a98; border-color:#cbd5e0; border-bottom:2px solid #fff; }
+        .ds-tab.add { background:none; border:1px dashed #cbd5e0; color:#6c757d; font-weight:500; }
+        .ds-tab .x { margin-left:8px; color:#adb5bd; font-weight:700; }
+        .ds-tab .x:hover { color:#dc3545; }
+        .ds-hint { font-size:11px; color:#6c757d; margin-bottom:16px; }
+</style>
 </head>
 <body>
 <style>.qs-home-pill{position:fixed;bottom:14px;left:14px;z-index:9999;background:#008a98;color:#fff;padding:6px 12px;border-radius:999px;font-family:'DM Sans','Segoe UI',sans-serif;font-size:12px;font-weight:600;text-decoration:none;box-shadow:0 2px 6px rgba(0,0,0,.25);opacity:.92;}.qs-home-pill:hover{opacity:1;}@media print{.qs-home-pill{display:none!important;}}</style><a class="qs-home-pill" href="index.html">&larr; All Tools</a>
@@ -778,6 +788,8 @@
         </div>
         
         <div class="content">
+            <div class="ds-tabs" id="dsTabs"></div>
+            <div class="ds-hint">Datasets (e.g., a zone’s current caseload, or a what-if scenario) are saved in this browser automatically. Double-click a tab to rename it; use Save Data for a file backup.</div>
             <div class="input-section">
                 <h2>Family Caseload Input</h2>
                 <div class="threshold-info">
@@ -948,9 +960,8 @@
             }
         }
         
-        // Start with empty data - user can import or add manually
         window.onload = function() {
-            // Tool starts empty - ready for import or manual entry
+            dsInit();
         };
         
         function addFamilyWithData(service, childId, pcStart, pcEnd, followupStart, followupEnd, isCentral = false) {
@@ -1026,6 +1037,7 @@
             
             container.appendChild(div);
             familyCount++;
+            dsSave();
         }
         
         function addFamily(service) {
@@ -1096,6 +1108,7 @@
             
             container.appendChild(div);
             familyCount++;
+            dsSave();
         }
         
         function updateServiceType(id) {
@@ -1123,6 +1136,7 @@
         
         function removeFamily(id) {
             document.getElementById(`family-${id}`).remove();
+            dsSave();
         }
         
         function openImportModal() {
@@ -1430,6 +1444,7 @@
                 familyCount = 0;
                 document.getElementById('results').style.display = 'none';
                 currentAnalysisData = null;
+                dsSave();
             }
         }
         
@@ -1586,6 +1601,7 @@
         }
         
         function analyzeCaseload() {
+            dsSave();
             const families = document.querySelectorAll('.family-input');
             const includeFollowups = document.getElementById('includeFollowups').checked;
             
@@ -2099,6 +2115,176 @@
             document.getElementById('results').style.display = 'block';
             document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
         }
+
+        /* ════════════════════════════════════════════════════════════
+           Dataset tabs — multiple caseloads (zones / what-if scenarios)
+           persisted in localStorage. The DOM rows remain the source of
+           truth; datasets snapshot/restore them verbatim.
+           ════════════════════════════════════════════════════════════ */
+
+        const DS_KEY = "qs-caseload-analyzer";
+        let dstore = null;
+        let dsRestoring = false;
+
+        function dsEsc(v) {
+            return String(v == null ? "" : v).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+        }
+
+        function mkDataset(name) {
+            return { id: "ds-" + Date.now() + "-" + Math.random().toString(36).slice(2, 5),
+                     name: name || "New dataset", includeFollowups: true, families: [] };
+        }
+
+        function dsActive() { return dstore.datasets.find(d => d.id === dstore.activeId); }
+
+        /* read every row verbatim — no completeness filter, so half-entered rows survive */
+        function snapshotFamilies() {
+            const out = [];
+            document.querySelectorAll(".family-input").forEach(family => {
+                const service = family.querySelector(".service-select").value;
+                const childId = family.querySelector(".child-id")?.value || "";
+                if (service === "ESDM") {
+                    out.push({ service, childId,
+                        directStart: family.querySelector(".esdm-direct-start")?.value || "",
+                        directEnd:   family.querySelector(".esdm-direct-end")?.value || "",
+                        pcStart:     family.querySelector(".esdm-pc-start")?.value || "",
+                        pcEnd:       family.querySelector(".esdm-pc-end")?.value || "" });
+                } else {
+                    out.push({ service, childId,
+                        pcStart:       family.querySelector(".pc-start")?.value || "",
+                        pcEnd:         family.querySelector(".pc-end")?.value || "",
+                        followupStart: family.querySelector(".followup-start")?.value || "",
+                        followupEnd:   family.querySelector(".followup-end")?.value || "" });
+                }
+            });
+            return out;
+        }
+
+        /* restore a row with field-exact values (no date re-derivation) */
+        function restoreFamilyRow(fam) {
+            addFamily(fam.service === "ESDM" ? "ESDM" : "PC");
+            const row = document.getElementById("familyInputs").lastElementChild;
+            row.querySelector(".child-id").value = fam.childId || "";
+            if (fam.service === "ESDM") {
+                row.querySelector(".esdm-direct-start").value = fam.directStart || "";
+                row.querySelector(".esdm-direct-end").value   = fam.directEnd || "";
+                row.querySelector(".esdm-pc-start").value     = fam.pcStart || "";
+                row.querySelector(".esdm-pc-end").value       = fam.pcEnd || "";
+            } else {
+                row.querySelector(".pc-start").value       = fam.pcStart || "";
+                row.querySelector(".pc-end").value         = fam.pcEnd || "";
+                row.querySelector(".followup-start").value = fam.followupStart || "";
+                row.querySelector(".followup-end").value   = fam.followupEnd || "";
+            }
+        }
+
+        function dsSave() {
+            if (dsRestoring || !dstore) return;
+            const d = dsActive();
+            if (!d) return;
+            d.families = snapshotFamilies();
+            d.includeFollowups = document.getElementById("includeFollowups").checked;
+            dsPersist();
+        }
+
+        function dsPersist() { try { localStorage.setItem(DS_KEY, JSON.stringify(dstore)); } catch (e) {} }
+
+        function dsLoadIntoDOM(d) {
+            dsRestoring = true;
+            document.getElementById("familyInputs").innerHTML = "";
+            familyCount = 0;
+            (d.families || []).forEach(restoreFamilyRow);
+            if (chart) { try { chart.destroy(); } catch (e) {} chart = null; }
+            currentAnalysisData = null;
+            const r = document.getElementById("results");
+            if (r) r.style.display = "none";
+            document.getElementById("includeFollowups").checked = d.includeFollowups !== false;
+            toggleFollowups();
+            dsRestoring = false;
+        }
+
+        function dsRenderTabs() {
+            const el = document.getElementById("dsTabs");
+            let h = "";
+            dstore.datasets.forEach(d => {
+                const active = d.id === dstore.activeId;
+                h += '<span class="ds-tab' + (active ? " active" : "") + '" onclick="dsSwitch(&quot;' + d.id + '&quot;)" ondblclick="dsRename(&quot;' + d.id + '&quot;)" title="Double-click to rename">' +
+                    dsEsc(d.name || "Unnamed") +
+                    (active && dstore.datasets.length > 1
+                        ? '<span class="x" title="Remove this dataset" onclick="event.stopPropagation();dsRemove(&quot;' + d.id + '&quot;)">&times;</span>'
+                        : "") +
+                    "</span>";
+            });
+            h += '<button class="ds-tab add" onclick="dsAdd()">+ Add dataset</button>';
+            el.innerHTML = h;
+        }
+
+        function dsSwitch(id) {
+            if (id === dstore.activeId) return;
+            dsSave();
+            const d = dstore.datasets.find(x => x.id === id);
+            if (!d) return;
+            dstore.activeId = id;
+            dsLoadIntoDOM(d);
+            dsPersist();
+            dsRenderTabs();
+        }
+
+        function dsAdd() {
+            dsSave();
+            const name = prompt('Name for the new dataset (e.g., "Central - current", "What-if Sept cohort"):', "New dataset");
+            if (name === null) return;
+            const d = mkDataset(name.trim() || "New dataset");
+            dstore.datasets.push(d);
+            dstore.activeId = d.id;
+            dsLoadIntoDOM(d);
+            dsPersist();
+            dsRenderTabs();
+        }
+
+        function dsRename(id) {
+            const d = dstore.datasets.find(x => x.id === id);
+            if (!d) return;
+            const name = prompt("Rename dataset:", d.name);
+            if (name === null) return;
+            d.name = name.trim() || d.name;
+            dsPersist();
+            dsRenderTabs();
+        }
+
+        function dsRemove(id) {
+            const d = dstore.datasets.find(x => x.id === id);
+            if (!d) return;
+            if (!confirm('Remove "' + d.name + '" and its ' + d.families.length + ' families from this browser? Use Save Data first if you want a file backup.')) return;
+            dstore.datasets = dstore.datasets.filter(x => x.id !== id);
+            if (!dstore.datasets.length) dstore.datasets.push(mkDataset("Dataset 1"));
+            if (dstore.activeId === id) {
+                dstore.activeId = dstore.datasets[0].id;
+                dsLoadIntoDOM(dsActive());
+            }
+            dsPersist();
+            dsRenderTabs();
+        }
+
+        function dsInit() {
+            try {
+                const raw = localStorage.getItem(DS_KEY);
+                if (raw) dstore = JSON.parse(raw);
+            } catch (e) {}
+            if (!dstore || !Array.isArray(dstore.datasets) || !dstore.datasets.length) {
+                dstore = { datasets: [mkDataset("Dataset 1")], activeId: null };
+                dstore.activeId = dstore.datasets[0].id;
+            }
+            if (!dstore.datasets.find(d => d.id === dstore.activeId)) dstore.activeId = dstore.datasets[0].id;
+            dsLoadIntoDOM(dsActive());
+            dsRenderTabs();
+            /* autosave on any edit within the family rows or the follow-up toggle */
+            const fi = document.getElementById("familyInputs");
+            fi.addEventListener("input", dsSave);
+            fi.addEventListener("change", dsSave);
+            document.getElementById("includeFollowups").addEventListener("change", dsSave);
+        }
+
     </script>
 </body>
 </html>
