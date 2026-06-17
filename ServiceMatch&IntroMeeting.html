@@ -19,12 +19,19 @@
   #sidebar-toc { position: fixed; top: 0; left: 0; width: var(--sidebar-w); height: 100vh; background: #fff; border-right: 1px solid var(--border); overflow-y: auto; z-index: 100; display: flex; flex-direction: column; }
   .toc-header { padding: 18px 16px 8px; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--teal); border-bottom: 2px solid var(--teal); flex-shrink: 0; }
   .toc-body { padding: 8px 0; overflow-y: auto; flex: 1; }
-  .toc-body a { display: block; padding: 5px 16px; color: #555; text-decoration: none; font-size: 13px; border-left: 3px solid transparent; transition: all 0.15s; }
+  .toc-body a { display: block; padding: 5px 30px 5px 16px; color: #555; text-decoration: none; font-size: 13px; border-left: 3px solid transparent; transition: all 0.15s; }
   .toc-body a:hover { background: var(--teal-light); color: var(--teal); border-left-color: var(--teal); }
   .toc-body a.active { background: var(--teal-light); color: var(--teal); font-weight: 700; border-left-color: var(--teal); }
   /* Checklist mode: links whose target section isn't shown are not navigable — dim + disable. */
   body.checklist-mode .toc-body a.toc-unreachable { opacity: 0.32; pointer-events: none; font-style: italic; }
   .toc-h3 { padding-left: 32px !important; font-size: 12px !important; color: #777 !important; }
+  /* Per-section "copy link" button — appears on row hover */
+  .toc-row { position: relative; }
+  .toc-copy { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); opacity: 0; pointer-events: none; background: #fff; border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; font-size: 11px; line-height: 1.4; cursor: pointer; color: #999; transition: opacity 0.12s, color 0.12s, border-color 0.12s; }
+  .toc-row:hover .toc-copy { opacity: 1; pointer-events: auto; }
+  .toc-copy:hover { color: var(--teal); border-color: var(--teal); }
+  .toc-copy.copied { color: #27ae60; border-color: #27ae60; background: #eafaf1; opacity: 1; }
+  body.checklist-mode .toc-row:has(a.toc-unreachable) .toc-copy { display: none; }
   #content { margin-left: var(--sidebar-w); padding: 40px 48px 80px; }
   h1 { font-size: 28px; color: var(--teal); margin-bottom: 8px; padding-bottom: 12px; border-bottom: 3px solid var(--teal); }
   h2 { font-size: 22px; color: var(--teal); margin: 40px 0 16px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
@@ -354,93 +361,93 @@
 </div>
 <div class="toc-search-results" id="toc-search-results" style="display:none"></div>
 <div class="toc-body" id="toc-body">
-  <a href="#overview" class="toc-h2">Overview</a>
-  <a href="#key-systems-and-tools" class="toc-h3">Key Systems and Tools</a>
-  <a href="#division-of-responsibilities" class="toc-h3">Division of Responsibilities</a>
-  <a href="#workflow-summary-age-eligible-children-under-32-months" class="toc-h3">Workflow Summary: Age-Eligible Children (under 32 months)</a>
-  <a href="#status-definitions" class="toc-h2">Status Definitions</a>
-  <a href="#contact-status" class="toc-h3">Contact Status</a>
-  <a href="#program-status" class="toc-h3">Program Status</a>
-  <a href="#understanding-the-waitlist-matched-vs-not-provisional-vs-confirmed" class="toc-h3">Understanding the Waitlist: Matched vs. Not, Provisional vs. Confirmed</a>
-  <a href="#reporting-considerations-for-program-status" class="toc-h3">Reporting Considerations for Program Status</a>
-  <a href="#participation-in-qs-ns-services" class="toc-h2">Participation in QS NS Services</a>
-  <a href="#parent-coaching-program" class="toc-h3">Parent Coaching Program</a>
-  <a href="#esdm-program" class="toc-h3">ESDM Program</a>
-  <a href="#community-outreach" class="toc-h2">Community Outreach</a>
-  <a href="#outreach-documentation" class="toc-h3">Outreach Documentation</a>
-  <a href="#common-referral-sources" class="toc-h3">Common Referral Sources</a>
-  <a href="#supervisor-expectations" class="toc-h3">Supervisor Expectations</a>
-  <a href="#section-1-initial-data-entry" class="toc-h2">Section 1: Initial Data Entry</a>
-  <a href="#step-1a-check-existing-client-status" class="toc-h3">Step 1A: Check Existing Client Status</a>
-  <a href="#step-1b-complete-general-client-profile" class="toc-h3">Step 1B: Complete General Client Profile</a>
-  <a href="#section-2-send-receipt-of-referral-confirmation" class="toc-h2">Section 2: Send Receipt of Referral Confirmation</a>
-  <a href="#section-3-assessment-of-quickstart-candidacy" class="toc-h2">Section 3: Assessment of QuickStart Candidacy</a>
-  <a href="#step-3a-determine-if-qs-assessment-of-candidacy-is-needed" class="toc-h3">Step 3A: Determine if QS Assessment of Candidacy is Needed</a>
-  <a href="#step-3b-conduct-qs-assessment-of-candidacy" class="toc-h3">Step 3B: Conduct QS Assessment of Candidacy</a>
-  <a href="#capacity-sharing-sheet--ongoing-qs-supervisor-monitoring" class="toc-h3">Capacity Sharing Sheet — Ongoing QS Supervisor Monitoring</a>
-  <a href="#section-35-review-of-waitlist-provisional-cases" class="toc-h2">Section 3.5: Review of Waitlist Provisional Cases</a>
-  <a href="#when-does-this-apply" class="toc-h3">When Does This Apply?</a>
-  <a href="#what-happens" class="toc-h3">What Happens?</a>
-  <a href="#qs-clinical-team-review-process" class="toc-h3">QS Clinical Team Review Process</a>
-  <a href="#cicc-follow-up-actions" class="toc-h3">CICC Follow-Up Actions</a>
-  <a href="#rc-waitlist-script-generalized" class="toc-h3">RC Waitlist Script (Generalized)</a>
-  <a href="#working-the-waitlist-when-an-opening-arises" class="toc-h3">Working the Waitlist When an Opening Arises</a>
-  <a href="#section-4-schedule-meeting-with-resource-coordinator" class="toc-h2">Section 4: Schedule Meeting with Resource Coordinator</a>
-  <a href="#section-5-screening-process-undiagnosed-children" class="toc-h2">Section 5: Screening Process (Undiagnosed Children)</a>
-  <a href="#section-6-informed-choice-discussion" class="toc-h2">Section 6: Informed Choice Discussion</a>
-  <a href="#step-6a-share-program-information" class="toc-h3">Step 6A: Share Program Information</a>
-  <a href="#step-6b-obtain-decision" class="toc-h3">Step 6B: Obtain Decision</a>
-  <a href="#section-7-review-remaining-eligibility-criteria--additional-screeners" class="toc-h2">Section 7: Review Remaining Eligibility Criteria &amp; Additional Screeners</a>
-  <a href="#1-availability-of-primary-participating-caregiver" class="toc-h3">1. Availability of Primary Participating Caregiver</a>
-  <a href="#2-availability-during-program-hours" class="toc-h3">2. Availability During Program Hours</a>
-  <a href="#3-language" class="toc-h3">3. Language</a>
-  <a href="#4-location" class="toc-h3">4. Location</a>
-  <a href="#section-8-final-documentation-and-handoff" class="toc-h2">Section 8: Final Documentation and Handoff</a>
-  <a href="#section-9-qs-receipt-of-service-match--follow-up" class="toc-h2">Section 9: QS Receipt of Service Match &amp; Follow-Up</a>
-  <a href="#step-9a-monitor-for-greenspace-notifications" class="toc-h3">Step 9A: Monitor for Greenspace Notifications</a>
-  <a href="#step-9b-add-child-to-participation-info-workbook--review-for-operational-considerations" class="toc-h3">Step 9B: Add Child to Participation Info Workbook &amp; Review for Operational Considerations</a>
-  <a href="#step-9c-supervisor-review-of-cases-flagged-for-operational-considerations" class="toc-h3">Step 9C: Supervisor Review of Cases Flagged for Operational Considerations</a>
-  <a href="#step-9d-contact-family-to-schedule-intro-meeting" class="toc-h3">Step 9D: Contact Family to Schedule Intro Meeting</a>
-  <a href="#step-9e-sharevision-profile" class="toc-h3">Step 9E: ShareVision Profile</a>
-  <a href="#step-9f-supervisor-closeout-for-unable-to-contact-cases" class="toc-h3">Step 9F: Supervisor Closeout for Unable-to-Contact Cases</a>
-  <a href="#section-10-completion-of-qs-intro-meeting" class="toc-h2">Section 10: Completion of QS Intro Meeting</a>
-  <a href="#prior-to-the-intro-meeting" class="toc-h3">Prior to the Intro Meeting</a>
-  <a href="#during-the-intro-meeting" class="toc-h3">During the Intro Meeting</a>
-  <a href="#following-the-intro-meeting" class="toc-h3">Following the Intro Meeting</a>
-  <a href="#docusign-consent--reference" class="toc-h3">DocuSign Consent — Reference</a>
-  <a href="#section-11-team-assignment--s1-4-scheduling" class="toc-h2">Section 11: Team Assignment &amp; S1-4 Scheduling</a>
-  <a href="#workflow-at-a-glance" class="toc-h3">Workflow at a Glance</a>
-  <a href="#step-11a-s1-4-scheduling-otslp" class="toc-h3">Step 11A: S1-4 Scheduling (OT/SLP)</a>
-  <a href="#step-11b-pc-assignment" class="toc-h3">Step 11B: PC Assignment</a>
-  <a href="#step-11c-operational-systems-updates" class="toc-h3">Step 11C: Operational Systems Updates</a>
-  <a href="#step-11d-outlook-calendar-setup" class="toc-h3">Step 11D: Outlook Calendar Setup</a>
-  <a href="#step-11e-scheduling-confirmation-email" class="toc-h3">Step 11E: Scheduling Confirmation Email</a>
-  <a href="#section-12-during-qs-participation--care-coordination-on-ppas-touched-services" class="toc-h2">Section 12: During QS Participation — Care Coordination on PPAS-Touched Services</a>
-  <a href="#1-coordination-on-hsns-staffed-slp-services" class="toc-h3">1. Coordination on HSNS-Staffed SLP Services</a>
-  <a href="#2-coordination-on-laterongoing-ppas-services-via-cicc" class="toc-h3">2. Coordination on Later/Ongoing PPAS Services via CICC</a>
-  <a href="#section-13-end-of-qs-services--transition-back-to-cicc" class="toc-h2">Section 13: End of QS Services — Transition Back to CICC</a>
-  <a href="#scenario-quick-reference" class="toc-h3">Scenario Quick-Reference</a>
-  <a href="#cicc-proactive-contact-rules" class="toc-h3">CICC Proactive Contact Rules</a>
-  <a href="#scenario-1-completed" class="toc-h3">Scenario 1: Completed</a>
-  <a href="#scenario-2-discontinued" class="toc-h3">Scenario 2: Discontinued</a>
-  <a href="#scenario-3-ineligible--aged-out-by-next-available-start-time" class="toc-h3">Scenario 3: Ineligible — Aged Out by Next Available Start Time</a>
-  <a href="#scenario-4-ineligible-unable-to-contact" class="toc-h3">Scenario 4: Ineligible Unable to Contact</a>
-  <a href="#final-greenspace-step-remove-client-from-quickstart-clinic" class="toc-h3">Final Greenspace Step: Remove Client from QuickStart Clinic</a>
-  <a href="#reference-family-facing-scripts" class="toc-h3">Reference: Family-Facing Scripts</a>
-  <a href="#reference-ppas-referral-mechanics" class="toc-h3">Reference: PPAS Referral Mechanics</a>
-  <a href="#reference-guardrails--what-not-to-do-or-say" class="toc-h3">Reference: Guardrails — What NOT to Do or Say</a>
-  <a href="#email-templates" class="toc-h2">Email Templates</a>
-  <a href="#email-template-1-initial-contact--intro-meeting-options" class="toc-h3">Email Template 1: Initial Contact / Intro Meeting Options</a>
-  <a href="#email-template-2-intro-meeting-confirmation" class="toc-h3">Email Template 2: Intro Meeting Confirmation</a>
-  <a href="#email-template-3-calendar-event-body" class="toc-h3">Email Template 3: Calendar Event Body</a>
-  <a href="#email-template-4-reminder-email" class="toc-h3">Email Template 4: Reminder Email</a>
-  <a href="#email-template-5-s1-4-scheduling-confirmation" class="toc-h3">Email Template 5: S1-4 Scheduling Confirmation</a>
-  <a href="#archive" class="toc-h2">Archive</a>
-  <a href="#end-of-service--not-matched-by-cicc-variants-transitional" class="toc-h3">End-of-Service — "Not Matched by CICC" Variants (transitional)</a>
-  <a href="#receipt-and-transfer-of-referrals-to-cicc-transition-period" class="toc-h3">Receipt and Transfer of Referrals to CICC (Transition Period)</a>
-  <a href="#consent-withdrawal-handling-transition-period" class="toc-h3">Consent Withdrawal Handling (Transition Period)</a>
-  <a href="#end-of-service-outreach--pre-dec-2025-families" class="toc-h3">End-of-Service Outreach — Pre-Dec 2025 Families</a>
-  <a href="#open-items-summary" class="toc-h2">Open Items Summary</a>
+  <div class="toc-row"><a href="#overview" class="toc-h2">Overview</a><button type="button" class="toc-copy" data-anchor="overview" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#key-systems-and-tools" class="toc-h3">Key Systems and Tools</a><button type="button" class="toc-copy" data-anchor="key-systems-and-tools" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#division-of-responsibilities" class="toc-h3">Division of Responsibilities</a><button type="button" class="toc-copy" data-anchor="division-of-responsibilities" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#workflow-summary-age-eligible-children-under-32-months" class="toc-h3">Workflow Summary: Age-Eligible Children (under 32 months)</a><button type="button" class="toc-copy" data-anchor="workflow-summary-age-eligible-children-under-32-months" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#status-definitions" class="toc-h2">Status Definitions</a><button type="button" class="toc-copy" data-anchor="status-definitions" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#contact-status" class="toc-h3">Contact Status</a><button type="button" class="toc-copy" data-anchor="contact-status" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#program-status" class="toc-h3">Program Status</a><button type="button" class="toc-copy" data-anchor="program-status" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#understanding-the-waitlist-matched-vs-not-provisional-vs-confirmed" class="toc-h3">Understanding the Waitlist: Matched vs. Not, Provisional vs. Confirmed</a><button type="button" class="toc-copy" data-anchor="understanding-the-waitlist-matched-vs-not-provisional-vs-confirmed" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#reporting-considerations-for-program-status" class="toc-h3">Reporting Considerations for Program Status</a><button type="button" class="toc-copy" data-anchor="reporting-considerations-for-program-status" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#participation-in-qs-ns-services" class="toc-h2">Participation in QS NS Services</a><button type="button" class="toc-copy" data-anchor="participation-in-qs-ns-services" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#parent-coaching-program" class="toc-h3">Parent Coaching Program</a><button type="button" class="toc-copy" data-anchor="parent-coaching-program" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#esdm-program" class="toc-h3">ESDM Program</a><button type="button" class="toc-copy" data-anchor="esdm-program" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#community-outreach" class="toc-h2">Community Outreach</a><button type="button" class="toc-copy" data-anchor="community-outreach" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#outreach-documentation" class="toc-h3">Outreach Documentation</a><button type="button" class="toc-copy" data-anchor="outreach-documentation" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#common-referral-sources" class="toc-h3">Common Referral Sources</a><button type="button" class="toc-copy" data-anchor="common-referral-sources" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#supervisor-expectations" class="toc-h3">Supervisor Expectations</a><button type="button" class="toc-copy" data-anchor="supervisor-expectations" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#section-1-initial-data-entry" class="toc-h2">Section 1: Initial Data Entry</a><button type="button" class="toc-copy" data-anchor="section-1-initial-data-entry" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#step-1a-check-existing-client-status" class="toc-h3">Step 1A: Check Existing Client Status</a><button type="button" class="toc-copy" data-anchor="step-1a-check-existing-client-status" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#step-1b-complete-general-client-profile" class="toc-h3">Step 1B: Complete General Client Profile</a><button type="button" class="toc-copy" data-anchor="step-1b-complete-general-client-profile" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#section-2-send-receipt-of-referral-confirmation" class="toc-h2">Section 2: Send Receipt of Referral Confirmation</a><button type="button" class="toc-copy" data-anchor="section-2-send-receipt-of-referral-confirmation" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#section-3-assessment-of-quickstart-candidacy" class="toc-h2">Section 3: Assessment of QuickStart Candidacy</a><button type="button" class="toc-copy" data-anchor="section-3-assessment-of-quickstart-candidacy" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#step-3a-determine-if-qs-assessment-of-candidacy-is-needed" class="toc-h3">Step 3A: Determine if QS Assessment of Candidacy is Needed</a><button type="button" class="toc-copy" data-anchor="step-3a-determine-if-qs-assessment-of-candidacy-is-needed" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#step-3b-conduct-qs-assessment-of-candidacy" class="toc-h3">Step 3B: Conduct QS Assessment of Candidacy</a><button type="button" class="toc-copy" data-anchor="step-3b-conduct-qs-assessment-of-candidacy" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#capacity-sharing-sheet--ongoing-qs-supervisor-monitoring" class="toc-h3">Capacity Sharing Sheet — Ongoing QS Supervisor Monitoring</a><button type="button" class="toc-copy" data-anchor="capacity-sharing-sheet--ongoing-qs-supervisor-monitoring" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#section-35-review-of-waitlist-provisional-cases" class="toc-h2">Section 3.5: Review of Waitlist Provisional Cases</a><button type="button" class="toc-copy" data-anchor="section-35-review-of-waitlist-provisional-cases" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#when-does-this-apply" class="toc-h3">When Does This Apply?</a><button type="button" class="toc-copy" data-anchor="when-does-this-apply" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#what-happens" class="toc-h3">What Happens?</a><button type="button" class="toc-copy" data-anchor="what-happens" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#qs-clinical-team-review-process" class="toc-h3">QS Clinical Team Review Process</a><button type="button" class="toc-copy" data-anchor="qs-clinical-team-review-process" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#cicc-follow-up-actions" class="toc-h3">CICC Follow-Up Actions</a><button type="button" class="toc-copy" data-anchor="cicc-follow-up-actions" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#rc-waitlist-script-generalized" class="toc-h3">RC Waitlist Script (Generalized)</a><button type="button" class="toc-copy" data-anchor="rc-waitlist-script-generalized" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#working-the-waitlist-when-an-opening-arises" class="toc-h3">Working the Waitlist When an Opening Arises</a><button type="button" class="toc-copy" data-anchor="working-the-waitlist-when-an-opening-arises" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#section-4-schedule-meeting-with-resource-coordinator" class="toc-h2">Section 4: Schedule Meeting with Resource Coordinator</a><button type="button" class="toc-copy" data-anchor="section-4-schedule-meeting-with-resource-coordinator" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#section-5-screening-process-undiagnosed-children" class="toc-h2">Section 5: Screening Process (Undiagnosed Children)</a><button type="button" class="toc-copy" data-anchor="section-5-screening-process-undiagnosed-children" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#section-6-informed-choice-discussion" class="toc-h2">Section 6: Informed Choice Discussion</a><button type="button" class="toc-copy" data-anchor="section-6-informed-choice-discussion" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#step-6a-share-program-information" class="toc-h3">Step 6A: Share Program Information</a><button type="button" class="toc-copy" data-anchor="step-6a-share-program-information" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#step-6b-obtain-decision" class="toc-h3">Step 6B: Obtain Decision</a><button type="button" class="toc-copy" data-anchor="step-6b-obtain-decision" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#section-7-review-remaining-eligibility-criteria--additional-screeners" class="toc-h2">Section 7: Review Remaining Eligibility Criteria &amp; Additional Screeners</a><button type="button" class="toc-copy" data-anchor="section-7-review-remaining-eligibility-criteria--additional-screeners" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#1-availability-of-primary-participating-caregiver" class="toc-h3">1. Availability of Primary Participating Caregiver</a><button type="button" class="toc-copy" data-anchor="1-availability-of-primary-participating-caregiver" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#2-availability-during-program-hours" class="toc-h3">2. Availability During Program Hours</a><button type="button" class="toc-copy" data-anchor="2-availability-during-program-hours" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#3-language" class="toc-h3">3. Language</a><button type="button" class="toc-copy" data-anchor="3-language" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#4-location" class="toc-h3">4. Location</a><button type="button" class="toc-copy" data-anchor="4-location" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#section-8-final-documentation-and-handoff" class="toc-h2">Section 8: Final Documentation and Handoff</a><button type="button" class="toc-copy" data-anchor="section-8-final-documentation-and-handoff" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#section-9-qs-receipt-of-service-match--follow-up" class="toc-h2">Section 9: QS Receipt of Service Match &amp; Follow-Up</a><button type="button" class="toc-copy" data-anchor="section-9-qs-receipt-of-service-match--follow-up" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#step-9a-monitor-for-greenspace-notifications" class="toc-h3">Step 9A: Monitor for Greenspace Notifications</a><button type="button" class="toc-copy" data-anchor="step-9a-monitor-for-greenspace-notifications" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#step-9b-add-child-to-participation-info-workbook--review-for-operational-considerations" class="toc-h3">Step 9B: Add Child to Participation Info Workbook &amp; Review for Operational Considerations</a><button type="button" class="toc-copy" data-anchor="step-9b-add-child-to-participation-info-workbook--review-for-operational-considerations" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#step-9c-supervisor-review-of-cases-flagged-for-operational-considerations" class="toc-h3">Step 9C: Supervisor Review of Cases Flagged for Operational Considerations</a><button type="button" class="toc-copy" data-anchor="step-9c-supervisor-review-of-cases-flagged-for-operational-considerations" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#step-9d-contact-family-to-schedule-intro-meeting" class="toc-h3">Step 9D: Contact Family to Schedule Intro Meeting</a><button type="button" class="toc-copy" data-anchor="step-9d-contact-family-to-schedule-intro-meeting" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#step-9e-sharevision-profile" class="toc-h3">Step 9E: ShareVision Profile</a><button type="button" class="toc-copy" data-anchor="step-9e-sharevision-profile" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#step-9f-supervisor-closeout-for-unable-to-contact-cases" class="toc-h3">Step 9F: Supervisor Closeout for Unable-to-Contact Cases</a><button type="button" class="toc-copy" data-anchor="step-9f-supervisor-closeout-for-unable-to-contact-cases" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#section-10-completion-of-qs-intro-meeting" class="toc-h2">Section 10: Completion of QS Intro Meeting</a><button type="button" class="toc-copy" data-anchor="section-10-completion-of-qs-intro-meeting" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#prior-to-the-intro-meeting" class="toc-h3">Prior to the Intro Meeting</a><button type="button" class="toc-copy" data-anchor="prior-to-the-intro-meeting" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#during-the-intro-meeting" class="toc-h3">During the Intro Meeting</a><button type="button" class="toc-copy" data-anchor="during-the-intro-meeting" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#following-the-intro-meeting" class="toc-h3">Following the Intro Meeting</a><button type="button" class="toc-copy" data-anchor="following-the-intro-meeting" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#docusign-consent--reference" class="toc-h3">DocuSign Consent — Reference</a><button type="button" class="toc-copy" data-anchor="docusign-consent--reference" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#section-11-team-assignment--s1-4-scheduling" class="toc-h2">Section 11: Team Assignment &amp; S1-4 Scheduling</a><button type="button" class="toc-copy" data-anchor="section-11-team-assignment--s1-4-scheduling" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#workflow-at-a-glance" class="toc-h3">Workflow at a Glance</a><button type="button" class="toc-copy" data-anchor="workflow-at-a-glance" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#step-11a-s1-4-scheduling-otslp" class="toc-h3">Step 11A: S1-4 Scheduling (OT/SLP)</a><button type="button" class="toc-copy" data-anchor="step-11a-s1-4-scheduling-otslp" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#step-11b-pc-assignment" class="toc-h3">Step 11B: PC Assignment</a><button type="button" class="toc-copy" data-anchor="step-11b-pc-assignment" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#step-11c-operational-systems-updates" class="toc-h3">Step 11C: Operational Systems Updates</a><button type="button" class="toc-copy" data-anchor="step-11c-operational-systems-updates" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#step-11d-outlook-calendar-setup" class="toc-h3">Step 11D: Outlook Calendar Setup</a><button type="button" class="toc-copy" data-anchor="step-11d-outlook-calendar-setup" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#step-11e-scheduling-confirmation-email" class="toc-h3">Step 11E: Scheduling Confirmation Email</a><button type="button" class="toc-copy" data-anchor="step-11e-scheduling-confirmation-email" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#section-12-during-qs-participation--care-coordination-on-ppas-touched-services" class="toc-h2">Section 12: During QS Participation — Care Coordination on PPAS-Touched Services</a><button type="button" class="toc-copy" data-anchor="section-12-during-qs-participation--care-coordination-on-ppas-touched-services" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#1-coordination-on-hsns-staffed-slp-services" class="toc-h3">1. Coordination on HSNS-Staffed SLP Services</a><button type="button" class="toc-copy" data-anchor="1-coordination-on-hsns-staffed-slp-services" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#2-coordination-on-laterongoing-ppas-services-via-cicc" class="toc-h3">2. Coordination on Later/Ongoing PPAS Services via CICC</a><button type="button" class="toc-copy" data-anchor="2-coordination-on-laterongoing-ppas-services-via-cicc" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#section-13-end-of-qs-services--transition-back-to-cicc" class="toc-h2">Section 13: End of QS Services — Transition Back to CICC</a><button type="button" class="toc-copy" data-anchor="section-13-end-of-qs-services--transition-back-to-cicc" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#scenario-quick-reference" class="toc-h3">Scenario Quick-Reference</a><button type="button" class="toc-copy" data-anchor="scenario-quick-reference" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#cicc-proactive-contact-rules" class="toc-h3">CICC Proactive Contact Rules</a><button type="button" class="toc-copy" data-anchor="cicc-proactive-contact-rules" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#scenario-1-completed" class="toc-h3">Scenario 1: Completed</a><button type="button" class="toc-copy" data-anchor="scenario-1-completed" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#scenario-2-discontinued" class="toc-h3">Scenario 2: Discontinued</a><button type="button" class="toc-copy" data-anchor="scenario-2-discontinued" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#scenario-3-ineligible--aged-out-by-next-available-start-time" class="toc-h3">Scenario 3: Ineligible — Aged Out by Next Available Start Time</a><button type="button" class="toc-copy" data-anchor="scenario-3-ineligible--aged-out-by-next-available-start-time" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#scenario-4-ineligible-unable-to-contact" class="toc-h3">Scenario 4: Ineligible Unable to Contact</a><button type="button" class="toc-copy" data-anchor="scenario-4-ineligible-unable-to-contact" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#final-greenspace-step-remove-client-from-quickstart-clinic" class="toc-h3">Final Greenspace Step: Remove Client from QuickStart Clinic</a><button type="button" class="toc-copy" data-anchor="final-greenspace-step-remove-client-from-quickstart-clinic" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#reference-family-facing-scripts" class="toc-h3">Reference: Family-Facing Scripts</a><button type="button" class="toc-copy" data-anchor="reference-family-facing-scripts" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#reference-ppas-referral-mechanics" class="toc-h3">Reference: PPAS Referral Mechanics</a><button type="button" class="toc-copy" data-anchor="reference-ppas-referral-mechanics" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#reference-guardrails--what-not-to-do-or-say" class="toc-h3">Reference: Guardrails — What NOT to Do or Say</a><button type="button" class="toc-copy" data-anchor="reference-guardrails--what-not-to-do-or-say" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#email-templates" class="toc-h2">Email Templates</a><button type="button" class="toc-copy" data-anchor="email-templates" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#email-template-1-initial-contact--intro-meeting-options" class="toc-h3">Email Template 1: Initial Contact / Intro Meeting Options</a><button type="button" class="toc-copy" data-anchor="email-template-1-initial-contact--intro-meeting-options" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#email-template-2-intro-meeting-confirmation" class="toc-h3">Email Template 2: Intro Meeting Confirmation</a><button type="button" class="toc-copy" data-anchor="email-template-2-intro-meeting-confirmation" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#email-template-3-calendar-event-body" class="toc-h3">Email Template 3: Calendar Event Body</a><button type="button" class="toc-copy" data-anchor="email-template-3-calendar-event-body" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#email-template-4-reminder-email" class="toc-h3">Email Template 4: Reminder Email</a><button type="button" class="toc-copy" data-anchor="email-template-4-reminder-email" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#email-template-5-s1-4-scheduling-confirmation" class="toc-h3">Email Template 5: S1-4 Scheduling Confirmation</a><button type="button" class="toc-copy" data-anchor="email-template-5-s1-4-scheduling-confirmation" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#archive" class="toc-h2">Archive</a><button type="button" class="toc-copy" data-anchor="archive" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#end-of-service--not-matched-by-cicc-variants-transitional" class="toc-h3">End-of-Service — "Not Matched by CICC" Variants (transitional)</a><button type="button" class="toc-copy" data-anchor="end-of-service--not-matched-by-cicc-variants-transitional" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#receipt-and-transfer-of-referrals-to-cicc-transition-period" class="toc-h3">Receipt and Transfer of Referrals to CICC (Transition Period)</a><button type="button" class="toc-copy" data-anchor="receipt-and-transfer-of-referrals-to-cicc-transition-period" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#consent-withdrawal-handling-transition-period" class="toc-h3">Consent Withdrawal Handling (Transition Period)</a><button type="button" class="toc-copy" data-anchor="consent-withdrawal-handling-transition-period" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#end-of-service-outreach--pre-dec-2025-families" class="toc-h3">End-of-Service Outreach — Pre-Dec 2025 Families</a><button type="button" class="toc-copy" data-anchor="end-of-service-outreach--pre-dec-2025-families" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#open-items-summary" class="toc-h2">Open Items Summary</a><button type="button" class="toc-copy" data-anchor="open-items-summary" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
 </div>
 </nav>
 <main id="content">
@@ -1905,6 +1912,11 @@
 <p><strong>Timing.</strong> Care coordination in both areas is <strong>ongoing throughout the family's QS participation</strong> — surfaced naturally in conversations at any session as relevant to the family's situation. <strong>Session 11 is a useful proxy anchor</strong> for an explicit mid-program check-in that ensures both areas have been actively touched on by that point. The closing-phase conversation in <a href="#section-13-end-of-qs-services--transition-back-to-cicc">Section 13</a> revisits both areas with a handoff framing.</p>
 <hr />
 <h3 id="1-coordination-on-hsns-staffed-slp-services">1. Coordination on HSNS-Staffed SLP Services <span class="topic-tag" data-topic="ppas" style="background:#ddeaea;color:#1a5a5a;border:1px solid #9fc6c6">PPAS</span></h3>
+<div class="checklist-keep">
+<blockquote>
+<p><strong>Consultable resource — <a href="https://autismnovascotia.sharepoint.com/:b:/s/ASDParent-MediatedCoaching/IQBZXrFvzq56RJfMxJEoGyqtATP11XDGNw1QIvFcNckeqew?e=ctPvq7">HSNS SLP Services FAQ for QuickStart</a></strong> (HSNS, April 2026). HSNS provided this FAQ for internal QS-staff use. It clarifies which SLP services are available by diagnostic status, how to find current wait times, caregiver programs (e.g., All Together Now), what happens when a child is diagnosed mid-service, and post-QS options. It <strong>supplements</strong> this section — consult it for service-level detail; it does not replace the navigation guidance below. <span class="topic-tag" data-topic="ppas" style="background:#ddeaea;color:#1a5a5a;border:1px solid #9fc6c6">PPAS</span></p>
+</blockquote>
+</div>
 <h4 id="background--historical-vs-current-administration">Background — Historical vs Current Administration</h4>
 <p>Communication-focused (SLP) support delivered by Hearing and Speech Nova Scotia (HSNS) staff is likely the most realistic next-tier PPAS service available to QS families either concurrent with QS participation or immediately after it. CICC integration changed the <strong>administrative pathways</strong> for accessing these services without changing the services themselves — and that change introduced new navigation considerations for QS staff.</p>
 <p><strong>Historical state (pre-CICC integration).</strong> HSNS administered two SLP service streams internally:</p>
@@ -1925,19 +1937,56 @@
 <div class="checklist-keep">
 <p>The two streams are now administratively distinct, and the route to access each differs. Knowing which stream applies to a given family, what's involved in transitioning between them, and what access gaps can occur is now part of the QS team's care-coordination work.</p>
 </div>
+<h4 id="what-qs-staff-should-do--helping-a-family-connect-or-resume-hsns-slp-services">What QS Staff Should Do — Helping a Family Connect or Resume HSNS SLP Services <span class="topic-tag" data-topic="greenspace" style="background:#dcecdf;color:#1f6e3a;border:1px solid #a3cdb0">Greenspace</span> <span class="topic-tag" data-topic="ppas" style="background:#ddeaea;color:#1a5a5a;border:1px solid #9fc6c6">PPAS</span></h4>
+<p>When a QS family needs to initially connect with — or resume — HSNS-staffed SLP services, the route depends on the child's <strong>diagnostic status</strong> and current connection. This reflects the current guidance landed with HSNS's clinical lead (April 2026).</p>
+<div class="checklist-keep">
+<table>
+<thead>
+<tr>
+<th>Diagnostic status</th>
+<th>Situation</th>
+<th>What QS staff does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Not yet diagnosed</strong> (covers all undiagnosed cases — this stream is <strong>Core Pediatric SLP</strong>)</td>
+<td>Not yet referred to Core Pediatric SLP</td>
+<td><strong>Contact HSNS directly</strong> — use any referral option at <a href="https://www.hearingandspeech.ca/">hearingandspeech.ca</a> (self-referral is possible). Per the HSNS FAQ, the referral form can also be emailed to <strong>info@nshsc.nshealth.ca</strong> or faxed to the local site.</td>
+</tr>
+<tr>
+<td></td>
+<td>Already connected to Core Pediatric SLP but on hold/paused</td>
+<td>Ideally the <strong>family contacts their assigned SLP directly</strong>, and/or <strong>QS staff contacts the SLP on the family's behalf</strong>. If unsure who to contact, use the general line for the appropriate site (<a href="https://www.hearingandspeech.ca/referrals-self-refer">hearingandspeech.ca/referrals-self-refer</a>).</td>
+</tr>
+<tr>
+<td><strong>Diagnosed</strong> (confirmed <em>or</em> provisional)</td>
+<td>A PPAS SLP is already assigned</td>
+<td>Contact <strong>HSNS and/or the SLP directly</strong>.</td>
+</tr>
+<tr>
+<td></td>
+<td>No PPAS SLP is assigned</td>
+<td>Call <strong>CI &amp; CC</strong> (1-833-200-7817 / intake-preschoolautism@iwk.nshealth.ca).</td>
+</tr>
+<tr>
+<td></td>
+<td>Unsure whether a PPAS SLP is assigned</td>
+<td>Check the child's <strong>GreenSpace</strong> profile — <strong>"Providers" list</strong> (Manage tab), <strong>RC intake notes</strong> (Notes tab), <strong>tags</strong> (Manage tab). Then route by what the check shows: <strong>assigned → contact HSNS/SLP directly; not assigned → call CI &amp; CC; still unsure → call CI &amp; CC.</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
 <h4 id="slip-scenarios-to-watch-for">Slip scenarios to watch for</h4>
-<p><strong>Scenario A — Undiagnosed → diagnosed mid-program.</strong> Family started on the Core Pediatric SLP pathway via direct HSNS referral pre-diagnosis; the appropriate access route shifts mid-program once a diagnosis is in place. Largely a CICC/HSNS-internal administrative issue, but families may experience confusion and benefit from QS-side clarification.</p>
-<p><strong>Scenario B — Paused SLP support during QS.</strong> QS policy does not require families to stop concurrent services. Some families choose to pause SLP support for capacity reasons during QS. CICC will <em>not</em> proactively re-initiate Communication Services for these families at end of service. This is the most common slip and the one QS most directly carries responsibility for surfacing.</p>
+<p><strong>Scenario A — Undiagnosed → diagnosed mid-program.</strong> Family started on the Core Pediatric SLP pathway via direct HSNS referral pre-diagnosis; the appropriate access route shifts mid-program once a diagnosis is in place. Largely a CICC/HSNS-internal administrative issue, but families may experience confusion and benefit from QS-side clarification. Per the HSNS FAQ, a diagnosis plus a PPAS SLP referral triggers a <strong>warm handover</strong> from the Core SLP to the PPAS SLP — goals and approaches carry over with no interruption in services. Families may also choose to <strong>decline PPAS SLP and stay with their Core SLP</strong>, though Core SLP cannot provide the same community-based (home / childcare-centre) services as PPAS SLP.</p>
+<p><strong>Scenario B — Paused SLP support during QS.</strong> QS policy does not require families to stop concurrent services. Some families choose to pause SLP support for capacity reasons during QS. CICC will <em>not</em> proactively re-initiate Communication Services for these families at end of service. This is the most common slip and the one QS most directly carries responsibility for surfacing. When the family is ready to resume, follow <a href="#what-qs-staff-should-do--helping-a-family-connect-or-resume-hsns-slp-services">What QS Staff Should Do</a> above — for an undiagnosed paused family this is as simple as contacting their SLP to restart whenever they wish (HSNS FAQ Q5).</p>
 <h4 id="implications-for-conversation">Implications for conversation</h4>
 <p>For most situations, this is a regular care-coordination touchpoint — tracking, asking, sharing information — using the established care-coordination practice covered in the existing QS and Supervisor Manuals.</p>
 <p>What's specific to surface (PPAS-driven):</p>
 <ul>
-<li><strong>For families with a diagnosis on the PPAS Communication Services pathway:</strong> confirm awareness that access is now administered through CICC, not directly through HSNS.</li>
 <li><strong>For Scenario B families especially:</strong> prime the message that they may need to actively re-initiate contact with CICC for Communication Services as QS ends — <em>"in your case, given you paused communication services, there may be a specific reason to call CICC back when QS is wrapping up."</em> The same tailored prompting is carried forward in the closing-phase conversation; see <a href="#reference-family-facing-scripts">Section 13 — Reference: Family-Facing Scripts</a>.</li>
+<li><strong>HSNS SLPs welcome invitations to QuickStart end-of-service meetings</strong> and attend when able (HSNS FAQ) — where a family has an HSNS SLP, consider inviting them to the closing conversation. Point service-level family questions (current wait times, caregiver programs) to the <a href="https://autismnovascotia.sharepoint.com/:b:/s/ASDParent-MediatedCoaching/IQBZXrFvzq56RJfMxJEoGyqtATP11XDGNw1QIvFcNckeqew?e=ctPvq7">HSNS SLP Services FAQ</a>.</li>
 </ul>
-<blockquote>
-<p><span class="topic-tag" data-topic="open-item" style="background:#fde8e8;color:#9b1c1c;border:1px solid #f5a3a3">Open Item</span> <strong>OPEN ITEM:</strong> HSNS is developing a comprehensive FAQ for staff on the Core Pediatric vs PPAS Communication Services distinction and how to help families navigate. Not yet provided. Once available, integrate as a referenced resource here.</p>
-</blockquote>
 <hr />
 <h3 id="2-coordination-on-laterongoing-ppas-services-via-cicc">2. Coordination on Later/Ongoing PPAS Services via CICC <span class="topic-tag" data-topic="ppas" style="background:#ddeaea;color:#1a5a5a;border:1px solid #9fc6c6">PPAS</span></h3>
 <blockquote>
@@ -2018,7 +2067,7 @@
 <p>CICC proactively reaches out to families in only three specific circumstances:</p>
 <div class="checklist-keep">
 <ol>
-<li><strong>An initial referral to PPAS has been placed</strong> — A formal referral (via PPAS Intake Referral Form or PPAS Autism Diagnosis Form) has been submitted by QS staff or family, and the family is registered in the PPAS system.</li>
+<li><strong>An initial referral to PPAS has been placed</strong> — A formal referral (via the PPAS Intake Request Form or PPAS Diagnostic and Intake Referral Form, or by contacting CICC directly) has been submitted by QS staff or family, and the family is registered in the PPAS system.</li>
 <li><strong>Family receives new diagnostic results</strong> — A child receives an updated or new autism diagnosis, prompting CICC to review eligibility for next-tier services.</li>
 <li><strong>Child reaches year-of-birth for intensive or ESDM enrollment</strong> — At the appropriate age, CICC proactively reaches out to explore intensive programming or ESDM enrollment opportunities.</li>
 </ol>
@@ -2322,13 +2371,19 @@
 </blockquote>
 <details>
 <summary><em>Click to expand reference material — forms, file transfer, and PPAS Integrated consent documentation at end of service</em></summary>
-<h4 id="ppas-forms">PPAS Forms</h4>
-<p>Two forms are available for placing referrals:</p>
+<h4 id="how-to-refer-to-ppas">How to Refer to PPAS</h4>
+<p>CICC is the single point of contact for all <a href="https://iwkhealth.ca/provincial-preschool-autism-service/referrals">PPAS referrals</a>. There are <strong>three ways to refer a family</strong>, and <strong>all three lead to the same place — processing by the CICC team</strong>, who then follow up with the family to confirm what they need and connect them to the appropriate PPAS services:</p>
 <ol>
-<li><strong>PPAS Intake Referral Form</strong> — General referral form used when family is first entering the PPAS system.</li>
-<li><strong>PPAS Autism Diagnosis Form</strong> — Specialized form used when a new or updated autism diagnosis is available.</li>
+<li><strong>Contact CICC directly</strong> — by phone (toll-free <strong>1-833-200-7817</strong>, Mon–Fri 8:30 a.m.–4:30 p.m.) or email (<strong>intake-preschoolautism@iwk.nshealth.ca</strong>). A family can self-refer this way with no form.</li>
+<li><strong><a href="https://iwkhealth.ca/sites/default/files/2025-10/PPAS%20Diagnostic%20and%20Intake%20Referral%20form%20-%20Final%2010.21.2025_5.pdf">PPAS Diagnostic and Intake Referral Form</a></strong> — used when an <strong>autism diagnostic assessment</strong> is being sought (alongside other PPAS supports/services). Submitting this form <em>also</em> registers the child for supports and services, so a separate intake form is <strong>not</strong> required. It also includes fields for the referrer to describe what they have observed, which can give CICC richer context up front.</li>
+<li><strong><a href="https://iwkhealth.ca/sites/default/files/2025-10/PPAS%20Intake%20Request%20Form%20-%20Final%2010.21.2025_3.pdf">PPAS Intake Request Form</a></strong> — used when seeking <strong>supports and services only</strong> (no diagnostic assessment).</li>
 </ol>
-<p>Both forms are available in the PPAS portal. Contact your PPAS liaison if you need access.</p>
+<p><strong>The method does not change the destination.</strong> Whichever route is used, CICC processes the referral and holds the relevant conversations with the family — for example, if only the (non-diagnostic) Intake Request Form was submitted, confirming the family does not also want a diagnostic referral. Choosing the diagnostic form when appropriate simply gives CICC more information up front; it does not route the family to a different team.</p>
+<p><strong>Where forms are submitted.</strong> Families and external professionals submit completed forms to <strong>referrals-preschoolautism@iwk.nshealth.ca</strong> or fax <strong>902-428-9931</strong>. When <strong>QS staff</strong> place a referral on a family's behalf — which involves attaching the child's Discharge/Completion Report — the package is sent securely via <strong>MoveIt</strong> to the regional PPAS admin instead (see <a href="#sharing-discharge-reports-via-moveit">Sharing Discharge Reports via MoveIt</a> below). Staff-placed referrals require documented family consent to release and share information with PPAS.</p>
+<p>These pathways and the current versions of each form are published on the IWK PPAS referrals pages — for <a href="https://iwkhealth.ca/provincial-preschool-autism-service/referrals/ppas-parentcaregiver-self-referrals-grade-primary">families (parent/caregiver self-referral)</a> and for <a href="https://iwkhealth.ca/provincial-preschool-autism-service/referrals/health-professionalcommunity-partner-ppas-referrals">health professionals / community partners</a>. If a direct form link above stops working, the current form will be linked from those pages.</p>
+<blockquote>
+<p><strong>Current QS context:</strong> Referring a family to PPAS rarely comes up for the QS team today, since nearly all current participants reach QS through a CICC service match (meaning PPAS already referred them). It is documented here for completeness and for the occasional case where QS staff support a family <strong>not</strong> yet connected to CICC (see <a href="#reference-family-facing-scripts">Reference: Family-Facing Scripts</a>).</p>
+</blockquote>
 <h4 id="sharing-discharge-reports-via-moveit">Sharing Discharge Reports via MoveIt <span class="topic-tag" data-topic="moveit" style="background:#e8e0f0;color:#5a3a8a;border:1px solid #c8b0d8">MoveIt</span></h4>
 <p>When placing a staff-referred referral with family consent:</p>
 <ul>
@@ -2490,7 +2545,7 @@ Administrative Support, QuickStart NS</p>
 <p><strong>Scenario 1b — Completed, Not Matched by CICC</strong></p>
 <p><em>If family consents to connection + sharing the Discharge Report:</em></p>
 <ol>
-<li><span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span> completes a PPAS Intake Referral Form (or PPAS Autism Diagnosis Form if a new/updated diagnosis applies — see <a href="#reference-ppas-referral-mechanics">Reference: PPAS Referral Mechanics</a>) and attaches the Discharge Report.</li>
+<li><span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span> completes a PPAS Intake Request Form (or the PPAS Diagnostic and Intake Referral Form if a new/updated diagnostic assessment also applies — see <a href="#reference-ppas-referral-mechanics">Reference: PPAS Referral Mechanics</a>) and attaches the Discharge Report.</li>
 <li><span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span> provides the completed package to <span class="role-badge" data-topic="role-qs-admin" style="background:#2980b9">QS Admin</span>.</li>
 <li><span class="role-badge" data-topic="role-qs-admin" style="background:#2980b9">QS Admin</span> submits the package via <strong>MoveIt</strong> to the appropriate regional PPAS admin:<ul>
 <li><strong>Central &amp; Western zones:</strong> Valeria</li>
@@ -2821,10 +2876,72 @@ QuickStart Nova Scotia</p>
   links.forEach(a => {
     a.addEventListener('click', function(e) {
       e.preventDefault();
-      const target = document.getElementById(this.getAttribute('href').slice(1));
-      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const id = this.getAttribute('href').slice(1);
+      const target = document.getElementById(id);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        history.replaceState(null, '', '#' + id);   // reflect the section in the address bar (shareable)
+      }
     });
   });
+})();
+
+/* ---- Deep-link: per-section copy-link buttons + jump-to-hash on load ---- */
+(function() {
+  function buildUrl(id) {
+    const url = new URL(window.location.href);
+    url.hash = id;
+    return url.toString();
+  }
+  function copyText(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(text);
+    }
+    // Fallback for non-secure contexts (e.g. opening the file via file://)
+    return new Promise((resolve, reject) => {
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.focus(); ta.select();
+        const ok = document.execCommand('copy');
+        document.body.removeChild(ta);
+        ok ? resolve() : reject(new Error('execCommand failed'));
+      } catch (e) { reject(e); }
+    });
+  }
+  function flash(btn, glyph) {
+    btn.classList.add('copied');
+    btn.innerHTML = glyph;
+    setTimeout(() => { btn.classList.remove('copied'); btn.innerHTML = '&#128279;'; }, 1200);
+  }
+  document.querySelectorAll('#sidebar-toc .toc-copy').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      copyText(buildUrl(btn.dataset.anchor))
+        .then(() => flash(btn, '\u2713'))
+        .catch(() => flash(btn, '\u2717'));
+    });
+  });
+
+  function jumpToHash() {
+    if (!window.location.hash) return;
+    let id;
+    try { id = decodeURIComponent(window.location.hash.slice(1)); }
+    catch (e) { id = window.location.hash.slice(1); }
+    const target = document.getElementById(id);
+    if (!target) return;
+    // Open any collapsed <details> the target lives inside, so it's visible when we scroll.
+    let anc = target;
+    while (anc && anc !== document.body) {
+      if (anc.tagName === 'DETAILS' && !anc.open) anc.open = true;
+      anc = anc.parentElement;
+    }
+    target.scrollIntoView({ block: 'start' });
+  }
+  // Run after view/filter init has settled so the target isn't hidden when we scroll to it.
+  window.addEventListener('load', () => setTimeout(jumpToHash, 80));
+  window.addEventListener('hashchange', jumpToHash);
 })();
 
 /* ---- Search ---- */
@@ -2908,6 +3025,14 @@ QuickStart Nova Scotia</p>
   function jumpToResult(i) {
     if (i < 0 || i >= currentMatches.length) return;
     const m = currentMatches[i];
+    // If the match lives inside one or more collapsed <details>, open them first so the
+    // highlighted text is actually visible when we scroll to it (search indexes details
+    // content, but jumping to a closed details would otherwise land on hidden text).
+    let anc = m.el;
+    while (anc && anc !== document.body) {
+      if (anc.tagName === 'DETAILS' && !anc.open) anc.open = true;
+      anc = anc.parentElement;
+    }
     // Scroll to the actual matched element (centered) — not the section heading — so the
     // matched text is in view rather than potentially off-screen below the header.
     const target = m.el || m.heading;
