@@ -1824,12 +1824,26 @@
 </details>
 <h4 id="consent-changes-during-programming">Consent Changes During Programming <span class="topic-tag" data-topic="ppas" style="background:#ddeaea;color:#1a5a5a;border:1px solid #9fc6c6">PPAS</span></h4>
 <blockquote>
-<p><strong>Responsible:</strong> <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> (documents withdrawal, coordinates updated consent via DocuSign; <span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span> uploads the updated form when sent)</p>
+<p><strong>Responsible:</strong> <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> (documents withdrawal, pre-fills and coordinates updated consent; <span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span> uploads the updated form when sent)</p>
 </blockquote>
 <p>Consent is not static. A family may withdraw or modify their consent at any point during programming. Two categories to handle:</p>
-<p><strong>(1) Partial change / preference update</strong> (most common — e.g., family adds or removes a partner agency, changes information types). The supervisor sends a fresh PPAS Integrated Service Delivery Consent via DocuSign reflecting the updated preferences, then documents the change.</p>
+<p><strong>(1) Partial change / preference update</strong> (most common — e.g., a family becomes connected with a new external community program such as NSECDIS partway through participation, or adds or removes a partner agency or information type).</p>
+<p><strong>The constraint.</strong> The PPAS Integrated Service Delivery Consent has no partial-amendment mechanism — there is no way to append or alter a single entry on an already-signed form. Any change requires the form to be <strong>re-completed in full</strong>. The retired QS Consent to Release and Share was a simpler form that could be updated more easily, which is how these changes used to be tracked. External community partners and programs change routinely across a family's participation, so this situation comes up often.</p>
+<p><strong>Current least-disruptive practice — pre-fill, don't re-ask.</strong> Do not hand the caregiver a blank form. The <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> pre-fills a copy carrying forward everything the family has already consented to, so the only thing left for the caregiver is what has actually changed:</p>
+<ol>
+<li>Start from a blank copy of the current PPAS Integrated Service Delivery Consent.</li>
+<li><strong>Pre-fill it with all content from the family's most recent signed form</strong> — every partner, information type, and preference already captured.</li>
+<li>Leave only the changed portion for the caregiver (e.g., the newly involved community program).</li>
+<li>Review the pre-filled copy with the caregiver, who adds or amends that portion and signs.</li>
+</ol>
+<p><strong>Why:</strong> re-completing the form in full is a requirement of the form, not of the family. The caregiver should not carry the onus of working through a long and complex document again because of a single change to their external providers. Pre-filling preserves what the form requires — a fully completed, staff-reviewed, freshly signed copy — while reducing the caregiver's task to confirming what is already there and supplying what is new.</p>
+<p><strong>Delivery.</strong> The pre-filled content is the same either way:</p>
 <ul>
-<li>DocuSign envelope addressed to <strong>both</strong> the parent and the assigned <span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span>.</li>
+<li><strong>Pre-filled physical copy in-session</strong> — the working default for a single partner change. Attending staff brings the pre-filled copy to the next session, reviews it with the caregiver, who amends the changed portion and signs in wet ink. Scan and upload afterwards per <a href="#physical-copy-fallback-when-docusign-isnt-workable">Physical Copy Fallback</a>.</li>
+<li><strong>Fresh DocuSign envelope</strong> — supervisor sends a copy reflecting the updated preferences, addressed to <strong>both</strong> the parent and the assigned <span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span>.</li>
+</ul>
+<p><strong>Storage and documentation</strong> (either route):</p>
+<ul>
 <li>Once signed, <span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span> downloads the new PDF and uploads to:<ul>
 <li><strong>Greenspace</strong> (Notes → Create a Note → "Service Delivery Consent Form", same naming convention as initial signing)</li>
 <li><strong>ShareVision</strong> (organizational record)</li>
@@ -1842,6 +1856,9 @@
 </ul>
 </li>
 </ul>
+<blockquote>
+<p><span class="topic-tag" data-topic="open-item" style="background:#fde8e8;color:#9b1c1c;border:1px solid #f5a3a3">Open Item</span> <strong>OPEN ITEM (<span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span>):</strong> Pre-filling is a mitigation, not a fix — the underlying issue is that the PPAS Integrated Service Delivery Consent has no mechanism for amending a single entry, so a one-line change to a family's external providers requires a full re-signing. Worth raising with PPAS whether an addendum or amendment page could be added for exactly this case (adding or removing a community partner mid-participation), which is how the retired QS Consent to Release and Share effectively worked. Also confirm whether pre-filling is best done on a printed copy or by populating the DocuSign form fields before sending, and whether a saved per-family pre-filled copy can be retained to make the <em>next</em> update quicker.</p>
+</blockquote>
 <p><strong>(2) Full withdrawal</strong> (rare — family fully revokes consent). Per the PPAS MOU, withdrawal is communicated in writing (e.g., by email or letter). The written communication itself is the authoritative document — no new DocuSign is sent. The supervisor stops information sharing per the <a href="#docusign-consent--reference">General rule</a> and documents the withdrawal.</p>
 <ul>
 <li><strong>Greenspace:</strong> <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> creates a new note documenting:<ul>
@@ -3005,6 +3022,12 @@ QuickStart Nova Scotia</p>
 <td>9D / 10</td>
 <td>Define what happens when a family reports a relocation into a different management zone after the service match (surfacing either before or during the intro meeting). Email Templates 1, 1B and 2 now prompt families to tell us; the handling process is undefined — who updates zone in Greenspace and the Capacity Sharing Sheet, whether cohort placement changes or carries over, whether a scheduled intro meeting transfers to the receiving zone's supervisor, and what CICC must be notified of</td>
 <td>Connor / QS Admin</td>
+</tr>
+<tr>
+<td>36</td>
+<td>10 (Consent Changes During Programming)</td>
+<td>The PPAS Integrated Service Delivery Consent has no partial-amendment mechanism, so adding a single external community program mid-participation requires a full re-signing. Pre-filling a copy from the family's last signed form is the current mitigation. Raise with PPAS whether an addendum/amendment page is possible for this case (as the retired QS Consent to Release and Share effectively allowed); also confirm whether pre-filling is better on a printed copy or by populating DocuSign fields pre-send, and whether a per-family pre-filled copy can be retained to speed up the next update</td>
+<td>Connor / PPAS</td>
 </tr>
 </tbody>
 </table>
