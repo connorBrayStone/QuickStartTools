@@ -2366,6 +2366,7 @@
 <ul>
 <li>Open the family's profile in Greenspace</li>
 <li>Navigate to the <strong>Manage</strong> tab</li>
+<li>Remove the <strong>"QuickStart - Waitlist"</strong> tag, if present — do this <strong>before</strong> removing the client</li>
 <li>Click <strong>Remove client</strong></li>
 <li>In the confirmation dialog, click <strong>Yes, remove client</strong></li>
 </ul>
@@ -2374,14 +2375,15 @@
 <ol>
 <li>Open the family's profile in Greenspace.</li>
 <li>Click the <strong>Manage</strong> tab.</li>
+<li><strong>Remove the "QuickStart - Waitlist" tag</strong> if it is present. This tag is applied by the CICC team when the child is matched to QuickStart services, so clearing it at closeout leaves the profile accurate. Complete this <strong>before</strong> step 4 — once the family has been removed from the QuickStart clinic, the profile is no longer available to QS staff to edit.</li>
 <li>Click <strong>Remove client</strong>.</li>
 <li>A warning dialog will appear. Click <strong>Yes, remove client</strong> to confirm.</li>
 </ol>
 <p>The family will be removed from the QuickStart clinic. The family's underlying Greenspace record (and any other clinics they are part of, e.g., CICC) is unaffected.</p>
 </div>
+<p><strong>On Greenspace tags generally.</strong> Tags are used inconsistently across teams, and QS deliberately minimises its use of and involvement with them. Clearing the "QuickStart - Waitlist" tag is a specific agreed exception, made at CICC's request: because CICC applies that tag at the point of match to QS, QS is the team positioned to clear it at closeout. QS staff should not otherwise add or remove Greenspace tags.</p>
 <blockquote>
 <p><span class="topic-tag" data-topic="open-item" style="background:#fde8e8;color:#9b1c1c;border:1px solid #f5a3a3">Open Item</span> <strong>OPEN ITEM (<span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> &amp; <span class="role-badge" data-topic="role-qs-admin" style="background:#2980b9">QS Admin</span>):</strong> Confirm routine ownership of this final remove-client step — <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> vs <span class="role-badge" data-topic="role-qs-admin" style="background:#2980b9">QS Admin</span> — for Scenarios 1a and 2a (where the PC has handed off the closeout). For Scenarios 3a and 4a, the supervisor is already the closeout owner and should complete this step directly.</p>
-<p><span class="topic-tag" data-topic="open-item" style="background:#fde8e8;color:#9b1c1c;border:1px solid #f5a3a3">Open Item</span> <strong>OPEN ITEM (Greenspace tags):</strong> Confirm whether removing the <strong>"QS Waitlist"</strong> tag (under the <strong>Manage</strong> tab) should be part of this final remove-client step. The QS team does not actively use Greenspace tags, and it is unclear how the CICC team uses or depends on them — so we are trying to avoid touching them, but clearing the "QS Waitlist" tag at closeout may be necessary. Confirm with CICC before making it a routine step.</p>
 </blockquote>
 <hr />
 <h3 id="reference-family-facing-scripts">Reference: Family-Facing Scripts</h3>
@@ -2592,7 +2594,6 @@ Administrative Support, QuickStart NS</p>
 <p>Looking forward to connecting soon,</p>
 <p>[Your Name]<br />
 Administrative Support, QuickStart NS</p>
-<p><span class="topic-tag" data-topic="open-item" style="background:#fde8e8;color:#9b1c1c;border:1px solid #f5a3a3">Open Item</span> <strong>OPEN ITEM (Timeline of Sessions attachment):</strong> A team member asked why the full Timeline of Sessions is attached at this stage. Current rationale: it has always been included, and the timeline is typically reviewed within the intro meeting — having it lets the family see and follow along with the full session-by-session timeline rather than only the abbreviated 3-phase breakdown in the parent guide. Worth revisiting the tradeoff of when to share more detailed information (does the full timeline help orient families pre-meeting, or is it better introduced during the meeting itself?).</p>
 </blockquote>
 <h3 id="email-template-3-calendar-event-body">Email Template 3: Calendar Event Body</h3>
 <p><em>Used when adding the caregiver to the Outlook calendar event for the confirmed intro meeting.</em></p>
@@ -2973,16 +2974,16 @@ QuickStart Nova Scotia</p>
 <td>Connor</td>
 </tr>
 <tr>
-<td>32</td>
-<td>13 (Remove Client)</td>
-<td>Confirm whether removing the <strong>"QS Waitlist"</strong> tag (Manage tab) should be part of the final remove-client step. QS doesn't actively use Greenspace tags and it's unclear how CICC uses/depends on them; avoid touching them unless confirmed necessary with CICC</td>
-<td>Connor / CICC</td>
+<td><del>32</del></td>
+<td><del>13 (Remove Client)</del></td>
+<td><del>Confirm whether removing the "QS Waitlist" tag (Manage tab) should be part of the final remove-client step. QS doesn't actively use Greenspace tags and it's unclear how CICC uses/depends on them; avoid touching them unless confirmed necessary with CICC</del> — resolved: yes, at CICC's request. The tag (correctly named <strong>"QuickStart - Waitlist"</strong>, applied by CICC at match) is now removed as a step in the final Greenspace action steps, before removing the client. Remains the only tag QS staff touch</td>
+<td><del>resolved</del></td>
 </tr>
 <tr>
-<td>33</td>
-<td>9D (Email Template 2)</td>
-<td>Revisit whether the full Timeline of Sessions should be attached to the intro-meeting confirmation email. Always included historically and typically reviewed within the intro meeting (family can follow the full session-by-session timeline, not just the parent guide's 3-phase breakdown), but a team member raised the tradeoff of when to share more detailed information</td>
-<td>Connor</td>
+<td><del>33</del></td>
+<td><del>9D (Email Template 2)</del></td>
+<td><del>Revisit whether the full Timeline of Sessions should be attached to the intro-meeting confirmation email. Always included historically and typically reviewed within the intro meeting, but a team member raised the tradeoff of when to share more detailed information</del> — closed with no change: the full Timeline of Sessions stays attached; inline note removed from Template 2</td>
+<td><del>closed</del></td>
 </tr>
 <tr>
 <td><del>34</del></td>
@@ -3924,6 +3925,13 @@ QuickStart Nova Scotia</p>
       clone.querySelectorAll('.role-badge').forEach(b => {
         const text = document.createTextNode(b.textContent);
         b.parentNode.replaceChild(text, b);
+      });
+      // Drop open-item notes entirely. Python-Markdown merges an adjacent open-item
+      // blockquote into the template body blockquote, so without this the maintainer
+      // note gets pasted into Outlook along with the email.
+      clone.querySelectorAll('.topic-tag[data-topic="open-item"]').forEach(t => {
+        const host = t.closest('p, li, div') || t;
+        host.remove();
       });
       // Strip topic-tag spans (HTML comments don't render, but these topic-tag spans do)
       clone.querySelectorAll('.topic-tag').forEach(t => t.remove());
