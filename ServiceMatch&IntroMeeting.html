@@ -1475,8 +1475,12 @@
 <td>Initial status set in Step 9B when operational flags are noticed. QS Admin pauses; supervisor back-reviews per Step 9C.</td>
 </tr>
 <tr>
+<td><strong>Confirmed Service Match</strong></td>
+<td>Set in Step 9D after sending <a href="#email-template-1b-confirmation-of-service-match-long-wait-periods">Template 1B</a> on the deferred pathway (start date more than 6 months out). Marks a family confirmed into the program whose intro meeting scheduling is still pending; picked up again 3 months before the start date.</td>
+</tr>
+<tr>
 <td><strong>1st / 2nd / 3rd attempted contact</strong></td>
-<td>Set during Step 9D after each contact attempt.</td>
+<td>Set during Step 9D after each contact attempt in the intro meeting scheduling outreach.</td>
 </tr>
 <tr>
 <td><strong>Intro meeting scheduled</strong></td>
@@ -1539,10 +1543,16 @@
 </table>
 <p><strong>Why the split:</strong> with current wait times, a family matched today may not start for well over 6 months. Initiating scheduling at that distance asks the family to commit to a date — and holds a supervisor calendar slot — far enough ahead that availability and circumstances are likely to change before it arrives. Template 1B still confirms the match promptly, so the family knows they are in the program and roughly when they will start, while leaving the actual scheduling until close enough to the start date to hold.</p>
 <p>Both pathways confirm receipt of the service match within 48-72 hours. The only difference is whether intro meeting scheduling is initiated in that same email.</p>
+<p><strong>On the deferred pathway,</strong> after sending Template 1B set the contact status in the Participation Info workbook to <strong>"Confirmed Service Match"</strong>. This status marks a family who has been confirmed into the program but whose intro meeting scheduling is still pending — it is what distinguishes these cases from unworked ones during the months between the two touchpoints. These cases are picked up again 3 months before their start date, at which point scheduling proceeds as per Template 1.</p>
 <p><strong>3-Attempt Contact Policy:</strong></p>
-<p>Initial outreach is via email within 72 hours of receiving the service match (see table above for which template) — email typically has a high response rate. For each attempt, if successful (intro meeting time agreed) → proceed to "Upon scheduling" steps below.</p>
+<p>The 3-attempt cycle applies to the <strong>outreach that schedules the intro meeting</strong> — not to the Template 1B confirmation, which asks nothing of the family. Where the cycle begins therefore depends on the pathway:</p>
+<ul>
+<li><strong>6 months or less</strong> — begins with the initial Template 1 email, within 48-72 hours of the service match</li>
+<li><strong>More than 6 months</strong> — Template 1B is sent within 48-72 hours and needs no follow-up cycle; the 3-attempt cycle begins with the scheduling outreach 3 months before the start date</li>
+</ul>
+<p>Outreach is via email — email typically has a high response rate. For each attempt, if successful (intro meeting time agreed) → proceed to "Upon scheduling" steps below.</p>
 <ol>
-<li><strong>1st Attempted Contact</strong> — initial email sent to family (<a href="#email-template-1-initial-contact--intro-meeting-options">Template 1</a> with intro meeting options, or <a href="#email-template-1b-confirmation-of-service-match-long-wait-periods">Template 1B</a> if the start date is more than 6 months out). Wait at least 2 business days for a response.</li>
+<li><strong>1st Attempted Contact</strong> — email sent to the family with intro meeting options (see <a href="#email-template-1-initial-contact--intro-meeting-options">Email Template 1</a>). Wait at least 2 business days for a response.</li>
 <li><strong>2nd Attempted Contact</strong> — follow-up phone call. If no answer, leave a voicemail. If no phone number available, send a follow-up email. Wait at least 2 business days.</li>
 <li><strong>3rd Attempted Contact</strong> — final phone call.</li>
 </ol>
@@ -2549,7 +2559,7 @@ Administrative Support, QuickStart NS</p>
 <div class="email-copy-wrap"><button type="button" class="email-copy-btn" aria-label="Copy email body to clipboard">&#128203; Copy email body</button></div><blockquote class="email-template-body">
 <p>Hi [Caregiver's Name],</p>
 <p>My name is [Your Name], and I'm the Administrative Support for the QuickStart Nova Scotia program at Autism Nova Scotia. QuickStart NS is part of the Provincial Preschool Autism Service (PPAS).</p>
-<p>I'm reaching out to confirm that we have received your referral to QuickStart NS from the PPAS Clinical Intake and Care Coordination team. You have been assigned to begin services with our team in [Month, Year].</p>
+<p>I'm reaching out to confirm that we have received your match to QuickStart NS from the PPAS Clinical Intake and Care Coordination team. You have been assigned to begin services with our team in [Month, Year].</p>
 <p>To get started, you will be required to complete an introductory meeting with the [Zone Name] Zone Supervisor. This meeting will be approximately 2 hours and can be completed either by phone or via Zoom.</p>
 <p>A member of our team will be in touch with you 3 months prior to your scheduled start date to discuss and arrange a convenient time for this meeting.</p>
 <p>If you have any questions in the meantime, please don't hesitate to reach out.</p>
@@ -2562,7 +2572,6 @@ Administrative Support, QuickStart NS</p>
 <p>Looking forward to connecting soon,</p>
 <p>[Your Name]<br />
 Administrative Support, QuickStart NS</p>
-<p><span class="topic-tag" data-topic="open-item" style="background:#fde8e8;color:#9b1c1c;border:1px solid #f5a3a3">Open Item</span> <strong>OPEN ITEM (<span class="role-badge" data-topic="role-qs-admin" style="background:#2980b9">QS Admin</span>):</strong> Confirm how deferred cases are tracked between the Template 1B confirmation and the scheduling outreach 3 months before the start date. The Contact Status list has no value for "service match confirmed, scheduling deferred" — without one, these cases sit indistinguishable from unworked ones for months. Also confirm whether the 3-attempt contact policy applies to Template 1B (which asks nothing of the family), or only to the later scheduling outreach.</p>
 </blockquote>
 <h3 id="email-template-2-intro-meeting-confirmation">Email Template 2: Intro Meeting Confirmation</h3>
 <p><strong>Subject:</strong> QuickStart NS – Intro Meeting Confirmation</p>
@@ -2976,10 +2985,10 @@ QuickStart Nova Scotia</p>
 <td>Connor</td>
 </tr>
 <tr>
-<td>34</td>
-<td>9D (Email Template 1B)</td>
-<td>Confirm how deferred cases are tracked between the Template 1B confirmation and the scheduling outreach 3 months before the start date. The Contact Status list has no value for "service match confirmed, scheduling deferred", so these cases are indistinguishable from unworked ones for months. Also confirm whether the 3-attempt contact policy applies to Template 1B (which asks nothing of the family) or only to the later scheduling outreach</td>
-<td>Connor / QS Admin</td>
+<td><del>34</del></td>
+<td><del>9D (Email Template 1B)</del></td>
+<td><del>Confirm how deferred cases are tracked between the Template 1B confirmation and the scheduling outreach 3 months before the start date, and whether the 3-attempt contact policy applies to Template 1B</del> — resolved: "Confirmed Service Match" contact status added to the Participation Info workbook (Valeria) marks deferred cases; the 3-attempt policy applies only to the intro meeting scheduling outreach, not to the Template 1B confirmation</td>
+<td><del>resolved</del></td>
 </tr>
 </tbody>
 </table>
