@@ -52,6 +52,8 @@
   .c-ot{background:var(--ot-bg); border-color:var(--ot); color:#1D5C48;}
   .c-sup{background:var(--sup-bg); border-color:var(--sup); color:#7A431C;}
   .c-open{background:#fff; border:1.5px dashed #C6CED4; color:#9AA3AA; text-align:center; font-style:italic;}
+  .c-open.c-inc{padding:1px 4px; font-size:10px; display:flex; align-items:center; justify-content:center;}
+  .c-open.c-inc b{font-size:10px; font-weight:400;}
   .c-rev{box-shadow:inset 3px 0 0 var(--accent);}
   .badge{display:inline-block; background:var(--sup); color:#fff; border-radius:8px; font-size:9.5px; padding:1px 6px; margin-top:2px; font-style:normal;}
   .badge.rev{background:var(--accent);}
@@ -254,6 +256,21 @@ const summaries = {
   sup:  w => `<strong>Supervisor's Monday (Central example):</strong> ${w===1?"1:00 provincial check-in · ":w===3?"1:00 zone check-in · ":""}weekly 30-min connects with each PC (deeper data/fidelity review now that scope consults live elsewhere) · 3:30 opted into Sarah + PC-C2's booking on a complex feeding case. Sees all PC bookings by default — awareness without attendance.`,
 };
 
+// Professionals' unbooked time renders as individual 15-min bookable increments
+const PRO_LANES = ["sarah","jenn","laura","kim","lorelle","newot"];
+function explodeOpen(chips){
+  const out = [];
+  chips.forEach(c=>{
+    if(PRO_LANES.includes(c.lane) && c.cls.indexOf("c-open")>-1){
+      const s = t(c.start);
+      for(let m=0; m<c.mins; m+=15){
+        out.push({lane:c.lane, abs:s+m, mins:15, cls:c.cls+" c-inc", title:"open", sub:"", tags:c.tags, badge:null});
+      }
+    } else out.push(c);
+  });
+  return out;
+}
+
 // ---------- render ----------
 const board = document.getElementById("board");
 let curWeek = 1, curRole = "all";
@@ -275,7 +292,7 @@ function render(){
   }
   board.appendChild(tc);
   // lanes
-  const chips = [groupChipByWeek[curWeek], ...baseChips];
+  const chips = explodeOpen([groupChipByWeek[curWeek], ...baseChips]);
   lanes.forEach(l=>{
     const ln = el("div","lane",""); ln.style.height = H+"px";
     for(let m=START; m<=END; m+=15){
@@ -286,7 +303,7 @@ function render(){
     chips.filter(c=>c.lane===l.id).forEach(c=>{
       const d = el("div","chip "+c.cls,
         `<b>${c.title}</b>${c.sub?`<small>${c.sub}</small>`:""}${c.badge==="sup"?'<span class="badge">+Sup joined</span>':""}${c.badge==="rev"?'<span class="badge rev">↩ reverse</span>':""}`);
-      d.style.top = (t(c.start)-START)*PXPM+1+"px";
+      d.style.top = ((c.abs!==undefined ? c.abs : t(c.start))-START)*PXPM+1+"px";
       d.style.height = c.mins*PXPM-3+"px";
       if(curRole!=="all"){
         if(c.tags.includes(curRole)) d.classList.add("hl");
