@@ -3662,6 +3662,32 @@ QuickStart Nova Scotia</p>
     return topics && topics.has('checklist');
   }
 
+  // A paragraph that is nothing but bold text, or nothing but italic text ending in a colon,
+  // acts as a label for what follows ("**Community outreach:**", "*In the Notes page:*").
+  function isLabelParagraph(el) {
+    if (!el.matches('p')) return false;
+    const text = (el.textContent || '').trim();
+    const onlyChild = el.children.length === 1 ? el.children[0] : null;
+    if (!onlyChild) return false;
+    const inner = (onlyChild.textContent || '').trim();
+    if (inner !== text) return false;
+    if (onlyChild.tagName === 'STRONG') return true;
+    return onlyChild.tagName === 'EM' && text.endsWith(':');
+  }
+
+  // Lead-in labels: a short single-sentence paragraph ending in ':' that introduces a list
+  // ("`Parent Coach` updates GreenSpace as follows:"). Without it the checkboxes beneath lose
+  // their orientation in checklist mode. Intervening label paragraphs are stepped over, so a
+  // lead-in still counts when a tab-area label sits between it and the list. Anything longer or
+  // multi-sentence is prose and stays hidden; use <!-- action --> to force-keep those.
+  function isListLeadIn(el, text) {
+    if (!text.endsWith(':') || text.length > 140) return false;
+    if (/[.!?]\s/.test(text.slice(0, -1))) return false;
+    let sib = el.nextElementSibling;
+    while (sib && isLabelParagraph(sib)) sib = sib.nextElementSibling;
+    return !!(sib && sib.matches('ul,ol,table,.checklist-keep,.checklist-only'));
+  }
+
   function hideProseIn(container) {
     Array.from(container.children).forEach(child => {
       // Keep structural elements visible
@@ -3696,11 +3722,11 @@ QuickStart Nova Scotia</p>
       // Bold-only paragraphs (e.g. **Community outreach:**) act as subheads — keep.
       // Italic-only paragraphs ending in a colon (e.g. *In the Notes page:*) are
       // tab-area / pathway labels that group the checkboxes beneath them — also keep.
+      // Colon-terminated lead-ins that introduce a list are kept for the same reason.
       if (child.matches('p')) {
         const text = (child.textContent || '').trim();
-        const onlyChild = child.children.length === 1 ? child.children[0] : null;
-        if (onlyChild && onlyChild.tagName === 'STRONG' && (onlyChild.textContent || '').trim() === text) return;
-        if (onlyChild && onlyChild.tagName === 'EM' && (onlyChild.textContent || '').trim() === text && text.endsWith(':')) return;
+        if (isLabelParagraph(child)) return;
+        if (isListLeadIn(child, text)) return;
       }
       // Inline <!-- action --> override: paragraph or element tagged action stays visible
       if (child.querySelector && child.querySelector('.topic-tag[data-topic="action"]')) return;
