@@ -708,7 +708,8 @@ function render() {
   h += `<div class="foot">${esc(val('footer'))}<br>Prepared ${todayStr()}${coach ? ' by ' + esc(coach) : ''}${child ? ' · ' + esc(child) : ''}${sess ? ' · ' + esc(sess) : ''}.</div>`;
   $('doc').innerHTML = h;
   $('prevMeta').textContent = [child, sess, date].filter(Boolean).join(' · ');
-  document.title = (child || sess ? `${child || ''} ${sess || ''} — ` : '') + 'Session Documentation';
+  const titleParts = [child, sess, date].filter(Boolean);
+  document.title = (titleParts.length ? titleParts.join(' - ') + ' - ' : '') + 'Session Documentation';
 }
 
 /* ═══════════════ Clear / remembered prefs ═══════════════ */
