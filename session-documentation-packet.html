@@ -218,7 +218,7 @@
         <label class="f">Goal names — one per line, in the same order as the data sheet</label>
         <textarea id="goalNames" placeholder="Goal 1 — Responds to name&#10;Goal 2 — Requests with a word&#10;…" oninput="render()"></textarea>
         <div class="inlineOpts">
-          <label><input type="checkbox" id="parentNumbering" onchange="render()"> Renumber steps for parents (data-sheet step 2 = Step 1; subtracts 1 from step numbers)</label>
+          <label><input type="checkbox" id="parentNumbering" checked onchange="render()"> Use parent numbering for step numbers (data-sheet step 2 = Step 1)</label>
           <label><input type="checkbox" id="showBaseline" onchange="render()"> Show baseline row cells</label>
         </div>
         <label class="f">Symbol key (printed under the table)</label>
@@ -496,7 +496,7 @@ function childDataHTML() {
   const clean = v => /^#(N\/A|REF!?|VALUE!?|DIV\/0!?)$/i.test(v) ? '—' : v;
   const fmtStep = v => { v = clean(v); return (renum && isNum(v)) ? String(Math.max(0, parseInt(v) - 1)) : v; };
   let h = '<table><tr><th rowspan="2">Goal</th>' + (showBase ? '<th rowspan="2" class="num">Baseline</th>' : '') + '<th colspan="5" class="num">Teaching steps — trials this session</th><th colspan="4" class="num">Summary</th></tr><tr>';
-  for (let i = 1; i <= 5; i++) h += `<th class="num">Step ${renum ? i : i + 1}</th>`;
+  for (let i = 1; i <= 5; i++) h += `<th class="num">Step ${i}</th>`;
   ['Current teaching step', 'Session result', 'Highest step performed', 'Steps mastered'].forEach(l => h += `<th class="num">${l}</th>`);
   h += '</tr>';
   childData.goals.forEach((g, i) => {
@@ -512,7 +512,7 @@ function childDataHTML() {
   });
   h += '</table>';
   if (names.length && names.length !== childData.goals.length) h += `<p class="empty" style="font-size:11px">Note: ${names.length} goal names for ${childData.goals.length} data blocks — check the order.</p>`;
-  if (val('symbolKey')) h += `<p style="font-size:11px;color:#6c757d">${esc(val('symbolKey'))}${renum ? ' · Step numbers count from the first teaching step (baseline not numbered).' : ' · Step 1 is the baseline step; teaching begins at Step 2.'} Goals measured once per session show no trial cells.</p>`;
+  if (val('symbolKey')) h += `<p style="font-size:11px;color:#6c757d">${esc(val('symbolKey'))}${renum ? ' · Step numbers count from the first teaching step; goals measured once per session show no trial cells.' : ''}</p>`;
   return h;
 }
 function fidelityHTML() {
@@ -727,7 +727,7 @@ function clearAll() {
   $('attSafetyInc').checked = false;
   tables.child = []; tables.fid = []; $('childTables').innerHTML = ''; $('fidTables').innerHTML = '';
   childData.goals = []; childData.date = ''; childRaw = ''; fidData.scores = []; fidData.date = ''; fidData.raw = ''; fidData.actual = fidData.possible = fidData.pct = null;
-  $('parentNumbering').checked = false; $('showBaseline').checked = false; $('symbolKey').value = '+ = skill shown independently · pr+ = shown with a prompt · − = not shown · n/o = no opportunity to observe';
+  $('parentNumbering').checked = true; $('showBaseline').checked = false; $('symbolKey').value = '+ = skill shown independently · pr+ = shown with a prompt · − = not shown · n/o = no opportunity to observe';
   addTable('child', false); addTable('fid', false);
   document.querySelectorAll('.status').forEach(s => { s.textContent = ''; s.className = 'status'; });
   if (keepCoach) { $('coach').value = keepCoach.coach; $('zone').value = keepCoach.zone; }
