@@ -507,7 +507,10 @@ function childDataHTML() {
     const dataRow = g.steps.findIndex((c, k) => k > 0 && c.length);
     const curStep = dataRow > 0 ? (renum ? dataRow : dataRow + 1) : '';
     const result = clean(g.summary[0]);
-    const highest = /^n\/o$/i.test(result) ? 'n/o' : fmtStep(g.summary[1]);
+    // Session result is n/o when fewer than 2 of 3 intervals could be scored. The sheet's "highest step" formula still
+    // reports a step in that case; only override it with n/o when no interval actually showed the skill (+ or pr+).
+    const anySuccess = g.steps.some(c => c.some(v => /^(pr)?\+$/i.test(v)));
+    const highest = (/^n\/o$/i.test(result) && !anySuccess) ? 'n/o' : fmtStep(g.summary[1]);
     h += `<td class="num">${curStep}</td><td class="num">${esc(result)}</td><td class="num">${esc(highest)}</td><td class="num">${esc(fmtStep(g.summary[2]))}</td></tr>`;
   });
   h += '</table>';
