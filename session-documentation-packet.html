@@ -553,12 +553,12 @@ function parseAttendance() {
   const setSel = (id, v) => { const el = $(id); const lv = v.toLowerCase(); const opt = [...el.options].find(o => o.text.toLowerCase() === lv) || [...el.options].find(o => o.value && (o.text.toLowerCase().startsWith(lv) || lv.startsWith(o.text.toLowerCase()))); if (opt) { el.value = opt.value; n++; return true; } return false; };
   if (found.status) setSel('attStatus2', found.status.split('\n')[0]);
   if (found.topic) { $('attTopic').value = found.topic.split('\n')[0]; n++; topicChanged(); }
-  if (found.location && !val('location')) setSel('location', found.location.split('\n')[0]);
+  if (found.location) setSel('location', found.location.split('\n')[0]);
   if (found.safety) { $('attSafetyInc').checked = true; setSel('attSafety', found.safety.split('\n')[0]); }
   if (found.sessionNum) { const s = found.sessionNum.split('\n')[0]; const num = s.match(/\d+/); const opt = num ? 'Session ' + num[0] : s; if (setSel('sessionNum', /follow/i.test(s) ? s : opt)) {} }
   if (found.date) { const d = found.date.split('\n')[0]; const iso = toISO(d); if (iso) { $('sessionDate').value = iso; n++; } }
-  if (found.clinician && !val('coach')) { $('coach').value = found.clinician.split('\n')[0]; n++; }
-  if (found.zone && !val('zone')) setSel('zone', found.zone.split('\n')[0]);
+  if (found.clinician) { $('coach').value = found.clinician.split('\n')[0]; n++; }
+  if (found.zone) setSel('zone', found.zone.split('\n')[0]);
   if (found.notes) { $('attNotes').value = found.notes; n++; }
   if (leftovers.length && !found.notes) { $('attNotes').value = leftovers.join('\n'); }
   const st = $('attStatus');
