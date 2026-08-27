@@ -222,7 +222,7 @@
           <label><input type="checkbox" id="showBaseline" onchange="render()"> Show baseline row cells</label>
         </div>
         <label class="f">Symbol key (printed under the table)</label>
-        <input type="text" id="symbolKey" value="+ = skill shown independently · pr+ = shown with a prompt · − = not shown · n/o = no opportunity to observe" oninput="render()">
+        <input type="text" id="symbolKey" value="+ = skill shown independently · pr+ = shown with a prompt · − = not shown · n/o = no opportunity to observe · i/o = insufficient opportunity to summarise the session (fewer than 2 of 3 intervals scored)" oninput="render()">
         <details style="margin-top:10px"><summary class="hint" style="cursor:pointer">Other format? Paste any Excel range as a plain table instead</summary>
         <div id="childTables"></div>
         <button class="btn small" onclick="addTable('child')">+ Add another table</button></details>
@@ -506,11 +506,15 @@ function childDataHTML() {
     // current teaching step = the step row holding interval data (per-interval goals); blank for per-session goals
     const dataRow = g.steps.findIndex((c, k) => k > 0 && c.length);
     const curStep = dataRow > 0 ? (renum ? dataRow : dataRow + 1) : '';
-    const result = clean(g.summary[0]);
+    // Session result: the sheet writes n/o when fewer than 2 of 3 intervals were scorable. If some intervals were
+    // scored (not n/o), that is "insufficient opportunity" (i/o); n/o is reserved for no opportunity at all.
+    const scored = g.steps.some(c => c.some(v => v !== '' && !/^n\/o$/i.test(v)));
+    let result = clean(g.summary[0]);
+    if (/^n\/o$/i.test(result) && scored) result = 'i/o';
     // Session result is n/o when fewer than 2 of 3 intervals could be scored. The sheet's "highest step" formula still
     // reports a step in that case; only override it with n/o when no interval actually showed the skill (+ or pr+).
     const anySuccess = g.steps.some(c => c.some(v => /^(pr)?\+$/i.test(v)));
-    const highest = (/^n\/o$/i.test(result) && !anySuccess) ? 'n/o' : fmtStep(g.summary[1]);
+    const highest = (/^[ni]\/o$/i.test(result) && !anySuccess) ? 'n/o' : fmtStep(g.summary[1]);
     h += `<td class="num">${curStep}</td><td class="num">${esc(result)}</td><td class="num">${esc(highest)}</td><td class="num">${esc(fmtStep(g.summary[2]))}</td></tr>`;
   });
   h += '</table>';
@@ -730,7 +734,7 @@ function clearAll() {
   $('attSafetyInc').checked = false;
   tables.child = []; tables.fid = []; $('childTables').innerHTML = ''; $('fidTables').innerHTML = '';
   childData.goals = []; childData.date = ''; childRaw = ''; fidData.scores = []; fidData.date = ''; fidData.raw = ''; fidData.actual = fidData.possible = fidData.pct = null;
-  $('parentNumbering').checked = true; $('showBaseline').checked = false; $('symbolKey').value = '+ = skill shown independently · pr+ = shown with a prompt · − = not shown · n/o = no opportunity to observe';
+  $('parentNumbering').checked = true; $('showBaseline').checked = false; $('symbolKey').value = '+ = skill shown independently · pr+ = shown with a prompt · − = not shown · n/o = no opportunity to observe · i/o = insufficient opportunity to summarise the session (fewer than 2 of 3 intervals scored)';
   addTable('child', false); addTable('fid', false);
   document.querySelectorAll('.status').forEach(s => { s.textContent = ''; s.className = 'status'; });
   if (keepCoach) { $('coach').value = keepCoach.coach; $('zone').value = keepCoach.zone; }
