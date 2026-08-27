@@ -89,10 +89,10 @@
   <div class="ctl-group">
     <label>Which Monday of the month</label>
     <div class="btnrow" id="weekBtns">
-      <button class="btn active" data-week="1">Mon 1 · Provincial</button>
-      <button class="btn" data-week="2">Mon 2</button>
-      <button class="btn" data-week="3">Mon 3 · Zone check-in</button>
-      <button class="btn" data-week="4">Mon 4</button>
+      <button class="btn active" data-week="1">Mon 1 · Provincial · Sup connects</button>
+      <button class="btn" data-week="2">Mon 2 · (Thu supervision wk)</button>
+      <button class="btn" data-week="3">Mon 3 · Zone check-in · Sup connects</button>
+      <button class="btn" data-week="4">Mon 4 · (Thu supervision wk)</button>
     </div>
   </div>
   <div class="ctl-group">
@@ -115,7 +115,7 @@
 
 <div class="legend">
   <span><span class="sw" style="background:var(--team-bg); border-color:var(--team);"></span>Group connect (1:00–1:30 window)</span>
-  <span><span class="sw" style="background:var(--sup-bg); border-color:var(--sup);"></span>Supervisor ↔ PC connects</span>
+  <span><span class="sw" style="background:var(--sup-bg); border-color:var(--sup);"></span>Supervisor ↔ PC connects (every 2nd Monday)</span>
   <span><span class="sw" style="background:var(--slp-bg); border-color:var(--slp);"></span>SLP bookable block</span>
   <span><span class="sw" style="background:var(--ot-bg); border-color:var(--ot);"></span>OT bookable block</span>
   <span><span class="sw" style="border:1.5px dashed #C6CED4;"></span>Open (unbooked) increment</span>
@@ -141,7 +141,7 @@
       <li><b>Under-booking blind spot:</b> the model serves confident bookers best. New/novice PCs may not know what to book — consider a fuller default review cadence for them.</li>
       <li><b>Capacity gauge:</b> a chronically full block = demand signal for that professional; chronically empty = demand is being met elsewhere (or questions are being sat on — check which).</li>
       <li><b>Group connect cadence:</b> 1:00–1:30 window shown with existing anchors (provincial on Mon 1, zone-wide mid-month); whether the remaining Mondays carry an optional zone huddle or stay free is a dial, not a decision yet.</li>
-      <li><b>Supervisor connect length:</b> shown as 30 min weekly per PC; could consolidate with the biweekly 1h individual supervision into a single weekly ~45-min supervision time.</li>
+      <li><b>Supervisor cadence (supervisor feedback):</b> Monday supervisor↔PC connects run every second Monday, alternating with the biweekly 1h individual supervision (typically Thursday). Shown as connect weeks on Mon 1 &amp; 3 and supervision weeks on Mon 2 &amp; 4 for illustration — the real alternation is biweekly and won't track month position exactly. OT/SLP booking blocks stay weekly regardless.</li>
     </ul>
   </div>
 </div>
@@ -155,7 +155,7 @@
     </div>
     <div>
       <h4>This model (professional-led)</h4>
-      <p>Consultation follows the professional's caseload, not the zone: one bookable block per professional per week (~2.5h, demand-driven, always caseload-matched). Accountability stays zone-shaped: weekly supervisor↔PC connects with room for deeper data/fidelity review in BCBA scope. The collective layer lives in the 1:00–1:30 window (provincial / zone-wide / optional huddle). Cross-zone professionals: one block, zero passive sitting, no staggering constraints.</p>
+      <p>Consultation follows the professional's caseload, not the zone: one bookable block per professional per week (~2.5h, demand-driven, always caseload-matched). Accountability stays zone-shaped: supervisor↔PC Monday connects every second week, alternating with the biweekly 1h individual supervision, with room for deeper data/fidelity review in BCBA scope. The collective layer lives in the 1:00–1:30 window (provincial / zone-wide / optional huddle). Cross-zone professionals: one block, zero passive sitting, no staggering constraints.</p>
     </div>
   </div>
 </details>
@@ -197,18 +197,7 @@ const groupChipByWeek = {
 };
 
 const baseChips = [
-  // Supervisor Central: weekly PC connects
-  ch("supC","1:30",30,"c-sup","PC-C1 connect","caseload + data review",["sup"]),
-  ch("supC","2:00",30,"c-sup","PC-C2 connect","caseload + data review",["pc","sup"]),
-  ch("supC","2:30",30,"c-sup","PC-C3 connect","caseload + data review",["sup"]),
-  ch("supC","3:00",30,"c-sup","PC-C4 connect","caseload + data review",["sup"]),
-  ch("supC","3:30",15,"c-sup","→ joins Sarah's 3:30","opt-in: complex case",["sup","sarah"]),
-  ch("supC","3:45",45,"c-open","open · report review","",["sup"]),
-  // Supervisor East/North
-  ch("supE","1:30",30,"c-sup","PC-E1 connect","",[]),
-  ch("supE","2:00",30,"c-sup","PC-E2 connect","",[]),
-  ch("supE","2:30",30,"c-sup","PC-N1 connect","",[]),
-  ch("supE","3:00",90,"c-open","open · obs notes / reports","",[]),
+  // (supervisor lanes are week-dependent — see supChipsByWeek)
 
   // Sarah B (SLP, Central+Eastern) — bookable 1:30–4:00
   ch("sarah","1:30",15,"c-slp","PC-C1 · child M","AAC next steps",["sarah"]),
@@ -248,12 +237,40 @@ const baseChips = [
   ch("newot","1:45",135,"c-open","open","",[]),
 ];
 
+// Supervisor↔PC Monday connects run every second Monday (Mon 1 & 3 shown).
+// On the alternate week there is no Monday connect — that week carries the
+// biweekly 1h individual supervision per PC (typically Thursday).
+const SUP_CONNECT_WEEKS = [1,3];
+function supChipsByWeek(w){
+  if(SUP_CONNECT_WEEKS.includes(w)) return [
+    // Supervisor Central: PC connects (connect week)
+    ch("supC","1:30",30,"c-sup","PC-C1 connect","caseload + data review",["sup"]),
+    ch("supC","2:00",30,"c-sup","PC-C2 connect","caseload + data review",["pc","sup"]),
+    ch("supC","2:30",30,"c-sup","PC-C3 connect","caseload + data review",["sup"]),
+    ch("supC","3:00",30,"c-sup","PC-C4 connect","caseload + data review",["sup"]),
+    ch("supC","3:30",15,"c-sup","→ joins Sarah's 3:30","opt-in: complex case",["sup","sarah"]),
+    ch("supC","3:45",45,"c-open","open · report review","",["sup"]),
+    // Supervisor East/North
+    ch("supE","1:30",30,"c-sup","PC-E1 connect","",[]),
+    ch("supE","2:00",30,"c-sup","PC-E2 connect","",[]),
+    ch("supE","2:30",30,"c-sup","PC-N1 connect","",[]),
+    ch("supE","3:00",90,"c-open","open · obs notes / reports","",[]),
+  ];
+  return [
+    // Supervision week: no Monday connects; 1h individual supervision per PC on Thursday
+    ch("supC","1:30",120,"c-open","no PC connects this Monday","1h individual supervision per PC · Thu this week",["sup","pc"]),
+    ch("supC","3:30",15,"c-sup","→ joins Sarah's 3:30","opt-in: complex case",["sup","sarah"]),
+    ch("supC","3:45",45,"c-open","open · report review","",["sup"]),
+    ch("supE","1:30",180,"c-open","no PC connects this Monday","1h individual supervision per PC · Thu this week",[]),
+  ];
+}
+
 const summaries = {
-  all:  w => `<strong>Everyone holds Monday 1:00–4:30.</strong> ${w===1?"This is the first working Monday — the provincial check-in runs 1:00–1:30.":w===3?"Mid-month Monday — each zone's zone-wide check-in runs 1:00–1:30.":"No standing group connect this week — the 1:00–1:30 window can carry an optional zone huddle or stay free."} Booking blocks run 1:30–4:00; supervisor↔PC connects run in parallel. Click a role above to see one person's actual Monday.`,
-  pc:   w => `<strong>PC-C2's Monday (Central example):</strong> ${w===1?"1:00 provincial check-in (30m) · ":w===3?"1:00 zone check-in (30m) · ":""}1:30 booked Lorelle re: child W's regulation (15m) · 2:00 supervisor connect (30m) · 3:30 booked Sarah re: child W's feeding — supervisor opted in (15m). <strong>Total: ${w===1||w===3?"1h30":"1h00"}.</strong> Two short consults, both with the professional who actually works with the child.`,
+  all:  w => `<strong>Everyone holds Monday 1:00–4:30.</strong> ${w===1?"This is the first working Monday — the provincial check-in runs 1:00–1:30.":w===3?"Mid-month Monday — each zone's zone-wide check-in runs 1:00–1:30.":"No standing group connect this week — the 1:00–1:30 window can carry an optional zone huddle or stay free."} Booking blocks run 1:30–4:00${SUP_CONNECT_WEEKS.includes(w)?"; supervisor↔PC Monday connects run in parallel (connect week)":". No supervisor↔PC Monday connects this week — it's the alternate week, with 1h individual supervision per PC on Thursday"}. Click a role above to see one person's actual Monday.`,
+  pc:   w => `<strong>PC-C2's Monday (Central example):</strong> ${w===1?"1:00 provincial check-in (30m) · ":w===3?"1:00 zone check-in (30m) · ":""}1:30 booked Lorelle re: child W's regulation (15m) · ${SUP_CONNECT_WEEKS.includes(w)?"2:00 supervisor connect (30m) · ":""}3:30 booked Sarah re: child W's feeding — supervisor opted in (15m). <strong>Total: ${(w===1||w===3)?"1h30":"0h30"}${SUP_CONNECT_WEEKS.includes(w)?"":" (+1h individual supervision Thursday)"}.</strong> Two short consults, both with the professional who actually works with the child.`,
   sarah:w => `<strong>Sarah B's Monday (SLP, Central + Eastern):</strong> ${w===1?"1:00 provincial check-in · ":w===3?"1:00 zone check-ins · ":""}one block, 1:30–4:00 — 5 of 10 increments booked this week (incl. one she reverse-booked), the rest revert to documentation time. <strong>Every conversation is about a child she directly saw.</strong> No zone meetings, no staggering, no passive sitting — and it's the same whether she covers one zone or three.`,
   kim:  w => `<strong>Kim L's Monday (OT, Western + Eastern):</strong> ${w===1?"1:00 provincial check-in · ":w===3?"1:00 zone check-ins · ":""}one block, 1:30–4:00 — 5 of 10 increments booked across both zones, including a reverse booking she initiated about child P. Under the current structure her Monday is two full zone clinicals (~4h); here it's ≤2.5h, all caseload-matched.`,
-  sup:  w => `<strong>Supervisor's Monday (Central example):</strong> ${w===1?"1:00 provincial check-in · ":w===3?"1:00 zone check-in · ":""}weekly 30-min connects with each PC (deeper data/fidelity review now that scope consults live elsewhere) · 3:30 opted into Sarah + PC-C2's booking on a complex feeding case. Sees all PC bookings by default — awareness without attendance.`,
+  sup:  w => `<strong>Supervisor's Monday (Central example):</strong> ${w===1?"1:00 provincial check-in · ":w===3?"1:00 zone check-in · ":""}${SUP_CONNECT_WEEKS.includes(w)?"connect week — 30-min Monday connects with each PC (deeper data/fidelity review now that scope consults live elsewhere)":"supervision week — no Monday connects; 1h individual supervision with each PC on Thursday, so Monday afternoon is largely open"} · 3:30 opted into Sarah + PC-C2's booking on a complex feeding case. Sees all PC bookings by default — awareness without attendance.`,
 };
 
 // Professionals' unbooked time renders as individual 15-min bookable increments
@@ -292,7 +309,7 @@ function render(){
   }
   board.appendChild(tc);
   // lanes
-  const chips = explodeOpen([groupChipByWeek[curWeek], ...baseChips]);
+  const chips = explodeOpen([groupChipByWeek[curWeek], ...supChipsByWeek(curWeek), ...baseChips]);
   lanes.forEach(l=>{
     const ln = el("div","lane",""); ln.style.height = H+"px";
     for(let m=START; m<=END; m+=15){
