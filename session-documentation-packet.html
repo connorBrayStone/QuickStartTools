@@ -556,7 +556,7 @@ function parseAttendance() {
   if (found.location && !val('location')) setSel('location', found.location.split('\n')[0]);
   if (found.safety) { $('attSafetyInc').checked = true; setSel('attSafety', found.safety.split('\n')[0]); }
   if (found.sessionNum) { const s = found.sessionNum.split('\n')[0]; const num = s.match(/\d+/); const opt = num ? 'Session ' + num[0] : s; if (setSel('sessionNum', /follow/i.test(s) ? s : opt)) {} }
-  if (found.date) { const d = found.date.split('\n')[0]; const iso = toISO(d); if (iso && !val('sessionDate')) { $('sessionDate').value = iso; n++; } }
+  if (found.date) { const d = found.date.split('\n')[0]; const iso = toISO(d); if (iso) { $('sessionDate').value = iso; n++; } }
   if (found.clinician && !val('coach')) { $('coach').value = found.clinician.split('\n')[0]; n++; }
   if (found.zone && !val('zone')) setSel('zone', found.zone.split('\n')[0]);
   if (found.notes) { $('attNotes').value = found.notes; n++; }
@@ -569,7 +569,10 @@ function parseAttendance() {
 function toISO(s) {
   s = s.trim();
   let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/); if (m) return `${m[1]}-${m[2].padStart(2, '0')}-${m[3].padStart(2, '0')}`;
-  const d = new Date(s); if (!isNaN(d)) return d.toISOString().slice(0, 10);
+  // ShareVision exports day/month/year, e.g. 6/05/2026 = 6 May 2026 (also accepts 06.05.26)
+  m = s.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})$/);
+  if (m) { const y = m[3].length === 2 ? '20' + m[3] : m[3]; return `${y}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`; }
+  const d = new Date(s); if (!isNaN(d)) return d.toISOString().slice(0, 10);   // e.g. "May 6, 2026"
   return '';
 }
 
