@@ -427,7 +427,6 @@
   <div class="toc-row"><a href="#section-12-during-qs-participation--care-coordination-on-ppas-touched-services" class="toc-h2">Section 12: During QS Participation — Care Coordination on PPAS-Touched Services</a><button type="button" class="toc-copy" data-anchor="section-12-during-qs-participation--care-coordination-on-ppas-touched-services" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
   <div class="toc-row"><a href="#1-coordination-on-hsns-staffed-slp-services" class="toc-h3">1. Coordination on HSNS-Staffed SLP Services</a><button type="button" class="toc-copy" data-anchor="1-coordination-on-hsns-staffed-slp-services" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
   <div class="toc-row"><a href="#2-coordination-on-laterongoing-ppas-services-via-cicc" class="toc-h3">2. Coordination on Later/Ongoing PPAS Services via CI&amp;CC</a><button type="button" class="toc-copy" data-anchor="2-coordination-on-laterongoing-ppas-services-via-cicc" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
-  <div class="toc-row"><a href="#for-the-closing-conversation-version-of-this-content-see-section-13--reference-family-facing-scripts-for-the-rules-governing-when-cicc-will-and-will-not-proactively-contact-families-post-qs-see-section-13--cicc-proactive-contact-rules" class="toc-h2">For the closing-conversation version of this content, see Section 13 — Reference: Family-Facing Scripts. For the rules governing when CI&amp;CC will and will not proactively contact families post-QS, see Section 13 — CI&amp;CC Proactive Contact Rules.</a><button type="button" class="toc-copy" data-anchor="for-the-closing-conversation-version-of-this-content-see-section-13--reference-family-facing-scripts-for-the-rules-governing-when-cicc-will-and-will-not-proactively-contact-families-post-qs-see-section-13--cicc-proactive-contact-rules" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
   <div class="toc-row"><a href="#section-13-end-of-qs-services--transition-back-to-cicc" class="toc-h2">Section 13: End of QS Services — Transition Back to CI&amp;CC</a><button type="button" class="toc-copy" data-anchor="section-13-end-of-qs-services--transition-back-to-cicc" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
   <div class="toc-row"><a href="#scenario-quick-reference" class="toc-h3">Scenario Quick-Reference</a><button type="button" class="toc-copy" data-anchor="scenario-quick-reference" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
   <div class="toc-row"><a href="#cicc-proactive-contact-rules" class="toc-h3">CI&amp;CC Proactive Contact Rules</a><button type="button" class="toc-copy" data-anchor="cicc-proactive-contact-rules" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
@@ -1846,6 +1845,29 @@
 <li><strong>Pre-filled digital copy (DocuSign)</strong> — <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> populates the form fields <strong>before</strong> sending, so the caregiver opens an envelope already carrying their existing content and only has to amend the changed portion and sign. Envelope addressed to <strong>both</strong> the parent and the assigned <span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span>.</li>
 </ul>
 <p>In both cases the caregiver receives a copy that already reflects everything they previously consented to. Neither route sends the family a blank form to redo.</p>
+<details>
+<summary><strong>How to pre-fill the parent/guardian fields in DocuSign (Advanced Edit)</strong> — supervisor reference; method trial-confirmed on the ANS account, August 2026 (click to expand)</summary>
+<p>The consent template's fields are assigned to the parent/guardian (plus ANS staff witness fields). The <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> supplies starting values for the parent's fields at send time via <strong>Advanced Edit</strong> — the fields arrive populated but still belong to the caregiver, who can edit any of them.</p>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Start a new envelope from the current consent template and add the recipients as usual (parent and assigned <span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span>).</li>
+<li>Before sending, open <strong>Advanced Edit</strong> to reach the field-tagging view.</li>
+<li>With the family's most recent signed form open for reference, click each parent/guardian field and set its carried-forward value — for a text field, enter the value in the field's properties ("Add Text"); checkboxes and radio buttons can be pre-selected the same way.</li>
+<li>Leave the changed portion blank for the caregiver to complete.</li>
+<li>Send. The caregiver opens an envelope already carrying their existing content; every pre-filled field remains editable by them, so they can amend anything — not only the flagged change — and then sign.</li>
+</ol>
+<p><strong>Rules that keep this proper:</strong></p>
+<ul>
+<li><strong>Keep all substantive fields assigned to the parent/guardian role.</strong> Do <strong>not</strong> rebuild the template using DocuSign's separately-named "Pre-Fill fields" tools — those create <em>sender-owned</em> fields that are locked for the recipient, which would prevent the caregiver from amending carried-forward content and undercut the consent logic.</li>
+<li>Signature, initial, and date-signed fields cannot be pre-set by the sender. This is by design and is the right property: the attestation itself is always freshly and only the parent's.</li>
+<li>Nothing in the caregiver's signing view, the completed PDF, or the Certificate of Completion marks a field as staff-entered; by completing and signing, the caregiver adopts every value on the form. This is the same footing as the physical route, where staff hand-fill the printed copy and the caregiver reviews and signs in wet ink. The <strong>review with the caregiver</strong> step above is what carries the weight — never skip it.</li>
+</ul>
+<p><strong>Practical notes:</strong></p>
+<ul>
+<li>DocuSign does not carry data forward from the previously signed envelope — the supervisor transcribes from the last signed PDF field by field. Workable at QS volumes; the DocuSign API could eventually automate this (see the "medium-long term" note under <a href="#auditing">Auditing</a>).</li>
+<li>A long pre-fill session can run into the account's 20-minute inactivity sign-out (see the DocuSign Session Timeout open item below) — have the prior signed form open and ready before starting.</li>
+</ul>
+</details>
 <p><strong>Storage and documentation</strong> (either route):</p>
 <ul>
 <li>Once signed, <span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span> downloads the new PDF and uploads to:<ul>
@@ -2218,7 +2240,8 @@
 <li>MLA advocacy pathway framing guidance</li>
 </ul>
 </div>
-<h2 id="for-the-closing-conversation-version-of-this-content-see-section-13--reference-family-facing-scripts-for-the-rules-governing-when-cicc-will-and-will-not-proactively-contact-families-post-qs-see-section-13--cicc-proactive-contact-rules">For the closing-conversation version of this content, see <a href="#reference-family-facing-scripts">Section 13 — Reference: Family-Facing Scripts</a>. For the rules governing when CI&amp;CC will and will not proactively contact families post-QS, see <a href="#cicc-proactive-contact-rules">Section 13 — CI&amp;CC Proactive Contact Rules</a>.</h2>
+<p>For the closing-conversation version of this content, see <a href="#reference-family-facing-scripts">Section 13 — Reference: Family-Facing Scripts</a>. For the rules governing when CI&amp;CC will and will not proactively contact families post-QS, see <a href="#cicc-proactive-contact-rules">Section 13 — CI&amp;CC Proactive Contact Rules</a>.</p>
+<hr />
 <h2 id="section-13-end-of-qs-services--transition-back-to-cicc">Section 13: End of QS Services — Transition Back to CI&amp;CC <span class="topic-tag" data-topic="checklist" style="background:#eef1f4;color:#2c3e50;border:1px solid #c8cfd8">Checklist</span> <span class="topic-tag" data-topic="ppas" style="background:#ddeaea;color:#1a5a5a;border:1px solid #9fc6c6">PPAS</span></h2>
 <blockquote>
 <p><strong>Responsible:</strong> <span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span> (owns Scenarios 1 and 2 — end-of-service conversations and GreenSpace updates; PCs now have GreenSpace accounts for this work); <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> (handles Scenarios 3 and 4 — no PC was assigned to these families); <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> or <span class="role-badge" data-topic="role-qs-admin" style="background:#2980b9">QS Admin</span> (completes the <a href="#final-greenspace-step-remove-client-from-quickstart-clinic">final Greenspace remove-client step</a> for any closure — requires admin-level Greenspace access, which PCs do not have)</p>
