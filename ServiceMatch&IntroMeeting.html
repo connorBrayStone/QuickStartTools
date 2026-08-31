@@ -32,6 +32,19 @@
   .toc-copy:hover { color: var(--teal); border-color: var(--teal); }
   .toc-copy.copied { color: #27ae60; border-color: #27ae60; background: #eafaf1; opacity: 1; }
   body.checklist-mode .toc-row:has(a.toc-unreachable) .toc-copy { display: none; }
+  /* Inline copy-link buttons on content headings (H2-H4) and anchored <details> summaries —
+     appear on hover. Glyph lives in CSS ::before so heading textContent stays clean for the
+     search index and TOC breadcrumbs (the JS appends an empty button, no text). */
+  .hlink-copy { opacity: 0; pointer-events: none; background: #fff; border: 1px solid var(--border); border-radius: 4px; padding: 1px 6px; font-size: 11px; line-height: 1.4; cursor: pointer; color: #999; margin-left: 8px; vertical-align: middle; transition: opacity 0.12s, color 0.12s, border-color 0.12s; }
+  .hlink-copy::before { content: "\1F517"; }
+  h2:hover .hlink-copy, h3:hover .hlink-copy, h4:hover .hlink-copy, summary:hover .hlink-copy { opacity: 1; pointer-events: auto; }
+  .hlink-copy:hover { color: var(--teal); border-color: var(--teal); }
+  .hlink-copy.copied { color: #27ae60; border-color: #27ae60; background: #eafaf1; }
+  .hlink-copy.copied::before { content: "\2713"; }
+  .hlink-copy.failed { color: #c0392b; border-color: #c0392b; background: #fdedec; }
+  .hlink-copy.failed::before { content: "\2717"; }
+  .hlink-copy.copied, .hlink-copy.failed { opacity: 1; pointer-events: auto; }
+  @media print { .hlink-copy { display: none; } }
   #content { margin-left: var(--sidebar-w); padding: 40px 48px 80px; }
   h1 { font-size: 28px; color: var(--teal); margin-bottom: 8px; padding-bottom: 12px; border-bottom: 3px solid var(--teal); }
   h2 { font-size: 22px; color: var(--teal); margin: 40px 0 16px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
@@ -3194,6 +3207,27 @@ QuickStart Nova Scotia</p>
         .catch(() => flash(btn, '\u2717'));
     });
   });
+
+  // Inline copy-link buttons on content headings and anchored expandable blocks.
+  // The button carries no text (glyph is CSS ::before) so heading textContent stays
+  // clean for the search index, TOC breadcrumbs, and scroll tracking.
+  function addInlineCopy(host, id) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'hlink-copy';
+    btn.title = 'Copy a direct link to this section';
+    btn.setAttribute('aria-label', 'Copy link to this section');
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();     // also stops a summary-hosted button from toggling its <details>
+      e.stopPropagation();
+      copyText(buildUrl(id))
+        .then(() => { btn.classList.add('copied'); setTimeout(() => btn.classList.remove('copied'), 1200); })
+        .catch(() => { btn.classList.add('failed'); setTimeout(() => btn.classList.remove('failed'), 1200); });
+    });
+    host.appendChild(btn);
+  }
+  document.querySelectorAll('#content h2[id], #content h3[id], #content h4[id]').forEach(h => addInlineCopy(h, h.id));
+  document.querySelectorAll('#content details[id] > summary').forEach(s => addInlineCopy(s, s.parentElement.id));
 
   function jumpToHash() {
     if (!window.location.hash) return;
