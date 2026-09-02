@@ -668,11 +668,11 @@
 </tr>
 <tr>
 <td><strong>Completed</strong></td>
-<td>Successfully completed participation in the program. For PC: when a family completes Session 17 (S18-S19 are follow-up sessions, not counted toward completion).</td>
+<td>Successfully completed participation in the program. Completion is an <strong>attendance threshold</strong>, applied regardless of how participation ended: <strong>PC</strong> — at least <strong>14 of the 17 weekly sessions</strong> attended (S18–S19 are follow-up sessions and do not count toward the threshold); <strong>ESDM</strong> — at least <strong>25 of the 31 scheduled sessions</strong> attended (the ESDM attendance policy allows no more than 6 cancellations). The threshold is clinical: it marks the minimum dose at which the program's parent and child goals are expected to have a clinically significant effect. End-date and closeout timing are in <a href="#end-date-and-closeout-timing">Section 13, Scenario 1</a>.</td>
 </tr>
 <tr>
 <td><strong>Discontinued</strong></td>
-<td>Started but did not complete participation in the program. Includes families who withdrew or were discharged due to lack of attendance after starting sessions. See reporting considerations below.</td>
+<td>Started but did not complete participation in the program — i.e. ended <strong>below the completion threshold</strong> (PC: fewer than 14 of 17 weekly sessions; ESDM: fewer than 25 of 31). Includes families who withdrew or were discharged due to lack of attendance after starting sessions. See reporting considerations below.</td>
 </tr>
 </tbody>
 </table>
@@ -2337,6 +2337,7 @@
 <li><strong>Prepare the Discharge Report</strong> so it's ready to share if consent is given</li>
 <li><strong>Hold the closing conversation (S17–19)</strong> — see <a href="#reference-family-facing-scripts">Reference: Family-Facing Scripts</a></li>
 <li><strong>Capture consent</strong> on sharing the Discharge Report with CI&amp;CC</li>
+<li><strong>Close out once no further session is certain</strong> (final session attended, family explicitly not continuing, or unreachable after 3 attempts) — QS End Date = last attended session</li>
 <li><strong>Apply the closeout actions below</strong></li>
 <li><span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> or <span class="role-badge" data-topic="role-qs-admin" style="background:#2980b9">QS Admin</span> <strong>Final step:</strong> <a href="#final-greenspace-step-remove-client-from-quickstart-clinic">Remove client from the QuickStart clinic in Greenspace</a></li>
 </ul>
@@ -2349,13 +2350,29 @@
 <p><strong>Responsible:</strong> <span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span></p>
 </blockquote>
 <p>The closing conversation is both an operational checkpoint and a supportive handoff. For the full script content — opening, re-introducing CI&amp;CC, what happens next, reasons to call now, and the PPAS service overview if the family asks — see <a href="#reference-family-facing-scripts">Reference: Family-Facing Scripts</a>. For phrases to avoid, see <a href="#reference-guardrails--what-not-to-do-or-say">Reference: Guardrails</a>.</p>
+<h4 id="end-date-and-closeout-timing">End date and closeout timing</h4>
+<p>Two separate questions decide the Scenario 1 closeout:</p>
+<ol>
+<li><strong>Is the family "Completed"?</strong> Decided by the attendance threshold (see <a href="#program-status">Program Status</a>): at least <strong>14 of 17</strong> weekly sessions for PC, at least <strong>25 of 31</strong> for ESDM. The threshold <strong>always</strong> determines the status — a family at or above it is Scenario 1 (Completed) however participation ended; a family below it is <a href="#scenario-2-discontinued">Scenario 2</a> (Discontinued).</li>
+<li><strong>What is the QS End Date?</strong> The date of the <strong>last session the family actually attended</strong>, recorded once it is certain no further session will occur. For PC, the follow-up sessions (S18, S19) count toward the end date even though they do not count toward the threshold.</li>
+</ol>
+<p>The <strong>QS Start Date</strong> is the date of the first completed session (S1).</p>
+<p>"Certain no further session will occur" means one of the following has happened:</p>
+<ul>
+<li>the family attended the final scheduled session (PC: S19; ESDM: the last of the 31);</li>
+<li>the family has explicitly said they are not continuing with the remaining sessions (e.g. a move, or another reason); or</li>
+<li>the family could not be reached to schedule a remaining session after the same <strong>3-attempt contact standard</strong> used in <a href="#step-9d-contact-family-to-schedule-intro-meeting">Step 9D</a>.</li>
+</ul>
+<p>Do the closeout actions at that point — not automatically at S17, and not on the assumption that S18/S19 will happen.</p>
+<p><strong>Example.</strong> A PC family attends 15 of 17 weekly sessions (2 cancellations), attends S18, then confirms they will not attend S19. They are Completed (15 ≥ 14). The closeout actions happen now, and the QS End Date is the <strong>date of S18</strong>. By contrast, a family who met the threshold but stops responding after S17 and cannot be reached after 3 attempts is still Completed, with the QS End Date = the <strong>date of S17</strong>.</p>
+<p>ESDM has no follow-up phase — its 31 sessions run twice weekly across 4 continuous months — so the end date is normally the final attended session of that block.</p>
 <h4 id="closeout-actions">Closeout actions</h4>
 <p><span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span> updates GreenSpace as follows:</p>
 <p><em>In Profile &gt; QuickStart Nova Scotia:</em></p>
 <ul>
 <li>Ensure the <strong>QS stream</strong> matches the stream the family participated in (<strong>"ESDM Program"</strong> or <strong>"PC Program"</strong>)</li>
 <li>Update the <strong>program status</strong> to <strong>"Completed"</strong></li>
-<li>Update <strong>Start &amp; End dates</strong> (end date = date services concluded)</li>
+<li>Update <strong>Start &amp; End dates</strong> — Start = first completed session; End = last attended session, per <a href="#end-date-and-closeout-timing">End date and closeout timing</a> above</li>
 </ul>
 <p><em>In the Notes page:</em></p>
 <p>Add a separate <strong>Document</strong> note for each item below (Greenspace requires a <strong>Title</strong> on Document notes, so each is listed in full):</p>
@@ -2383,7 +2400,7 @@
 <blockquote>
 <p><strong>Responsible:</strong> <span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span> (owns the full workflow — conversation, documentation, and referral form completion for 2b); <span class="role-badge" data-topic="role-qs-admin" style="background:#2980b9">QS Admin</span> (submits the referral package via MoveIt for 2b)</p>
 </blockquote>
-<p>Scenario 2 applies when a family <strong>began QS (Session 1+) but did not complete</strong> — either <strong>program-initiated</strong> (attendance, non-participation, capacity reasons) or <strong>family-initiated</strong> (withdrawal). Scenario 2 mirrors Scenario 1 structurally; the differences are in documentation — a <strong>QS Discharge letter</strong> instead of a Discharge Report, and program status <strong>"Discontinued"</strong> with a required <strong>"reason why"</strong> field (full steps in the closeout actions below).</p>
+<p>Scenario 2 applies when a family <strong>began QS (Session 1+) but did not complete</strong> — i.e. ended <strong>below the completion threshold</strong> (PC: fewer than 14 of 17 weekly sessions; ESDM: fewer than 25 of 31). The threshold, not the manner of ending, decides Scenario 1 vs 2 — see <a href="#end-date-and-closeout-timing">End date and closeout timing</a>. Discontinuation may be <strong>program-initiated</strong> (attendance, non-participation, capacity reasons) or <strong>family-initiated</strong> (withdrawal). Scenario 2 mirrors Scenario 1 structurally; the differences are in documentation — a <strong>QS Discharge letter</strong> instead of a Discharge Report, and program status <strong>"Discontinued"</strong> with a required <strong>"reason why"</strong> field (full steps in the closeout actions below).</p>
 <div class="checklist-only">
 <ul>
 <li><strong>Closing conversation</strong> (where applicable) — same as Scenario 1; see <a href="#reference-family-facing-scripts">Reference: Family-Facing Scripts</a></li>
