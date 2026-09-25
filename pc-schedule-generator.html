@@ -66,7 +66,8 @@
   table.sched th, table.sched td { border: 1px solid var(--g300); padding: 5px 7px; text-align: left; vertical-align: top; }
   table.sched th { background: var(--teal); color: #fff; font-size: 12px; }
   table.sched tr.section td { background: var(--teal-lt); color: var(--teal-dk); font-weight: 700; }
-  table.sched tr.nosess td { background: var(--g100); color: var(--g600); font-style: italic; }
+  table.sched tr.nosess td { background: var(--red-lt); color: var(--red); font-style: italic; }
+  table.sched tr.nosess td b { font-style: normal; text-transform: uppercase; letter-spacing: .02em; }
   table.sched tr.cancelled td { color: var(--g600); text-decoration: line-through; }
   table.sched tr.cancelled td.status { text-decoration: none; color: var(--red); font-weight: 600; }
   table.sched tr.changed td:first-child::after { content: ' *'; color: var(--red); }
@@ -89,6 +90,7 @@
     header { border-bottom: 2px solid var(--teal); }
     table.sched th { background: var(--teal) !important; color: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     table.sched tr.section td, table.sched tr.nosess td { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    table.sched tr.nosess td { background: #fff !important; }
     table.sched td, table.sched th { padding: 3px 6px; }
     .contact { break-inside: avoid; }
   }
@@ -279,7 +281,7 @@ function tallyOf(){
 }
 function s14Deviates(){ const c=rec.comp.map(x=>x.type); return !(c.length===4&&c.filter(x=>x==='SLP').length===2&&c.filter(x=>x==='OT').length===2); }
 function renderTally(){
-  const {t,total}=tallyOf(); const dev=s14Deviates()||(rec.schedule&&rec.schedule.some(s=>!s.noSession&&s.phase!=='consult'&&s.type!=='PC'));
+  const {t,total}=tallyOf(); const dev=s14Deviates()||(rec.schedule&&rec.schedule.some(s=>!s.noSession&&!s.baseline&&s.phase!=='consult'&&s.type!=='PC'));
   document.getElementById('tally').innerHTML=Object.entries(t).filter(([k,v])=>v).map(([k,v])=>`<span class="pill">${TYPE_LABEL[k]}: ${v}</span>`).join('')+
     `<span class="pill ${total===19?'ok':'bad'}">Total: ${total} / 19</span>`+(dev?`<span class="pill dev">Deviates from standard 2 SLP + 2 OT</span>`:'');
   document.getElementById('deviation').classList.toggle('show',!!dev);
@@ -309,7 +311,7 @@ function generate(){
     let type,prof,time;
     if(n<=k){ const c=rec.comp[n-1]; type=c.type; prof=(c.name||defaultName(c.type))+(n===k?' & '+(rec.pcName||'Parent Coach'):''); time=c.time||rec.sessionTime; }
     else { type='PC'; prof=rec.pcName||'Parent Coach'; time=n>=18?'TBD':rec.sessionTime; }
-    const phase=n<=k?'consult':n<=17?'coaching':'followup';
+    const phase=n<=k+1?'consult':n<=17?'coaching':'followup';   // baseline S(k+1) stays in the assessment block
     rows.push({num:n,type,prof,phase,baseline:n===k+1,date:iso(cur),time,location:(n===19&&rec.delivery==='zoom')?'Zoom / phone':loc,changed:false,cancelled:false});
     if(n===17) s17=new Date(cur);
     if(n===k+1){ cur=addDays(cur,7); const h=holidayOn(cur); rows.push({noSession:true,breakWeek:true,reason:'Break week – goal writing'+(h?' (also '+h.name+')':''),date:iso(cur)}); }
@@ -329,7 +331,7 @@ function renderSchedule(){
   rec.schedule.forEach((s,i)=>{
     if(!s.noSession&&s.phase!==lastPhase){ html+=`<tr class="section"><td colspan="7">${PH[s.phase]||''}</td></tr>`; lastPhase=s.phase; }
     if(editing===i){ html+=editRow(s,i); return; }
-    if(s.noSession){ html+=`<tr class="nosess"><td>–</td><td></td><td colspan="4">${s.reason} — ${longDate(parse(s.date))}</td><td class="actions no-print"><button class="small secondary" onclick="startEdit(${i})">Edit</button></td></tr>`; return; }
+    if(s.noSession){ html+=`<tr class="nosess"><td>–</td><td></td><td colspan="4"><b>${s.breakWeek?'No session – break week for goal writing':'No session – '+s.reason.replace(/^Office closed – /,'office closed: ').replace(/^Family unavailable/,'family unavailable')}</b> — ${longDate(parse(s.date))}</td><td class="actions no-print"><button class="small secondary" onclick="startEdit(${i})">Edit</button></td></tr>`; return; }
     html+=`<tr class="${s.cancelled?'cancelled':''} ${s.changed?'changed':''}"><td>${s.num}</td><td class="type-${s.type}">${TYPE_LABEL[s.type]}${s.baseline?' <span class="hint">(baseline)</span>':''}</td><td>${s.prof}</td><td>${longDate(parse(s.date))}</td><td class="status">${s.cancelled?(s.status||'Not attended'):fmtTime(s.time)}</td><td>${s.location}</td>
       <td class="actions no-print"><button class="small secondary" onclick="startEdit(${i})">Edit</button> ${s.cancelled?'':`<button class="small danger" onclick="markNotAttended(${i})">Not attended</button> <button class="small secondary" onclick="reschedule(${i})">Reschedule</button>`}</td></tr>`;
   });
