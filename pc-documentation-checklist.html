@@ -34,6 +34,9 @@
   .tab.active .dot { background: #fff; }
   .tab.add { background: #fff; color: var(--teal-dk); border-style: dashed; }
   .tab:hover { filter: brightness(0.97); }
+  details.saved-note { font-size: 12px; color: var(--g700); margin: 8px 0 0; }
+  details.saved-note summary { cursor: pointer; color: var(--teal-dk); font-weight: 600; }
+  details.saved-note ul { margin: 4px 0 0; padding-left: 18px; }
   .empty { background: var(--g100); border-radius: 6px; padding: 24px; text-align: center; color: var(--g600); font-size: 14px; margin: 14px 0; }
   .autosave { font-size: 12px; color: var(--g600); }
   .family { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; background: var(--g100); border-radius: 0 0 6px 6px; padding: 12px; margin-bottom: 14px; }
@@ -126,7 +129,7 @@
 </header>
 
 <div class="interim no-print">
-  <strong>Interim tool.</strong> QSIS will generate these tasks automatically once in production. Until then this page consolidates the Session Documentation Checklist (Excel), the QS Supervisor Wiki (CI&amp;CC integration &amp; Greenspace steps) and the QSIS workplan rules. Items marked <span class="verify">verify</span> have conflicting timings across sources — confirm with your supervisor.
+  <strong>About this checklist.</strong> It consolidates the Session Documentation Checklist (Excel), the QS Supervisor Wiki (CI&amp;CC integration &amp; Greenspace steps) and the PC workplan rules. Items marked <span class="verify">verify</span> have conflicting timings across sources — confirm with your supervisor.
 </div>
 
 <div class="tabs no-print" id="tabs"></div>
@@ -150,6 +153,9 @@
   <button class="secondary" onclick="expandAll(true)">Expand all</button>
   <button class="secondary" onclick="expandAll(false)">Collapse all</button>
   <button class="secondary" onclick="window.print()">🖨 Print</button>
+  <button class="secondary" onclick="exportJSON()">⬇ Export .json</button>
+  <button class="secondary" onclick="document.getElementById('importFile').click()">⬆ Import .json</button>
+  <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
   <button class="danger" onclick="deleteActive()">Delete this family</button>
   <span class="autosave" id="autosaveMsg">Changes save automatically in this browser.</span>
   <span class="spacer"></span>
@@ -161,15 +167,24 @@
 <div id="phases"></div>
 
 <h2>Session grid — S5 to S19</h2>
-<p style="font-size:13px;color:var(--g600);margin:0 0 8px">Tick as each session's documentation is done. Session notes are due within 48 hours <span class="src Q">QSIS</span>; attendance before the next team member's session <span class="src O">OT/SLP</span>.</p>
+<p style="font-size:13px;color:var(--g600);margin:0 0 8px">Tick as each session's documentation is done. Session notes are due within 48 hours <span class="src Q">WORKPLAN</span>; attendance before the next team member's session <span class="src O">OT/SLP</span>.</p>
 <table class="grid" id="grid"></table>
 
-<div class="legend">Sources: <span class="src W">WIKI</span> QS Supervisor Wiki &nbsp; <span class="src Q">QSIS</span> QSIS workplan / derived tasks &nbsp; <span class="src X">EXCEL</span> Session Documentation Checklist &nbsp; <span class="src O">OT/SLP</span> SLP/OT prep checklist pattern</div>
+<div class="legend">Sources: <span class="src W">WIKI</span> QS Supervisor Wiki &nbsp; <span class="src Q">WORKPLAN</span> PC workplan rules &nbsp; <span class="src X">EXCEL</span> Session Documentation Checklist &nbsp; <span class="src O">OT/SLP</span> SLP/OT prep checklist pattern</div>
 
 </div>
 <div class="empty no-print" id="empty" style="display:none">No families yet. Click <strong>+ Add family</strong> above to start. Records are saved in this browser only — use initials, not full names.</div>
+<details class="saved-note no-print">
+  <summary>Where is this saved?</summary>
+  <ul>
+    <li>Only in this browser on this computer — nothing is sent anywhere, backed up or synced. It won't appear in another browser, another computer or a private window, and it's lost if browser data is cleared or your profile is reset.</li>
+    <li>These tools are not a record. ShareVision and Greenspace remain the systems of record.</li>
+    <li>Use initials only for children.</li>
+    <li>Use <strong>Export .json</strong> to keep a copy or move it to another computer; <strong>Import .json</strong> loads it back.</li>
+  </ul>
+</details>
 
-<footer>Interim bridge until QSIS. Greenspace/CI&amp;CC steps link to the QS Supervisor Wiki; everything else follows the QS Manual. Rule of thumb: <strong>every document uploaded to Greenspace is also uploaded to ShareVision.</strong></footer>
+<footer>Greenspace/CI&amp;CC steps link to the QS Supervisor Wiki; everything else follows the QS Manual. Rule of thumb: <strong>every document uploaded to Greenspace is also uploaded to ShareVision.</strong></footer>
 </div>
 
 <script>
@@ -205,7 +220,7 @@ const PHASES = [
   ]},
   { id: 'p2', title: 'S5 — Baseline assessment', when: 'First PC-led session', from: 5, to: 5, groups: [
     { name: 'Assessment', items: [
-      { id: 'p2-esdm', text: 'Complete the pre-intervention ESDM curriculum checklist (wrapping up what SLP/OT started in S1–4).', sub: 'QSIS: due S5, overdue at S7. This checklist drives proximal-zone identification and goal selection for S6.', src: 'Q' },
+      { id: 'p2-esdm', text: 'Complete the pre-intervention ESDM curriculum checklist (wrapping up what SLP/OT started in S1–4).', sub: 'Workplan: due S5, overdue at S7. This checklist drives proximal-zone identification and goal selection for S6.', src: 'Q' },
       { id: 'p2-copm', text: 'Confirm the COPM (from intake) is on file in ShareVision.', src: 'QO' },
     ]},
     { name: 'Documentation starts', items: [
@@ -217,18 +232,18 @@ const PHASES = [
   { id: 'p3', title: 'S6 — Goal sharing', when: 'Goals finalised with the family', from: 6, to: 6, groups: [
     { name: 'Goal sharing', items: [
       { id: 'p3-mtg', text: `Goal-sharing meeting held (Zoom). HSNS SLPs involved with the family can be invited (${w('section-12-during-qs-participation--care-coordination-on-ppas-touched-services')}).`, src: 'XW' },
-      { id: 'p3-goals', text: 'At least 8 goals finalised after supervisor review.', sub: 'QSIS raises a task if fewer than 8 goals exist after S6.', src: 'Q' },
+      { id: 'p3-goals', text: 'At least 8 goals finalised after supervisor review.', sub: 'Workplan: flagged if fewer than 8 goals exist after S6.', src: 'Q' },
       { id: 'p3-excel', text: 'Goals added to the Excel Data Sheet and shared with the family.', src: 'X' },
     ]},
   ]},
   { id: 'p4', title: 'S7–S16 — Coaching', when: 'Progress report at S12; surveys at S16', from: 7, to: 16, groups: [
     { name: 'Every session', items: [
-      { id: 'p4-grid', text: 'Session note within 48 h, attendance, activity log, child goal data and parent fidelity — tick per session in the grid below.', sub: 'QSIS expects fidelity and goal data on 90%+ of sessions.', src: 'Q' },
+      { id: 'p4-grid', text: 'Session note within 48 h, attendance, activity log, child goal data and parent fidelity — tick per session in the grid below.', sub: 'Workplan: fidelity and goal data on 90%+ of sessions.', src: 'Q' },
       { id: 'p4-stag', text: 'Watch for goal stagnation (2+ consecutive "−") or 2+ sessions without goal data — adjust goals or teaching steps. When ~80% of goals are mastered, add goals.', src: 'Q' },
       { id: 'p4-safety', text: 'Home-based: after each visit, complete the attendance-tracker field about safety checklist updates; if anything changed, notify the supervisor.', src: 'O', cls: 'home-only' },
     ]},
     { name: 'S12 — Progress report', items: [
-      { id: 'p4-prog', text: 'Progress (mid-point) report drafted and submitted to your supervisor.', sub: 'QSIS: task raised at S12, due +7 days, overdue at S14.', src: 'Q' },
+      { id: 'p4-prog', text: 'Progress (mid-point) report drafted and submitted to your supervisor.', sub: 'Workplan: task raised at S12, due +7 days, overdue at S14.', src: 'Q' },
       { id: 'p4-progsv', text: 'Approved progress report uploaded to ShareVision.', src: 'X' },
     ]},
     { name: 'CI&amp;CC coordination (mid-program onward)', items: [
@@ -243,14 +258,14 @@ const PHASES = [
   ]},
   { id: 'p5', title: 'S17 — Reassessment', when: 'Post-intervention measures; discharge planning starts', from: 17, to: 17, groups: [
     { name: 'Reassessment', items: [
-      { id: 'p5-esdm', text: 'Post-intervention ESDM curriculum checklist re-administered.', sub: 'QSIS: due S17, overdue at S18.', src: 'QX' },
-      { id: 'p5-copm', text: `COPM post-assessment completed. ${V}`, sub: 'QSIS: due S17. Excel places the COPM at S19.', src: 'QX' },
+      { id: 'p5-esdm', text: 'Post-intervention ESDM curriculum checklist re-administered.', sub: 'Workplan: due S17, overdue at S18.', src: 'QX' },
+      { id: 'p5-copm', text: `COPM post-assessment completed. ${V}`, sub: 'Workplan: due S17. Excel places the COPM at S19.', src: 'QX' },
       { id: 'p5-surveys', text: 'Collect completed surveys.', src: 'X' },
     ]},
     { name: 'Discharge planning', items: [
-      { id: 'p5-dcgoals', text: 'Write discharge goals (3+), send to the family and add to the Excel Data Sheet.', sub: 'QSIS: due S17 + 14 days; supervisor review 3 working days.', src: 'QX' },
+      { id: 'p5-dcgoals', text: 'Write discharge goals (3+), send to the family and add to the Excel Data Sheet.', sub: 'Workplan: due S17 + 14 days; supervisor review 3 working days.', src: 'QX' },
       { id: 'p5-book', text: 'Book the follow-up sessions S18 and S19.', src: 'X' },
-      { id: 'p5-report', text: 'Start the Discharge Report.', sub: 'QSIS raises the task 14 days before S19 and expects it 7 days before S19, so the supervisor can review.', src: 'Q' },
+      { id: 'p5-report', text: 'Start the Discharge Report.', sub: 'Workplan: start 14 days before S19; submit 7 days before S19 so the supervisor can review.', src: 'Q' },
       { id: 'p5-prep', text: `Before the closing conversation: review the family against Section 12 Area 2 — is there a reason for them to call CI&amp;CC now? (${w('before-the-closing-conversation')})`, src: 'W' },
     ]},
   ]},
@@ -297,7 +312,7 @@ const PHASES = [
     ]},
     { name: 'Hand off', items: [
       { id: 'p7-consentfile', text: `Confirm the PPAS Integrated consent is on file in both Greenspace and ShareVision (${w('consent-documentation-at-end-of-service')}).`, src: 'W' },
-      { id: 'p7-handoff', text: `Tell your supervisor/admin the Greenspace closeout is done so they can remove the client from the QuickStart clinic (${w('final-greenspace-step-remove-client-from-quickstart-clinic')}). QSIS expects the handback within 14 days of the approved report / letter date.`, src: 'WQ' },
+      { id: 'p7-handoff', text: `Tell your supervisor/admin the Greenspace closeout is done so they can remove the client from the QuickStart clinic (${w('final-greenspace-step-remove-client-from-quickstart-clinic')}). Workplan: handback within 14 days of the approved report / letter date.`, src: 'WQ' },
     ]},
   ]},
 ];
@@ -310,7 +325,7 @@ const GRID_COLS = [
   { id: 'parent', label: 'Parent fidelity<br><small>Excel</small>' },
 ];
 const MILESTONES = { 5: 'Baseline · ESDM checklist', 6: 'Goal sharing', 12: 'Progress report', 16: 'Send surveys', 17: 'Reassessment · COPM · D/C goals', 18: 'Book S19 · digital surveys', 19: 'Closing conversation' };
-const SRC_NAMES = { W: 'WIKI', Q: 'QSIS', X: 'EXCEL', O: 'OT/SLP' };
+const SRC_NAMES = { W: 'WIKI', Q: 'WORKPLAN', X: 'EXCEL', O: 'OT/SLP' };
 
 let state = { checks: {} };
 
@@ -462,6 +477,9 @@ function deleteActive() {
   persist();
   if (active >= 0) switchTo(active); else { state = { checks: {} }; renderTabs(); }
 }
+
+function exportJSON(){ if(active<0) return; const r=all[active]; const b=new Blob([JSON.stringify(r,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=`QS-checklist-${(r.child||'family').replace(/[^\w.-]+/g,'_')}.json`; a.click(); URL.revokeObjectURL(a.href); }
+function importJSON(ev){ const f=ev.target.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=()=>{ try{ const d=JSON.parse(rd.result); if(typeof d.child!=='string'||typeof d.checks!=='object') throw 0; const i=all.findIndex(r=>r.child.toLowerCase()===d.child.toLowerCase()); if(i>=0&&!confirm(`Replace the saved checklist for ${d.child}?`)) return; if(i>=0) all[i]=d; else all.push(d); switchTo(i>=0?i:all.length-1); }catch{ alert('Not a checklist file from this tool.'); } ev.target.value=''; }; rd.readAsText(f); }
 
 // autosave on every change path
 const _toggle = toggle; toggle = function (cb) { _toggle(cb); autosave(); };

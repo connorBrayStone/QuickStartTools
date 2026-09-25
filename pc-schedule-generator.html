@@ -32,6 +32,9 @@
   .tab.active { background: var(--teal); border-color: var(--teal-dk); color: #fff; }
   .tab.active .ph { color: rgba(255,255,255,.85); }
   .tab.add { background: #fff; color: var(--teal-dk); border-style: dashed; }
+  details.saved-note { font-size: 12px; color: var(--g700); margin: 8px 0 0; }
+  details.saved-note summary { cursor: pointer; color: var(--teal-dk); font-weight: 600; }
+  details.saved-note ul { margin: 4px 0 0; padding-left: 18px; }
   .empty { background: var(--g100); border-radius: 6px; padding: 24px; text-align: center; color: var(--g600); font-size: 14px; margin: 14px 0; }
 
   .panel { background: var(--g100); border-radius: 0 0 6px 6px; padding: 12px 14px 14px; margin-bottom: 14px; }
@@ -56,8 +59,6 @@
   .tally .pill.ok { background: var(--green-lt); color: var(--green-dk); }
   .tally .pill.dev { background: var(--amber-lt); color: #8a5a00; }
   .tally .pill.bad { background: var(--red-lt); color: var(--red); }
-  #deviation { display: none; margin-top: 8px; }
-  #deviation.show { display: block; }
   .vac { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
   .vac span { background: #fff; border: 1px solid var(--g300); border-radius: 999px; padding: 3px 10px; font-size: 12px; }
   .vac span b { cursor: pointer; color: var(--red); margin-left: 6px; }
@@ -111,11 +112,20 @@
 </header>
 
 <div class="interim no-print">
-  <strong>Interim tool.</strong> QSIS generates the same schedule from confirmed S1–4 bookings. Use this when a family's schedule is needed before QSIS is live, or when the S1–4 composition has to deviate from the standard 2 SLP + 2 OT for staffing reasons — the tally below keeps the total at 19 and records the reason.
+  <strong>How to use.</strong> Enter the team, the S1 date and the regular day/time, then generate. If staffing means the S1–4 composition can't be the standard 2 SLP + 2 OT, remove or retype rows in the composition table — the tally keeps the total at 19.
 </div>
 
 <div class="tabs no-print" id="tabs"></div>
 <div class="empty no-print" id="empty" style="display:none">No families yet. Click <strong>+ Add family</strong> to start. Saved in this browser only.</div>
+<details class="saved-note no-print">
+  <summary>Where is this saved?</summary>
+  <ul>
+    <li>Only in this browser on this computer — nothing is sent anywhere, backed up or synced. It won't appear in another browser, another computer or a private window, and it's lost if browser data is cleared or your profile is reset.</li>
+    <li>These tools are not a record. ShareVision and Greenspace remain the systems of record.</li>
+    <li>Use initials only for children.</li>
+    <li>Use <strong>Export .json</strong> to keep a copy or move it to another computer; <strong>Import .json</strong> loads it back.</li>
+  </ul>
+</details>
 
 <div id="workspace">
 <div class="panel no-print">
@@ -154,10 +164,6 @@
     <tbody id="compRows"></tbody>
   </table>
   <div class="tally" id="tally"></div>
-  <div id="deviation">
-    <label>Reason for deviating from 2 SLP + 2 OT (recorded on the schedule for the supervisor)</label>
-    <input type="text" id="deviationReason" data-f placeholder="e.g. no OT capacity in zone until Nov; make-up consult with BCBA at S9" oninput="onField()">
-  </div>
 
   <h2>Family unavailable dates</h2>
   <div class="grid">
@@ -184,7 +190,6 @@
     <span class="spacer"></span>
     <span class="hint">Autosaves in this browser. * = changed after generation.</span>
   </div>
-  <div class="print-only" id="printDeviation" style="font-size:11px;color:#8a5a00;margin-bottom:6px"></div>
   <table class="sched">
     <thead><tr><th style="width:44px">#</th><th style="width:110px">Type</th><th>Professional</th><th style="width:210px">Date</th><th style="width:80px">Time</th><th>Location</th><th class="actions no-print">Actions</th></tr></thead>
     <tbody id="schedBody"></tbody>
@@ -193,7 +198,7 @@
 </div>
 </div>
 
-<footer>Interim bridge until QSIS. Schedule formula matches QSIS's participant-schedule generator: baseline on the regular day after the last consultation → break week for goal writing → weekly to S17 → S18 at S17 + 30 days → S19 at S17 + 60 days. Sessions falling on a holiday or family-unavailable date shift the whole schedule one week.</footer>
+<footer>Schedule rules: baseline on the regular day after the last consultation → break week for goal writing → weekly to S17 → S18 at S17 + 30 days → S19 at S17 + 60 days. Sessions falling on a holiday or family-unavailable date shift the whole schedule one week.</footer>
 </div>
 
 <script>
@@ -285,7 +290,6 @@ function renderTally(){
   const {t,total}=tallyOf(); const dev=s14Deviates()||(rec.schedule&&rec.schedule.some(s=>!s.noSession&&!s.baseline&&s.phase!=='consult'&&s.type!=='PC'));
   document.getElementById('tally').innerHTML=Object.entries(t).filter(([k,v])=>v).map(([k,v])=>`<span class="pill">${TYPE_LABEL[k]}: ${v}</span>`).join('')+
     `<span class="pill ${total===19?'ok':'bad'}">Total: ${total} / 19</span>`+(dev?`<span class="pill dev">Deviates from standard 2 SLP + 2 OT</span>`:'');
-  document.getElementById('deviation').classList.toggle('show',!!dev);
 }
 
 // ---------- vacations ----------
@@ -330,6 +334,7 @@ function renderSchedule(){
   const tb=document.getElementById('schedBody'); let html='', lastPhase=null;
   const PH={consult:'Consultation &amp; assessment sessions',coaching:'Parent coaching sessions',followup:'Follow-up sessions'};
   rec.schedule.forEach((s,i)=>{
+    if(!s.noSession&&!s.phase){ s.phase=s.num<=5?'consult':s.num<=17?'coaching':'followup'; if(s.num===5) s.baseline=true; } // records from the first version
     if(!s.noSession&&s.phase!==lastPhase){ html+=`<tr class="section"><td colspan="7">${PH[s.phase]||''}</td></tr>`; lastPhase=s.phase; }
     if(editing===i){ html+=editRow(s,i); return; }
     if(s.noSession){ html+=`<tr class="nosess"><td>–</td><td></td><td colspan="4"><b>${s.breakWeek?'No session – break week for goal writing':'No session – '+s.reason.replace(/^Office closed – /,'office closed: ').replace(/^Family unavailable/,'family unavailable')}</b> — ${longDate(parse(s.date))}</td><td class="actions no-print"><button class="small secondary" onclick="startEdit(${i})">Edit</button></td></tr>`; return; }
@@ -339,7 +344,6 @@ function renderSchedule(){
   tb.innerHTML=html;
   document.getElementById('contact').innerHTML=`<strong>Parent Coach:</strong> ${rec.pcName||'—'} · ${rec.pcPhone||''} · ${rec.pcEmail||''}<br><strong>Supervisor:</strong> ${rec.supName||'—'} · ${rec.supPhone||''} · ${rec.supEmail||''}`;
   document.getElementById('printSub').textContent='Participant: '+(rec.participantName||'');
-  document.getElementById('printDeviation').textContent=rec.deviationReason?'Note for team: '+rec.deviationReason:'';
 }
 function editRow(s,i){
   if(s.noSession) return `<tr class="editing"><td>–</td><td></td><td colspan="4"><input type="text" id="e-reason" value="${s.reason}" style="width:60%"> <input type="date" id="e-date" value="${s.date}" style="width:36%"></td><td class="actions no-print"><button class="small" onclick="saveEdit(${i})">Save</button> <button class="small secondary" onclick="editing=null;renderSchedule()">Cancel</button></td></tr>`;
