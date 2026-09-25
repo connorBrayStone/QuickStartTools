@@ -190,8 +190,12 @@
     <span class="spacer"></span>
     <span class="hint">Autosaves in this browser. * = changed after generation.</span>
   </div>
+  <div class="print-only" style="font-size:11px;margin:0 0 6px;color:var(--g700)">
+    <div>* If you need to reschedule or cancel, please let me know 1.5 hours before your session.</div>
+    <div>* There may be schedule changes due to illness, power outages or extreme weather.</div>
+  </div>
   <table class="sched">
-    <thead><tr><th style="width:44px">#</th><th style="width:110px">Type</th><th>Professional</th><th style="width:210px">Date</th><th style="width:80px">Time</th><th>Location</th><th class="actions no-print">Actions</th></tr></thead>
+    <thead><tr><th style="width:44px">#</th><th style="width:110px">Type</th><th>Professional</th><th style="width:210px">Date</th><th style="width:120px">Time</th><th>Location</th><th class="actions no-print">Actions</th></tr></thead>
     <tbody id="schedBody"></tbody>
   </table>
   <div class="contact" id="contact"></div>
@@ -228,6 +232,7 @@ const DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturda
 function nextWeekday(d,name){ const t=DAYS.indexOf(name); const x=new Date(d); x.setDate(x.getDate()+((t-x.getDay()+7)%7)); return x; }
 function longDate(d){ return d.toLocaleDateString('en-CA',{weekday:'long',year:'numeric',month:'long',day:'numeric'}); }
 function fmtTime(t){ if(!t||t==='TBD') return 'TBD'; const [h,m]=t.split(':'); const hh=+h; return (hh%12||12)+':'+m+(hh>=12?' pm':' am'); }
+function fmtRange(t,hours){ if(!t||t==='TBD') return 'TBD'; const [h,m]=t.split(':').map(Number); const end=h*60+m+Math.round((hours||1)*60); const eh=Math.floor(end/60)%24, em=end%60; const sfx=x=>x>=12?' pm':' am'; const st=(h%12||12)+':'+String(m).padStart(2,'0'), en=(eh%12||12)+':'+String(em).padStart(2,'0'); return sfx(h)===sfx(eh)?`${st}–${en}${sfx(eh)}`:`${st}${sfx(h)}–${en}${sfx(eh)}`; }
 
 // ---------- model ----------
 const TYPES=['SLP','OT','Consult','PC','Other'];
@@ -317,7 +322,9 @@ function generate(){
     if(n<=k){ const c=rec.comp[n-1]; type=c.type; prof=(c.name||defaultName(c.type))+(n===k?' & '+(rec.pcName||'Parent Coach'):''); time=c.time||rec.sessionTime; }
     else { type='PC'; prof=rec.pcName||'Parent Coach'; time=n>=18?'TBD':rec.sessionTime; }
     const phase=n<=k+1?'consult':n<=17?'coaching':'followup';   // baseline S(k+1) stays in the assessment block
-    rows.push({num:n,type,prof,phase,baseline:n===k+1,date:iso(cur),time,location:(n===19&&rec.delivery==='zoom')?'Zoom / phone':loc,changed:false,cancelled:false});
+    const goalSharing=n===k+2;           // first coaching session is always the goal-sharing meeting
+    const location=(n===19&&rec.delivery==='zoom')?'Zoom / phone':goalSharing?'Zoom':loc;
+    rows.push({num:n,type,prof,phase,baseline:n===k+1,goalSharing,duration:n<=k?1.5:1,date:iso(cur),time,location,changed:false,cancelled:false});
     if(n===17) s17=new Date(cur);
     if(n===k+1){ cur=addDays(cur,7); const h=holidayOn(cur); rows.push({noSession:true,breakWeek:true,reason:'Break week – goal writing'+(h?' (also '+h.name+')':''),date:iso(cur)}); }
     cur=addDays(cur,7); n++;
@@ -338,7 +345,7 @@ function renderSchedule(){
     if(!s.noSession&&s.phase!==lastPhase){ html+=`<tr class="section"><td colspan="7">${PH[s.phase]||''}</td></tr>`; lastPhase=s.phase; }
     if(editing===i){ html+=editRow(s,i); return; }
     if(s.noSession){ html+=`<tr class="nosess"><td>–</td><td></td><td colspan="4"><b>${s.breakWeek?'No session – break week for goal writing':'No session – '+s.reason.replace(/^Office closed – /,'office closed: ').replace(/^Family unavailable/,'family unavailable')}</b> — ${longDate(parse(s.date))}</td><td class="actions no-print"><button class="small secondary" onclick="startEdit(${i})">Edit</button></td></tr>`; return; }
-    html+=`<tr class="${s.cancelled?'cancelled':''} ${s.changed?'changed':''}"><td>${s.num}</td><td class="type-${s.type}">${TYPE_LABEL[s.type]}${s.baseline?' <span class="hint">(baseline)</span>':''}</td><td>${s.prof}</td><td>${longDate(parse(s.date))}</td><td class="status">${s.cancelled?(s.status||'Not attended'):fmtTime(s.time)}</td><td>${s.location}</td>
+    html+=`<tr class="${s.cancelled?'cancelled':''} ${s.changed?'changed':''}"><td>${s.num}</td><td class="type-${s.type}">${TYPE_LABEL[s.type]}${s.baseline?' <span class="hint">(baseline)</span>':''}</td><td>${s.prof}</td><td>${s.goalSharing?'<b>Goal sharing meeting:</b> ':''}${longDate(parse(s.date))}</td><td class="status">${s.cancelled?(s.status||'Not attended'):fmtRange(s.time,s.duration||(s.phase==='consult'&&!s.baseline?1.5:1))}</td><td>${s.location}</td>
       <td class="actions no-print"><button class="small secondary" onclick="startEdit(${i})">Edit</button> ${s.cancelled?'':`<button class="small danger" onclick="markNotAttended(${i})">Not attended</button> <button class="small secondary" onclick="reschedule(${i})">Reschedule</button>`}</td></tr>`;
   });
   tb.innerHTML=html;
