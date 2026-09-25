@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PC Program Documentation Checklist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal: #00a5b5; --teal-dk: #008a98; --teal-lt: #e6f6f8;
+    --green: #7cb342; --green-dk: #5d8f2f; --green-lt: #eef6e4;
+    --blue: #5a7fc0; --blue-dk: #41619c; --blue-lt: #eaeff8;
+    --amber: #e6a117; --amber-lt: #fff6df;
+    --red: #c0392b; --red-lt: #fbe9e7;
+    --g100: #f5f5f5; --g200: #eeeeee; --g300: #e0e0e0; --g600: #757575; --g700: #616161; --g900: #212121;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: 'DM Sans', -apple-system, 'Segoe UI', sans-serif; color: var(--g900); background: #fff; margin: 0; padding: 20px 16px 80px; line-height: 1.45; }
+  .wrap { max-width: 900px; margin: 0 auto; }
+  header { border-bottom: 3px solid var(--teal); padding-bottom: 10px; margin-bottom: 16px; }
+  h1 { color: var(--teal-dk); font-size: 26px; font-weight: 700; margin: 0 0 4px; }
+  header p { color: var(--g600); font-size: 14px; margin: 0; }
+  .interim { background: var(--amber-lt); border-left: 4px solid var(--amber); padding: 8px 12px; font-size: 13px; margin: 12px 0 16px; border-radius: 0 4px 4px 0; }
+
+  .family { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; background: var(--g100); border-radius: 6px; padding: 12px; margin-bottom: 14px; }
+  .family label { display: block; font-weight: 600; font-size: 12px; color: var(--g700); margin-bottom: 3px; }
+  .family input[type=text], .family select { width: 100%; padding: 7px 8px; border: 1px solid var(--g300); border-radius: 4px; font: inherit; font-size: 14px; background: #fff; }
+  .family .chk { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; padding-top: 20px; }
+
+  .toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 16px; }
+  button { font: inherit; font-size: 13px; font-weight: 600; padding: 7px 14px; border-radius: 4px; border: 1px solid var(--teal-dk); background: var(--teal); color: #fff; cursor: pointer; }
+  button.secondary { background: #fff; color: var(--teal-dk); }
+  button.danger { background: #fff; color: var(--red); border-color: var(--red); }
+  button:hover { filter: brightness(0.95); }
+  .toolbar .spacer { flex: 1; }
+  .toolbar .toggle { font-size: 13px; display: flex; align-items: center; gap: 5px; }
+
+  .summary { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; font-size: 13px; }
+  .summary .pill { padding: 4px 10px; border-radius: 999px; background: var(--g200); }
+  .summary .pill.now { background: var(--teal); color: #fff; font-weight: 600; }
+  .summary .pill.behind { background: var(--red-lt); color: var(--red); font-weight: 600; }
+
+  details.phase { border: 1px solid var(--g300); border-radius: 6px; margin-bottom: 10px; background: #fff; }
+  details.phase > summary { list-style: none; cursor: pointer; padding: 10px 14px; display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 15px; color: var(--g900); border-left: 5px solid var(--g300); border-radius: 6px 0 0 6px; }
+  details.phase > summary::-webkit-details-marker { display: none; }
+  details.phase > summary .when { font-weight: 500; font-size: 12px; color: var(--g600); }
+  details.phase > summary .count { margin-left: auto; font-size: 12px; font-weight: 600; color: var(--g600); }
+  details.phase.now > summary { border-left-color: var(--teal); background: var(--teal-lt); }
+  details.phase.past > summary { border-left-color: var(--green); }
+  details.phase.past.behind > summary { border-left-color: var(--red); }
+  details.phase.past.behind > summary .count { color: var(--red); }
+  details.phase.future > summary { color: var(--g700); }
+  .phase-body { padding: 6px 14px 12px; }
+  .group { margin: 10px 0 4px; font-weight: 700; font-size: 13px; color: var(--teal-dk); text-transform: uppercase; letter-spacing: .03em; }
+  .item { display: flex; align-items: flex-start; gap: 9px; padding: 4px 0; font-size: 14px; }
+  .item input { margin-top: 3px; accent-color: var(--teal-dk); flex-shrink: 0; width: 16px; height: 16px; }
+  .item.done .txt { color: var(--g600); text-decoration: line-through; }
+  .item .txt { flex: 1; }
+  .item .sub { display: block; font-size: 12px; color: var(--g600); margin-top: 2px; }
+  .item a { color: var(--blue-dk); }
+  .src { display: inline-block; font-size: 10px; font-weight: 700; padding: 1px 5px; border-radius: 3px; margin-left: 4px; vertical-align: 1px; letter-spacing: .02em; }
+  .src.W { background: var(--teal-lt); color: var(--teal-dk); }
+  .src.Q { background: var(--blue-lt); color: var(--blue-dk); }
+  .src.X { background: var(--green-lt); color: var(--green-dk); }
+  .src.O { background: var(--g200); color: var(--g700); }
+  .verify { display: inline-block; font-size: 11px; font-weight: 700; color: #8a5a00; background: var(--amber-lt); border: 1px solid var(--amber); padding: 0 6px; border-radius: 3px; margin-left: 4px; }
+  body.hide-src .src, body.hide-src .legend { display: none; }
+  .note { background: var(--g100); border-left: 4px solid var(--blue); padding: 8px 12px; font-size: 13px; margin: 8px 0; border-radius: 0 4px 4px 0; }
+  .note.warn { border-left-color: var(--amber); background: var(--amber-lt); }
+  .note ul { margin: 4px 0 0; padding-left: 18px; }
+  .home-only { display: none; }
+  body.home .home-only { display: block; }
+  body.home .item.home-only { display: flex; }
+
+  h2 { font-size: 18px; color: var(--teal-dk); margin: 26px 0 8px; }
+  table.grid { border-collapse: collapse; width: 100%; font-size: 13px; }
+  table.grid th, table.grid td { border: 1px solid var(--g300); padding: 4px 6px; text-align: center; }
+  table.grid th { background: var(--g100); font-weight: 600; font-size: 12px; }
+  table.grid td:first-child, table.grid th:first-child { text-align: left; font-weight: 600; white-space: nowrap; }
+  table.grid tr.now td { background: var(--teal-lt); }
+  table.grid tr.future td { color: var(--g600); }
+  table.grid input { accent-color: var(--teal-dk); width: 16px; height: 16px; }
+  table.grid td.milestone { font-size: 11px; color: var(--g700); text-align: left; font-weight: 400; }
+
+  .saved { margin-top: 10px; }
+  .saved-item { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 10px; background: var(--g100); border-radius: 4px; margin: 4px 0; font-size: 13px; }
+  .saved-item small { color: var(--g600); }
+  .saved-item button { padding: 4px 10px; font-size: 12px; }
+  .legend { font-size: 12px; color: var(--g600); margin: 12px 0; }
+  footer { margin-top: 30px; font-size: 12px; color: var(--g600); border-top: 1px solid var(--g300); padding-top: 10px; }
+
+  .qs-home-pill{position:fixed;bottom:14px;left:14px;z-index:9999;background:#008a98;color:#fff;padding:6px 12px;border-radius:999px;font-family:'DM Sans','Segoe UI',sans-serif;font-size:12px;font-weight:600;text-decoration:none;box-shadow:0 2px 6px rgba(0,0,0,.25);opacity:.92;}
+  .qs-home-pill:hover{opacity:1;}
+
+  @media print {
+    body { padding: 0; font-size: 12px; }
+    .no-print, .qs-home-pill, .toolbar, .src { display: none !important; }
+    details.phase { break-inside: avoid; }
+    details.phase[open] > summary, details.phase > summary { border-left-width: 4px; }
+    .item { font-size: 12px; padding: 2px 0; }
+    h1 { font-size: 20px; }
+  }
+</style>
+</head>
+<body>
+<a class="qs-home-pill" href="index.html">&larr; All Tools</a>
+<div class="wrap">
+
+<header>
+  <h1>PC Program Documentation Checklist</h1>
+  <p>Administrative and documentation tasks for the Parent Coach, by program phase — from assignment through closeout. One saved record per family.</p>
+</header>
+
+<div class="interim no-print">
+  <strong>Interim tool.</strong> QSIS will generate these tasks automatically once in production. Until then this page consolidates the Session Documentation Checklist (Excel), the QS Supervisor Wiki (CI&amp;CC integration &amp; Greenspace steps) and the QSIS workplan rules. Items marked <span class="verify">verify</span> have conflicting timings across sources — confirm with your supervisor.
+</div>
+
+<div class="family">
+  <div><label for="child">Child (initials or first name)</label><input type="text" id="child" placeholder="e.g. J.S." oninput="render()"></div>
+  <div><label for="pc">Parent Coach</label><input type="text" id="pc" placeholder="Your name"></div>
+  <div><label for="session">Current point in program</label>
+    <select id="session" onchange="render()">
+      <option value="0">Assigned — before S1</option>
+      <option value="1">S1</option><option value="2">S2</option><option value="3">S3</option><option value="4">S4 (PC handoff)</option>
+      <option value="5">S5 — baseline</option><option value="6">S6 — goal sharing</option>
+      <option value="7">S7</option><option value="8">S8</option><option value="9">S9</option><option value="10">S10</option><option value="11">S11</option><option value="12">S12 — progress report</option><option value="13">S13</option><option value="14">S14</option><option value="15">S15</option><option value="16">S16</option>
+      <option value="17">S17 — reassessment</option><option value="18">S18 — follow-up 1</option><option value="19">S19 — follow-up 2</option>
+      <option value="20">Closing out</option>
+    </select></div>
+  <div class="chk"><input type="checkbox" id="home" onchange="render()"><label for="home" style="margin:0">Sessions are home-based</label></div>
+</div>
+
+<div class="toolbar no-print">
+  <button onclick="saveProgress()">💾 Save</button>
+  <button class="secondary" onclick="expandAll(true)">Expand all</button>
+  <button class="secondary" onclick="expandAll(false)">Collapse all</button>
+  <button class="secondary" onclick="window.print()">🖨 Print</button>
+  <button class="danger" onclick="clearCurrent()">Clear &amp; start new</button>
+  <span class="spacer"></span>
+  <label class="toggle"><input type="checkbox" id="showSrc" checked onchange="document.body.classList.toggle('hide-src', !this.checked)"> Show sources</label>
+</div>
+
+<div class="summary" id="summary"></div>
+
+<div id="phases"></div>
+
+<h2>Session grid — S5 to S19</h2>
+<p style="font-size:13px;color:var(--g600);margin:0 0 8px">Tick as each session's documentation is done. Session notes are due within 48 hours <span class="src Q">QSIS</span>; attendance before the next team member's session <span class="src O">OT/SLP</span>.</p>
+<table class="grid" id="grid"></table>
+
+<div class="legend">Sources: <span class="src W">WIKI</span> QS Supervisor Wiki &nbsp; <span class="src Q">QSIS</span> QSIS workplan / derived tasks &nbsp; <span class="src X">EXCEL</span> Session Documentation Checklist &nbsp; <span class="src O">OT/SLP</span> SLP/OT prep checklist pattern</div>
+
+<div class="no-print">
+  <h2>Saved families</h2>
+  <p style="font-size:13px;color:var(--g600);margin:0">Saved in this browser only. Nothing leaves your computer — use initials, not full names.</p>
+  <div class="saved" id="savedList"></div>
+</div>
+
+<footer>Interim bridge until QSIS. Greenspace/CI&amp;CC steps link to the QS Supervisor Wiki; everything else follows the QS Manual. Rule of thumb: <strong>every document uploaded to Greenspace is also uploaded to ShareVision.</strong></footer>
+</div>
+
+<script>
+const WIKI = 'ServiceMatch%26IntroMeeting.html';
+const w = a => `<a href="${WIKI}#${a}" target="_blank">wiki</a>`;
+const V = '<span class="verify">verify</span>';
+
+// Each task: id (stable — used for saving), text, src (W/Q/X/O letters), optional cls
+const PHASES = [
+  { id: 'p0', title: 'Assigned — before S1', when: 'Within 2 weeks of assignment', from: 0, to: 0, groups: [
+    { name: 'First contact & scheduling', items: [
+      { id: 'p0-intro', text: `Introduce yourself to the family before S1 — the supervisor's S1–4 confirmation email (${w('step-11e-scheduling-confirmation-email')}) promises PC contact within 2 weeks.`, src: 'WQ' },
+      { id: 'p0-sched', text: 'Draft the S5–19 schedule with the family and confirm it.', sub: 'Due by S1; flagged overdue at S3.', src: 'QX' },
+      { id: 'p0-send', text: 'Send the schedule, book and parent binder.', src: 'X' },
+    ]},
+    { name: 'Review & systems', items: [
+      { id: 'p0-sv', text: 'Review the ShareVision profile: intake notes (incl. COPM), Community Partners &amp; Programs, program documentation / consents.', src: 'O' },
+      { id: 'p0-gs', text: `Confirm you appear as a provider on the child's Greenspace profile (you are notified at your QS email when added, ${w('step-11c-operational-systems-updates')}) and on the ShareVision QS Team.`, src: 'W' },
+      { id: 'p0-prof', text: 'Connect with other professionals / community service providers involved with the family (by S1).', src: 'QX' },
+      { id: 'p0-safety', text: 'Home-based: review the pre-visit safety checklist (completed by the supervisor) and acknowledge it. If risks are identified, review the safety plan and sign off; questions go to the zone supervisor.', src: 'QO', cls: 'home-only' },
+    ]},
+  ]},
+  { id: 'p1', title: 'S1–S4 — SLP/OT consultations', when: 'PC joins at S4 as the handoff', from: 1, to: 4, groups: [
+    { name: 'Consents', items: [
+      { id: 'p1-consent', text: 'All three DocuSign consent forms complete.', sub: 'Due by S2; overdue at S4. If DocuSign is not workable, the printed-copy fallback applies: review, wet-ink signature, scan, upload to Greenspace + ShareVision, offer the family a copy.', src: 'QW' },
+      { id: 'p1-upload', text: `Consents uploaded to ShareVision; the PPAS Integrated Service Delivery Consent is on file in <strong>both</strong> Greenspace and ShareVision (${w('docusign-consent--reference')}).`, src: 'XW' },
+    ]},
+    { name: 'Handoff', items: [
+      { id: 'p1-soap', text: "Review the SLP/OT SOAP notes and their goal recommendations (recommendations are due by S4).", src: 'Q' },
+      { id: 'p1-s4', text: 'Attend S4 as the overlap/handoff session (you are an attendee on the S4 calendar event only).', src: 'W' },
+      { id: 'p1-esdm', text: 'Pre-intervention ESDM curriculum checklist in progress — SLP/OT update it each session while they lead; you overlap at S4.', sub: 'You complete it at S5 and use it to identify the proximal zone and select goals for S6.', src: 'QO' },
+    ]},
+  ]},
+  { id: 'p2', title: 'S5 — Baseline assessment', when: 'First PC-led session', from: 5, to: 5, groups: [
+    { name: 'Assessment', items: [
+      { id: 'p2-esdm', text: 'Complete the pre-intervention ESDM curriculum checklist (wrapping up what SLP/OT started in S1–4).', sub: 'QSIS: due S5, overdue at S7. This checklist drives proximal-zone identification and goal selection for S6.', src: 'Q' },
+      { id: 'p2-copm', text: 'Confirm the COPM (from intake) is on file in ShareVision.', src: 'QO' },
+    ]},
+    { name: 'Documentation starts', items: [
+      { id: 'p2-notes', text: 'Session notes begin — every session from S5 is due within 48 hours (use the grid below).', src: 'Q' },
+      { id: 'p2-excel', text: 'Start the Excel Data Sheet (Parent and Child tabs).', src: 'X' },
+      { id: 'p2-goals', text: 'Draft 8–10 goals and send them to your supervisor 72 hours before S6 (supervisor review takes up to 3 working days).', src: 'Q' },
+    ]},
+  ]},
+  { id: 'p3', title: 'S6 — Goal sharing', when: 'Goals finalised with the family', from: 6, to: 6, groups: [
+    { name: 'Goal sharing', items: [
+      { id: 'p3-mtg', text: `Goal-sharing meeting held (Zoom). HSNS SLPs involved with the family can be invited (${w('section-12-during-qs-participation--care-coordination-on-ppas-touched-services')}).`, src: 'XW' },
+      { id: 'p3-goals', text: 'At least 8 goals finalised after supervisor review.', sub: 'QSIS raises a task if fewer than 8 goals exist after S6.', src: 'Q' },
+      { id: 'p3-excel', text: 'Goals added to the Excel Data Sheet and shared with the family.', src: 'X' },
+    ]},
+  ]},
+  { id: 'p4', title: 'S7–S16 — Coaching', when: 'Progress report at S12; surveys at S16', from: 7, to: 16, groups: [
+    { name: 'Every session', items: [
+      { id: 'p4-grid', text: 'Session note within 48 h, attendance, activity log, child goal data and parent fidelity — tick per session in the grid below.', sub: 'QSIS expects fidelity and goal data on 90%+ of sessions.', src: 'Q' },
+      { id: 'p4-stag', text: 'Watch for goal stagnation (2+ consecutive "−") or 2+ sessions without goal data — adjust goals or teaching steps. When ~80% of goals are mastered, add goals.', src: 'Q' },
+      { id: 'p4-safety', text: 'Home-based: after each visit, complete the attendance-tracker field about safety checklist updates; if anything changed, notify the supervisor.', src: 'O', cls: 'home-only' },
+    ]},
+    { name: 'S12 — Progress report', items: [
+      { id: 'p4-prog', text: 'Progress (mid-point) report drafted and submitted to your supervisor.', sub: 'QSIS: task raised at S12, due +7 days, overdue at S14.', src: 'Q' },
+      { id: 'p4-progsv', text: 'Approved progress report uploaded to ShareVision.', src: 'X' },
+    ]},
+    { name: 'CI&amp;CC coordination (mid-program onward)', items: [
+      { id: 'p4-cicc', text: `Deliver the 4-point baseline message about CI&amp;CC to the family (${w('section-12-during-qs-participation--care-coordination-on-ppas-touched-services')}).`, src: 'W' },
+      { id: 'p4-encourage', text: 'Encourage the family to call CI&amp;CC when they hold information CI&amp;CC can\'t see: a private diagnosis, a changed waitlist decision, paused Communication Services, a move, changed needs.', src: 'W' },
+      { id: 'p4-slp', text: `SLP routing: undiagnosed → Core Pediatric SLP via HSNS; diagnosed → CI&amp;CC; unsure → check Greenspace Providers / Notes / tags (${w('1-coordination-on-hsns-staffed-slp-services')}).`, src: 'W' },
+      { id: 'p4-consent', text: `If the family adds or changes a partner/program: the supervisor sends the revised DocuSign to the parent and you. <strong>You</strong> download the signed PDF and upload it to Greenspace (Notes → Create a Note → "Service Delivery Consent Form", Shared With: tick <strong>Clinician(s)</strong>) and to ShareVision, then delete the local copy (${w('consent-changes-during-programming')}).`, src: 'W' },
+    ]},
+    { name: 'S16', items: [
+      { id: 'p4-survey', text: 'Send the family surveys.', sub: 'Collected at S17; digital surveys emailed at S18.', src: 'X' },
+    ]},
+  ]},
+  { id: 'p5', title: 'S17 — Reassessment', when: 'Post-intervention measures; discharge planning starts', from: 17, to: 17, groups: [
+    { name: 'Reassessment', items: [
+      { id: 'p5-esdm', text: 'Post-intervention ESDM curriculum checklist re-administered.', sub: 'QSIS: due S17, overdue at S18.', src: 'QX' },
+      { id: 'p5-copm', text: `COPM post-assessment completed. ${V}`, sub: 'QSIS: due S17. Excel places the COPM at S19.', src: 'QX' },
+      { id: 'p5-surveys', text: 'Collect completed surveys.', src: 'X' },
+    ]},
+    { name: 'Discharge planning', items: [
+      { id: 'p5-dcgoals', text: 'Write discharge goals (3+), send to the family and add to the Excel Data Sheet.', sub: 'QSIS: due S17 + 14 days; supervisor review 3 working days.', src: 'QX' },
+      { id: 'p5-book', text: 'Book the follow-up sessions S18 and S19.', src: 'X' },
+      { id: 'p5-report', text: 'Start the Discharge Report.', sub: 'QSIS raises the task 14 days before S19 and expects it 7 days before S19, so the supervisor can review.', src: 'Q' },
+      { id: 'p5-prep', text: `Before the closing conversation: review the family against Section 12 Area 2 — is there a reason for them to call CI&amp;CC now? (${w('before-the-closing-conversation')})`, src: 'W' },
+    ]},
+  ]},
+  { id: 'p6', title: 'S18–S19 — Follow-ups', when: 'Closing conversation; final measures', from: 18, to: 19, groups: [
+    { name: 'S18', items: [
+      { id: 'p6-book19', text: 'Book S19 (team meeting, call or PC session) and send the S19 invitation.', src: 'X' },
+      { id: 'p6-digital', text: 'Email the digital surveys.', src: 'X' },
+      { id: 'p6-fid', text: 'Parent fidelity scored at S18.', src: 'Q' },
+    ]},
+    { name: 'Closing conversation (S17–19)', items: [
+      { id: 'p6-conv', text: `Closing conversation held using the Section 13 scripts and guardrails (${w('the-closing-conversation-s1719')}). Give CI&amp;CC's contact details <strong>in writing</strong>.`, src: 'W' },
+      { id: 'p6-share', text: 'Ask for consent to share the Discharge Report with CI&amp;CC (scripted ask). Record yes-written / yes-verbal / no. If no, document the preference in Greenspace.', src: 'WQ' },
+      { id: 'p6-report', text: 'Discharge Report finalised and approved by your supervisor.', src: 'Q' },
+    ]},
+  ]},
+  { id: 'p7', title: 'Closeout', when: 'Only once it is certain no further session will happen', from: 20, to: 20, groups: [
+    { name: 'Decide the status', items: [
+      { id: 'p7-status', text: `<strong>Completed</strong> = at least 14 of 17 weekly sessions (S18/19 don't count toward the threshold). Below that = <strong>Discontinued</strong>. Do not close out automatically at S17 — wait for the final session attended, an explicit "not continuing", or 3 failed contact attempts (${w('section-13-end-of-qs-services--transition-back-to-cicc')}).`, src: 'W' },
+    ]},
+    { name: 'Scenario 1 — Completed (Greenspace)', items: [
+      { id: 'p7-c-profile', text: `Greenspace Profile → QuickStart Nova Scotia: QS stream = "PC Program"; Status = "Completed"; QS Start Date = S1; QS End Date = last session actually attended (S18/19 count) (${w('scenario-1-completed')}).`, src: 'WQ' },
+      { id: 'p7-c-note1', text: 'Document note — Title <em>QuickStart Nova Scotia Completed - Discharge Report</em>, Comments "See attached Discharge Report for more details.", attach the report. Shared With: tick <strong>Clinician(s)</strong>.', src: 'W' },
+      { id: 'p7-c-note2', text: 'Document note — <em>QuickStart Nova Scotia Completed - pre-intervention ESDM curriculum checklist</em>, attach it. Shared With: tick <strong>Clinician(s)</strong>.', src: 'W' },
+      { id: 'p7-c-note3', text: 'Document note — <em>QuickStart Nova Scotia Completed - post-intervention ESDM curriculum checklist</em>, attach it. Shared With: tick <strong>Clinician(s)</strong>.', src: 'W' },
+      { id: 'p7-c-privacy', text: 'Attach the report and checklists <strong>only</strong> if the family consented to sharing with CI&amp;CC. No consent → create the notes without attachments.', src: 'WQ' },
+    ]},
+    { name: 'Scenario 2 — Discontinued (Greenspace)', items: [
+      { id: 'p7-d-request', text: 'Request discontinuation from your supervisor (decision within 3 working days).', src: 'Q' },
+      { id: 'p7-d-letter', text: 'Write the QS Discharge letter (within 7 days of approval; supervisor reviews), then give it to the family and record the date. A letter is required for unable-to-contact and attendance/participation endings; not for caregiver choice.', src: 'Q' },
+      { id: 'p7-d-profile', text: `Greenspace Profile: QS stream; Status = "Discontinued"; Reason = matching dropdown; QS End Date = <strong>the date the letter was given</strong> (${w('scenario-2-discontinued')}).`, src: 'WQ' },
+      { id: 'p7-d-note', text: 'Document note — Title <em>QuickStart Nova Scotia Discontinued - [reason]</em>, Comments "See attached Discharge letter for more details.", attach the letter. Shared With: tick <strong>Clinician(s)</strong>.', src: 'W' },
+    ]},
+    { name: 'ShareVision discharge file (both scenarios)', items: [
+      { id: 'p7-sv-consents', text: 'Consents', src: 'X' },
+      { id: 'p7-sv-esdm', text: 'ESDM checklists 1 and 2 (pre- and post-intervention)', src: 'X' },
+      { id: 'p7-sv-copm', text: 'COPM', src: 'X' },
+      { id: 'p7-sv-excel', text: 'Excel Data Sheet, and the Input Report tab from it', src: 'X' },
+      { id: 'p7-sv-goals', text: 'Goals (PDF)', src: 'X' },
+      { id: 'p7-sv-pw', text: `Add the document password as an announcement on the profile page ${V}`, sub: 'Confirm whether documents are still password-protected before upload; if so this stays.', src: 'X' },
+      { id: 'p7-sv-other', text: 'Any additional documentation (professional reports, recommendation letters)', src: 'X' },
+      { id: 'p7-sv-report', text: 'Discharge Report PDF (Completed) or Discharge letter (Discontinued)', src: 'X' },
+      { id: 'p7-sv-section', text: 'Complete the discharge section in ShareVision', src: 'X' },
+      { id: 'p7-sv-partners', text: 'Update Community Partners &amp; Programs', src: 'X' },
+    ]},
+    { name: 'Hand off', items: [
+      { id: 'p7-consentfile', text: `Confirm the PPAS Integrated consent is on file in both Greenspace and ShareVision (${w('consent-documentation-at-end-of-service')}).`, src: 'W' },
+      { id: 'p7-handoff', text: `Tell your supervisor/admin the Greenspace closeout is done so they can remove the client from the QuickStart clinic (${w('final-greenspace-step-remove-client-from-quickstart-clinic')}). QSIS expects the handback within 14 days of the approved report / letter date.`, src: 'WQ' },
+    ]},
+  ]},
+];
+
+const GRID_COLS = [
+  { id: 'att', label: 'Attendance<br><small>ShareVision</small>' },
+  { id: 'log', label: 'Activity log<br><small>ShareVision</small>' },
+  { id: 'soap', label: 'Session note ≤48h<br><small>ShareVision</small>' },
+  { id: 'child', label: 'Child goal data<br><small>Excel</small>' },
+  { id: 'parent', label: 'Parent fidelity<br><small>Excel</small>' },
+];
+const MILESTONES = { 5: 'Baseline · ESDM checklist', 6: 'Goal sharing', 12: 'Progress report', 16: 'Send surveys', 17: 'Reassessment · COPM · D/C goals', 18: 'Book S19 · digital surveys', 19: 'Closing conversation' };
+const SRC_NAMES = { W: 'WIKI', Q: 'QSIS', X: 'EXCEL', O: 'OT/SLP' };
+
+let state = { checks: {} };
+
+function srcChips(s) { return (s || '').split('').map(c => `<span class="src ${c}">${SRC_NAMES[c]}</span>`).join(''); }
+
+function buildPhases() {
+  const el = document.getElementById('phases');
+  el.innerHTML = PHASES.map(p => `
+    <details class="phase" id="${p.id}">
+      <summary><span>${p.title}</span><span class="when">${p.when}</span><span class="count" id="${p.id}-count"></span></summary>
+      <div class="phase-body">
+        ${p.groups.map(g => `<div class="group">${g.name}</div>` + g.items.map(it => `
+          <label class="item ${it.cls || ''}" id="row-${it.id}">
+            <input type="checkbox" data-id="${it.id}" onchange="toggle(this)">
+            <span class="txt">${it.text}${srcChips(it.src)}${it.sub ? `<span class="sub">${it.sub}</span>` : ''}</span>
+          </label>`).join('')).join('')}
+      </div>
+    </details>`).join('');
+}
+
+function buildGrid() {
+  const t = document.getElementById('grid');
+  let html = `<tr><th>Session</th>${GRID_COLS.map(c => `<th>${c.label}</th>`).join('')}<th>Milestone</th></tr>`;
+  for (let s = 5; s <= 19; s++) {
+    html += `<tr id="grow-${s}"><td>S${s}</td>${GRID_COLS.map(c => `<td><input type="checkbox" data-id="g-${s}-${c.id}" onchange="toggle(this)"></td>`).join('')}<td class="milestone">${MILESTONES[s] || ''}</td></tr>`;
+  }
+  t.innerHTML = html;
+}
+
+function toggle(cb) {
+  state.checks[cb.dataset.id] = cb.checked;
+  const row = document.getElementById('row-' + cb.dataset.id);
+  if (row) row.classList.toggle('done', cb.checked);
+  updateCounts();
+}
+
+function currentSession() { return parseInt(document.getElementById('session').value, 10); }
+
+function render() {
+  const s = currentSession();
+  document.body.classList.toggle('home', document.getElementById('home').checked);
+  document.querySelectorAll('input[data-id]').forEach(cb => {
+    cb.checked = !!state.checks[cb.dataset.id];
+    const row = document.getElementById('row-' + cb.dataset.id);
+    if (row) row.classList.toggle('done', cb.checked);
+  });
+  PHASES.forEach(p => {
+    const d = document.getElementById(p.id);
+    d.classList.remove('now', 'past', 'future');
+    const cls = s < p.from ? 'future' : s > p.to ? 'past' : 'now';
+    d.classList.add(cls);
+    d.open = cls === 'now';
+  });
+  for (let r = 5; r <= 19; r++) {
+    const tr = document.getElementById('grow-' + r);
+    tr.className = r === s ? 'now' : r > s ? 'future' : '';
+  }
+  updateCounts();
+}
+
+function phaseItems(p) {
+  const home = document.getElementById('home').checked;
+  return p.groups.flatMap(g => g.items).filter(it => !it.cls || (it.cls === 'home-only' && home));
+}
+
+function updateCounts() {
+  const s = currentSession();
+  let behind = 0, nowOpen = 0, nowTitle = '';
+  PHASES.forEach(p => {
+    const items = phaseItems(p);
+    const done = items.filter(it => state.checks[it.id]).length;
+    const left = items.length - done;
+    const c = document.getElementById(p.id + '-count');
+    const d = document.getElementById(p.id);
+    d.classList.remove('behind');
+    if (s > p.to) { c.textContent = left ? `${left} outstanding` : '✓ done'; if (left) { d.classList.add('behind'); behind += left; } }
+    else if (s < p.from) { c.textContent = 'upcoming'; }
+    else { c.textContent = `${done}/${items.length}`; nowOpen = left; nowTitle = p.title; }
+  });
+  // grid lateness: sessions before current with any unticked column
+  let gridBehind = 0;
+  for (let r = 5; r < s && r <= 19; r++) if (GRID_COLS.some(c => !state.checks[`g-${r}-${c.id}`])) gridBehind++;
+  const sum = document.getElementById('summary');
+  sum.innerHTML = `<span class="pill now">Now: ${nowTitle} — ${nowOpen} to do</span>` +
+    (behind ? `<span class="pill behind">${behind} outstanding from earlier phases</span>` : '') +
+    (gridBehind ? `<span class="pill behind">${gridBehind} earlier session${gridBehind > 1 ? 's' : ''} with incomplete documentation</span>` : '');
+}
+
+function expandAll(open) { document.querySelectorAll('details.phase').forEach(d => d.open = open); }
+
+// ---- persistence ----
+const KEY = 'pcDocChecklist';
+function loadAll() { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { return []; } }
+function saveProgress() {
+  const child = document.getElementById('child').value.trim();
+  if (!child) { alert('Enter the child\'s initials first.'); return; }
+  const rec = { child, pc: document.getElementById('pc').value, session: currentSession(), home: document.getElementById('home').checked, checks: state.checks, savedAt: new Date().toISOString() };
+  const all = loadAll();
+  const i = all.findIndex(r => r.child.toLowerCase() === child.toLowerCase());
+  if (i >= 0) all[i] = rec; else all.push(rec);
+  try { localStorage.setItem(KEY, JSON.stringify(all)); } catch { alert('Could not save — browser storage unavailable.'); return; }
+  listSaved();
+}
+function loadRecord(i) {
+  const r = loadAll()[i]; if (!r) return;
+  document.getElementById('child').value = r.child;
+  document.getElementById('pc').value = r.pc || '';
+  document.getElementById('session').value = r.session;
+  document.getElementById('home').checked = !!r.home;
+  state = { checks: r.checks || {} };
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function deleteRecord(i) {
+  const all = loadAll();
+  if (!confirm(`Delete saved checklist for ${all[i].child}?`)) return;
+  all.splice(i, 1);
+  localStorage.setItem(KEY, JSON.stringify(all));
+  listSaved();
+}
+function clearCurrent() {
+  if (!confirm('Clear the current checklist and start a new family?')) return;
+  ['child', 'pc'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('session').value = '0';
+  document.getElementById('home').checked = false;
+  state = { checks: {} };
+  render();
+}
+function listSaved() {
+  const all = loadAll();
+  const el = document.getElementById('savedList');
+  if (!all.length) { el.innerHTML = '<p style="font-size:13px;color:var(--g600)">No saved families yet.</p>'; return; }
+  const label = s => s === 0 ? 'before S1' : s === 20 ? 'closing out' : 'S' + s;
+  el.innerHTML = all.map((r, i) => `<div class="saved-item"><div><strong>${r.child}</strong> — ${label(r.session)}${r.pc ? ' · ' + r.pc : ''}<br><small>Saved ${new Date(r.savedAt).toLocaleDateString()}</small></div><div><button onclick="loadRecord(${i})">Load</button> <button class="danger" onclick="deleteRecord(${i})">Delete</button></div></div>`).join('');
+}
+
+buildPhases(); buildGrid(); render(); listSaved();
+</script>
+</body>
+</html>
