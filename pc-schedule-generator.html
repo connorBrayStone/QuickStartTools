@@ -135,7 +135,6 @@
   <h2>Session pattern</h2>
   <div class="grid">
     <div><label>S1 date</label><input type="date" id="startDate" data-f oninput="onField()"></div>
-    <div><label>Consultation sessions (SLP/OT phase)</label><select id="compCount" onchange="setCompCount(+this.value)"><option>1</option><option>2</option><option>3</option><option selected>4</option></select></div>
     <div><label>Regular session day</label><select id="sessionDay" data-f onchange="onField()"><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option></select></div>
     <div><label>Regular session time (S5+)</label><input type="time" id="sessionTime" data-f value="13:30" oninput="onField()"></div>
     <div><label>Delivery</label><select id="delivery" data-f onchange="onField()"><option value="in-person">In-person</option><option value="zoom">Zoom / online</option></select></div>
@@ -148,10 +147,10 @@
   <div class="toolbar" style="margin-top:0">
     <button class="secondary small" onclick="applyPattern(['SLP','OT','SLP','OT'])">SLP → OT → SLP → OT</button>
     <button class="secondary small" onclick="applyPattern(['OT','SLP','OT','SLP'])">OT → SLP → OT → SLP</button>
-    <span class="hint">Presets fill the rows; change any row's type when staffing requires. The last consultation session always includes the PC (handoff). Fewer consultation sessions = more coaching sessions; total stays 19.</span>
+    <span class="hint">Presets fill the rows; change any row's type when staffing requires. The last consultation session always includes the PC (handoff). Remove a row (✕) when staffing can't fill it — the coaching phase gains that session; total stays 19.</span>
   </div>
   <table class="comp">
-    <tr><th style="width:50px">#</th><th style="width:170px">Type</th><th>Professional</th><th style="width:120px">Time</th></tr>
+    <tr><th style="width:50px">#</th><th style="width:170px">Type</th><th>Professional</th><th style="width:120px">Time</th><th style="width:36px"></th></tr>
     <tbody id="compRows"></tbody>
   </table>
   <div class="tally" id="tally"></div>
@@ -255,15 +254,17 @@ function onField(){ if(loading||!rec) return; document.querySelectorAll('[data-f
 function toggleCustomLoc(){ document.getElementById('customLocWrap').style.display=document.getElementById('location').value==='custom'?'':'none'; }
 function locationText(){ return rec.location==='custom'?(rec.customLoc||'TBD'):rec.location; }
 
+function removeComp(i){ if(rec.comp.length<=1) return; rec.comp.splice(i,1); renderComp(); persist(); }
 function setCompCount(k){ while(rec.comp.length<k) rec.comp.push({type:'OT',name:'',time:''}); rec.comp.length=k; renderComp(); persist(); }
 function renderComp(){
   const tb=document.getElementById('compRows');
-  document.getElementById('compCount').value=rec.comp.length;
   const k=rec.comp.length;
   tb.innerHTML=rec.comp.map((c,i)=>`<tr><td>S${i+1}${i===k-1?' <span class="hint">+ PC</span>':''}</td>
     <td><select onchange="compChange(${i},'type',this.value)">${TYPES.map(t=>`<option value="${t}" ${c.type===t?'selected':''}>${TYPE_LABEL[t]}</option>`).join('')}</select></td>
     <td><input type="text" value="${c.name||''}" placeholder="${defaultName(c.type)}" oninput="compChange(${i},'name',this.value)"></td>
-    <td><input type="time" value="${c.time||''}" oninput="compChange(${i},'time',this.value)"></td></tr>`).join('');
+    <td><input type="time" value="${c.time||''}" oninput="compChange(${i},'time',this.value)"></td>
+    <td>${k>1?`<button class="small danger" title="Remove this consultation session — the coaching phase gains one" onclick="removeComp(${i})">✕</button>`:''}</td></tr>`).join('')
+    +(k<4?`<tr><td colspan="5"><button class="small secondary" onclick="setCompCount(${k+1})">+ Add consultation session</button> <span class="hint">${k} consultation session${k>1?'s':''} → S${k+1} baseline + ${19-k-3} coaching + 2 follow-ups = 19</span></td></tr>`:`<tr><td colspan="5"><span class="hint">Standard: 4 consultations → S5 baseline + 12 coaching + 2 follow-ups = 19</span></td></tr>`);
   renderTally();
 }
 function defaultName(t){ return t==='SLP'?(rec.slpName||'SLP'):t==='OT'?(rec.otName||'OT'):t==='PC'?(rec.pcName||'Parent Coach'):t==='Consult'?(rec.supName||'Supervisor'):''; }
