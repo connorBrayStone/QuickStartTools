@@ -342,6 +342,7 @@ function renderSchedule(){
   const PH={consult:'Consultation &amp; assessment sessions',coaching:'Parent coaching sessions',followup:'Follow-up sessions'};
   rec.schedule.forEach((s,i)=>{
     if(!s.noSession&&!s.phase){ s.phase=s.num<=5?'consult':s.num<=17?'coaching':'followup'; if(s.num===5) s.baseline=true; } // records from the first version
+    if(!s.noSession&&s.phase==='coaching'&&lastPhase!=='coaching'&&s.goalSharing===undefined) s.goalSharing=true; // first coaching row on older saves
     if(!s.noSession&&s.phase!==lastPhase){ html+=`<tr class="section"><td colspan="7">${PH[s.phase]||''}</td></tr>`; lastPhase=s.phase; }
     if(editing===i){ html+=editRow(s,i); return; }
     if(s.noSession){ html+=`<tr class="nosess"><td>–</td><td></td><td colspan="4"><b>${s.breakWeek?'No session – break week for goal writing':'No session – '+s.reason.replace(/^Office closed – /,'office closed: ').replace(/^Family unavailable/,'family unavailable')}</b> — ${longDate(parse(s.date))}</td><td class="actions no-print"><button class="small secondary" onclick="startEdit(${i})">Edit</button></td></tr>`; return; }
