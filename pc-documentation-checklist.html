@@ -24,7 +24,19 @@
   header p { color: var(--g600); font-size: 14px; margin: 0; }
   .interim { background: var(--amber-lt); border-left: 4px solid var(--amber); padding: 8px 12px; font-size: 13px; margin: 12px 0 16px; border-radius: 0 4px 4px 0; }
 
-  .family { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; background: var(--g100); border-radius: 6px; padding: 12px; margin-bottom: 14px; }
+  .tabs { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 2px solid var(--teal); }
+  .tab { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border: 1px solid var(--g300); border-bottom: none; border-radius: 6px 6px 0 0; background: var(--g100); color: var(--g700); font-size: 13px; font-weight: 600; cursor: pointer; user-select: none; max-width: 220px; }
+  .tab .ph { font-weight: 500; font-size: 11px; color: var(--g600); }
+  .tab .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); flex-shrink: 0; }
+  .tab .ok { color: var(--green-dk); font-size: 11px; }
+  .tab.active { background: var(--teal); border-color: var(--teal-dk); color: #fff; }
+  .tab.active .ph, .tab.active .ok { color: rgba(255,255,255,.85); }
+  .tab.active .dot { background: #fff; }
+  .tab.add { background: #fff; color: var(--teal-dk); border-style: dashed; }
+  .tab:hover { filter: brightness(0.97); }
+  .empty { background: var(--g100); border-radius: 6px; padding: 24px; text-align: center; color: var(--g600); font-size: 14px; margin: 14px 0; }
+  .autosave { font-size: 12px; color: var(--g600); }
+  .family { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; background: var(--g100); border-radius: 0 0 6px 6px; padding: 12px; margin-bottom: 14px; }
   .family label { display: block; font-weight: 600; font-size: 12px; color: var(--g700); margin-bottom: 3px; }
   .family input[type=text], .family select { width: 100%; padding: 7px 8px; border: 1px solid var(--g300); border-radius: 4px; font: inherit; font-size: 14px; background: #fff; }
   .family .chk { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; padding-top: 20px; }
@@ -117,9 +129,11 @@
   <strong>Interim tool.</strong> QSIS will generate these tasks automatically once in production. Until then this page consolidates the Session Documentation Checklist (Excel), the QS Supervisor Wiki (CI&amp;CC integration &amp; Greenspace steps) and the QSIS workplan rules. Items marked <span class="verify">verify</span> have conflicting timings across sources — confirm with your supervisor.
 </div>
 
+<div class="tabs no-print" id="tabs"></div>
+<div id="workspace">
 <div class="family">
-  <div><label for="child">Child (initials or first name)</label><input type="text" id="child" placeholder="e.g. J.S." oninput="render()"></div>
-  <div><label for="pc">Parent Coach</label><input type="text" id="pc" placeholder="Your name"></div>
+  <div><label for="child">Child (initials or first name)</label><input type="text" id="child" placeholder="e.g. J.S." oninput="autosave()"></div>
+  <div><label for="pc">Parent Coach</label><input type="text" id="pc" placeholder="Your name" oninput="autosave()"></div>
   <div><label for="session">Current point in program</label>
     <select id="session" onchange="render()">
       <option value="0">Assigned — before S1</option>
@@ -133,11 +147,11 @@
 </div>
 
 <div class="toolbar no-print">
-  <button onclick="saveProgress()">💾 Save</button>
   <button class="secondary" onclick="expandAll(true)">Expand all</button>
   <button class="secondary" onclick="expandAll(false)">Collapse all</button>
   <button class="secondary" onclick="window.print()">🖨 Print</button>
-  <button class="danger" onclick="clearCurrent()">Clear &amp; start new</button>
+  <button class="danger" onclick="deleteActive()">Delete this family</button>
+  <span class="autosave" id="autosaveMsg">Changes save automatically in this browser.</span>
   <span class="spacer"></span>
   <label class="toggle"><input type="checkbox" id="showSrc" checked onchange="document.body.classList.toggle('hide-src', !this.checked)"> Show sources</label>
 </div>
@@ -152,11 +166,8 @@
 
 <div class="legend">Sources: <span class="src W">WIKI</span> QS Supervisor Wiki &nbsp; <span class="src Q">QSIS</span> QSIS workplan / derived tasks &nbsp; <span class="src X">EXCEL</span> Session Documentation Checklist &nbsp; <span class="src O">OT/SLP</span> SLP/OT prep checklist pattern</div>
 
-<div class="no-print">
-  <h2>Saved families</h2>
-  <p style="font-size:13px;color:var(--g600);margin:0">Saved in this browser only. Nothing leaves your computer — use initials, not full names.</p>
-  <div class="saved" id="savedList"></div>
 </div>
+<div class="empty no-print" id="empty" style="display:none">No families yet. Click <strong>+ Add family</strong> above to start. Records are saved in this browser only — use initials, not full names.</div>
 
 <footer>Interim bridge until QSIS. Greenspace/CI&amp;CC steps link to the QS Supervisor Wiki; everything else follows the QS Manual. Rule of thumb: <strong>every document uploaded to Greenspace is also uploaded to ShareVision.</strong></footer>
 </div>
@@ -390,53 +401,75 @@ function updateCounts() {
 
 function expandAll(open) { document.querySelectorAll('details.phase').forEach(d => d.open = open); }
 
-// ---- persistence ----
-const KEY = 'pcDocChecklist';
-function loadAll() { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { return []; } }
-function saveProgress() {
-  const child = document.getElementById('child').value.trim();
-  if (!child) { alert('Enter the child\'s initials first.'); return; }
-  const rec = { child, pc: document.getElementById('pc').value, session: currentSession(), home: document.getElementById('home').checked, checks: state.checks, savedAt: new Date().toISOString() };
-  const all = loadAll();
-  const i = all.findIndex(r => r.child.toLowerCase() === child.toLowerCase());
-  if (i >= 0) all[i] = rec; else all.push(rec);
-  try { localStorage.setItem(KEY, JSON.stringify(all)); } catch { alert('Could not save — browser storage unavailable.'); return; }
-  listSaved();
+// ---- persistence: tabs + autosave ----
+const KEY = 'pcDocChecklist', AKEY = 'pcDocChecklist_active';
+let all = [], active = -1;
+function loadAll() { try { all = JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { all = []; } }
+function persist() { try { localStorage.setItem(KEY, JSON.stringify(all)); localStorage.setItem(AKEY, String(active)); } catch { document.getElementById('autosaveMsg').textContent = 'Could not save — browser storage unavailable.'; } }
+
+function outstanding(rec) {
+  // same rule as updateCounts, computed from a record without rendering it
+  let n = 0;
+  PHASES.forEach(p => { if (rec.session > p.to) p.groups.flatMap(g => g.items).forEach(it => { if ((!it.cls || rec.home) && !rec.checks[it.id]) n++; }); });
+  for (let r = 5; r < rec.session && r <= 19; r++) if (GRID_COLS.some(c => !rec.checks[`g-${r}-${c.id}`])) n++;
+  return n;
 }
-function loadRecord(i) {
-  const r = loadAll()[i]; if (!r) return;
+const phaseLabel = s => s === 0 ? 'pre-S1' : s === 20 ? 'closeout' : 'S' + s;
+
+function renderTabs() {
+  const el = document.getElementById('tabs');
+  el.innerHTML = all.map((r, i) => {
+    const n = outstanding(r);
+    return `<div class="tab ${i === active ? 'active' : ''}" onclick="switchTo(${i})" title="${n ? n + ' outstanding' : 'up to date'}">${r.child || '(unnamed)'} <span class="ph">${phaseLabel(r.session)}</span>${n ? '<span class="dot"></span>' : '<span class="ok">✓</span>'}</div>`;
+  }).join('') + `<div class="tab add" onclick="addFamily()">+ Add family</div>`;
+  document.getElementById('workspace').style.display = active >= 0 ? '' : 'none';
+  document.getElementById('empty').style.display = active >= 0 ? 'none' : '';
+}
+
+let loading = false;
+function switchTo(i) {
+  active = i; const r = all[i];
+  loading = true;
   document.getElementById('child').value = r.child;
   document.getElementById('pc').value = r.pc || '';
   document.getElementById('session').value = r.session;
   document.getElementById('home').checked = !!r.home;
   state = { checks: r.checks || {} };
   render();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-function deleteRecord(i) {
-  const all = loadAll();
-  if (!confirm(`Delete saved checklist for ${all[i].child}?`)) return;
-  all.splice(i, 1);
-  localStorage.setItem(KEY, JSON.stringify(all));
-  listSaved();
-}
-function clearCurrent() {
-  if (!confirm('Clear the current checklist and start a new family?')) return;
-  ['child', 'pc'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('session').value = '0';
-  document.getElementById('home').checked = false;
-  state = { checks: {} };
-  render();
-}
-function listSaved() {
-  const all = loadAll();
-  const el = document.getElementById('savedList');
-  if (!all.length) { el.innerHTML = '<p style="font-size:13px;color:var(--g600)">No saved families yet.</p>'; return; }
-  const label = s => s === 0 ? 'before S1' : s === 20 ? 'closing out' : 'S' + s;
-  el.innerHTML = all.map((r, i) => `<div class="saved-item"><div><strong>${r.child}</strong> — ${label(r.session)}${r.pc ? ' · ' + r.pc : ''}<br><small>Saved ${new Date(r.savedAt).toLocaleDateString()}</small></div><div><button onclick="loadRecord(${i})">Load</button> <button class="danger" onclick="deleteRecord(${i})">Delete</button></div></div>`).join('');
+  loading = false;
+  persist(); renderTabs();
 }
 
-buildPhases(); buildGrid(); render(); listSaved();
+function addFamily() {
+  const name = (prompt('Child initials (e.g. J.S.):') || '').trim();
+  if (!name) return;
+  const pc = active >= 0 ? (all[active].pc || '') : '';
+  all.push({ child: name, pc, session: 0, home: false, checks: {}, savedAt: new Date().toISOString() });
+  switchTo(all.length - 1);
+}
+
+function autosave() {
+  if (active < 0 || loading) return;
+  all[active] = { child: document.getElementById('child').value.trim(), pc: document.getElementById('pc').value, session: currentSession(), home: document.getElementById('home').checked, checks: state.checks, savedAt: new Date().toISOString() };
+  persist(); renderTabs();
+}
+
+function deleteActive() {
+  if (active < 0) return;
+  if (!confirm(`Delete the checklist for ${all[active].child}? This cannot be undone.`)) return;
+  all.splice(active, 1);
+  active = all.length ? Math.min(active, all.length - 1) : -1;
+  persist();
+  if (active >= 0) switchTo(active); else { state = { checks: {} }; renderTabs(); }
+}
+
+// autosave on every change path
+const _toggle = toggle; toggle = function (cb) { _toggle(cb); autosave(); };
+const _render = render; render = function () { _render(); autosave(); };
+
+loadAll();
+buildPhases(); buildGrid();
+{ const a = parseInt(localStorage.getItem(AKEY) ?? '-1', 10); if (all.length) switchTo(a >= 0 && a < all.length ? a : 0); else { render(); renderTabs(); } }
 </script>
 </body>
 </html>
