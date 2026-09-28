@@ -158,12 +158,13 @@
   .tryit { font-size: 12px; padding: 4px 10px; margin: 4px 6px 4px 0; }
 
   /* Start page */
-  .lead { font-size: 17px; margin: 4px 0 14px; max-width: 860px; }
+  .lead { font-size: 17px; margin: 4px 0 14px; }
   .lead b { color: var(--teal-dk); }
-  .tldr { background: var(--teal-lt); border-left: 5px solid var(--teal); border-radius: 0 8px 8px 0; padding: 12px 16px; max-width: 860px; margin-bottom: 20px; }
-  .tldr-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
-  .tldr-head h3 { margin: 0 !important; }
-  .tldr-head button { font-size: 12px; padding: 4px 10px; }
+  .tldr { background: var(--teal-lt); border-left: 5px solid var(--teal); border-radius: 0 8px 8px 0; padding: 12px 16px; margin-bottom: 20px; }
+  .tldr-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr); gap: 10px 32px; }
+  .tldr-cols p { margin: 0 0 10px; font-size: 15px; }
+  .tldr button { font-size: 12px; padding: 4px 10px; }
+  @media (max-width: 860px) { .tldr-cols { grid-template-columns: minmax(0, 1fr); } }
   .tldr h3 { margin: 0 0 6px; font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--teal-dk); }
   .tldr ol { margin: 0; padding-left: 22px; font-size: 15px; }
   .tldr li { margin-bottom: 5px; }
@@ -242,14 +243,21 @@
   <p class="lead">Use this whenever you're working with a family's <b>PPAS Integrated Service Delivery consent form</b>: going through it with them, checking what a signed form allows, or handling a change. The form is easy to fill in wrongly and easy to misread, so this is for the whole team: supervisors, SLPs and OTs, and Parent Coaches.</p>
 
   <div class="tldr">
-    <div class="tldr-head"><h3>In short</h3><button class="secondary" data-print="1">Print one-page summary</button></div>
-    <p style="margin:0 0 8px;font-size:15px">The form lets the PPAS partners, and any other providers the family names, share the child's information with each other. Families don't have to repeat their story, and services can be coordinated. It's valid for one year.</p>
-    <h3>The three things that matter most for QuickStart</h3>
+    <div class="tldr-cols">
+      <div>
+        <h3>In short</h3>
+        <p>The form lets the PPAS partners, and any other providers the family names, share the child's information with each other. Families don't have to repeat their story, and services can be coordinated. It's valid for one year.</p>
+        <button class="secondary" data-print="1">Print one-page summary</button>
+      </div>
+      <div>
+        <h3>The three things that matter most for QuickStart</h3>
     <ol>
       <li><b>QuickStart's minimum:</b> the QuickStart column ticked in the first row with Diagnosis covered, the first “Use of information” box, and a signature. <span class="rv">REVIEW</span></li>
       <li><b>In each column, tick ALL <i>or</i> ONLY items, never both.</b> The ONLY list continues onto page 3.</li>
       <li><b>If anything is unclear, don't guess.</b> Pause that sharing and ask the family what they meant.</li>
     </ol>
+      </div>
+    </div>
   </div>
 
   <h3 class="start-h">What do you need to do?</h3>
