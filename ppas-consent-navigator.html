@@ -128,7 +128,7 @@
   .rv { display: inline-block; font-size: 10px; font-weight: 700; color: var(--amber-dk); background: var(--amber-lt); border: 1px solid var(--amber); padding: 0 5px; border-radius: 3px; margin-left: 3px; vertical-align: 1px; }
   .rvnote { background: var(--amber-lt); border: 1px dashed var(--amber); border-radius: 4px; padding: 6px 9px; font-size: 12.5px; margin: 6px 0; color: #5c3d00; }
   .rvnote::before { content: "REVIEW  "; font-weight: 700; font-size: 10.5px; letter-spacing: .04em; color: var(--amber-dk); }
-  body.hide-meta .src, body.hide-meta .rv, body.hide-meta .rvnote, body.hide-meta .legend { display: none !important; }
+  body.hide-meta :is(#pane-start, #pane-check, #pane-guide, #pane-situations) :is(.src, .rv, .rvnote, .legend) { display: none !important; }
   .legend { font-size: 12px; color: var(--g600); margin: 4px 0 10px; line-height: 1.9; }
 
   /* Guide & situations */
@@ -161,6 +161,9 @@
   .lead { font-size: 17px; margin: 4px 0 14px; max-width: 860px; }
   .lead b { color: var(--teal-dk); }
   .tldr { background: var(--teal-lt); border-left: 5px solid var(--teal); border-radius: 0 8px 8px 0; padding: 12px 16px; max-width: 860px; margin-bottom: 20px; }
+  .tldr-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
+  .tldr-head h3 { margin: 0 !important; }
+  .tldr-head button { font-size: 12px; padding: 4px 10px; }
   .tldr h3 { margin: 0 0 6px; font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--teal-dk); }
   .tldr ol { margin: 0; padding-left: 22px; font-size: 15px; }
   .tldr li { margin-bottom: 5px; }
@@ -213,7 +216,7 @@
   #printSheet .foot { font-size: 8pt; color: #444; border-top: 1px solid #999; padding-top: 4px; }
 </style>
 </head>
-<body>
+<body class="hide-meta">
 <a class="qs-home-pill" href="index.html">&larr; All Tools</a>
 <div class="wrap">
 
@@ -224,7 +227,7 @@
 
 <div class="banner" id="draftBanner">
   <strong>Draft for senior team review (September 2026)</strong>
-  Rules tagged <span class="src qs">QS</span> are our proposals where the PPAS documents are silent. Amber <span class="rv">REVIEW</span> notes mark where we most want your judgement. Start with the <a href="#review" data-go="review">For reviewers</a> tab.
+  Rules tagged <span class="src qs">QS</span> are our proposals where the PPAS documents are silent, and amber <span class="rv">REVIEW</span> notes mark where we most want your judgement. They're hidden by default: tick <b>Show sources &amp; review notes</b> on any tab to see them. Start with the <a href="#review" data-go="review">For reviewers</a> tab.
 </div>
 <div class="tabs" role="tablist">
   <button class="tab" data-tab="start">Start here</button>
@@ -236,11 +239,10 @@
 
 <!-- ============ START ============ -->
 <section class="pane" id="pane-start">
-  <p class="lead">Use this when you're working with a family's <b>PPAS Integrated Service Delivery consent form</b>. The form is easy to fill in wrongly, and easy to misread afterwards. This tool helps you spot problems, check what a form allows, know what to do, and handle changes later. New to the form? Read <a href="#start" data-scroll="bigpic">the bigger picture</a> first.</p>
-  <p class="hint" style="margin:-6px 0 14px;font-size:13.5px">It's for the whole team. Supervisors review the form with families. SLPs and OTs sometimes complete a printed copy in session. Parent Coaches rely on what it allows, for example before sharing the Discharge Report with CI&amp;CC.</p>
+  <p class="lead">Use this whenever you're working with a family's <b>PPAS Integrated Service Delivery consent form</b>: going through it with them, checking what a signed form allows, or handling a change. The form is easy to fill in wrongly and easy to misread, so this is for the whole team: supervisors, SLPs and OTs, and Parent Coaches.</p>
 
   <div class="tldr">
-    <h3>In short</h3>
+    <div class="tldr-head"><h3>In short</h3><button class="secondary" data-print="1">Print one-page summary</button></div>
     <p style="margin:0 0 8px;font-size:15px">The form lets the PPAS partners, and any other providers the family names, share the child's information with each other. Families don't have to repeat their story, and services can be coordinated. It's valid for one year.</p>
     <h3>The three things that matter most for QuickStart</h3>
     <ol>
@@ -267,21 +269,12 @@
       <span class="d">Adding or removing a provider, a withdrawal, consent about to expire, a form signed before the review, or a family who can't use DocuSign.</span>
       <span class="go">Something changed →</span>
     </a>
-    <a class="choice rvc" href="#review" data-go="review">
-      <span class="q">I'm reviewing this draft</span>
-      <span class="d">What we'd most like your judgement on, questions for PPAS, and form-design feedback.</span>
-      <span class="go">For reviewers →</span>
-    </a>
   </div>
 
   <div class="tryrow">
-    <b>New to this form?</b> See the checker working first:
+    <b>New to this form?</b> Read <a href="#start" data-scroll="bigpic">the bigger picture</a> below (about 2 minutes), then see the checker working:
     <button class="secondary" data-load="clean">A correctly completed form</button>
     <button class="secondary" data-load="a">A common mistake</button>
-  </div>
-  <div class="tryrow">
-    <b>Need it on paper?</b> A one-page summary of the minimums and what to watch for, to keep beside the form:
-    <button class="secondary" data-print="1">Print one-page summary</button>
   </div>
 
   <h3 class="start-h" id="bigpic">The bigger picture</h3>
@@ -328,7 +321,7 @@
     <button class="secondary" id="btnBlank">Clear everything</button>
     <span class="spacer"></span>
     <button id="btnCopy">Copy summary</button>
-    <label class="toggle"><input type="checkbox" class="metaToggle" checked> Show sources &amp; review notes</label>
+    <label class="toggle"><input type="checkbox" class="metaToggle"> Show sources &amp; review notes</label>
   </div>
   <ol class="steps">
     <li>Tick exactly what's on the family's form, <b>including anything that looks wrong</b>. The partner table runs across pages 2 and 3, so check both.</li>
@@ -345,20 +338,21 @@
 
 <!-- ============ GUIDE ============ -->
 <section class="pane" id="pane-guide">
-  <div class="toolbar"><button class="secondary" data-print="1">Print one-page summary</button><span class="spacer"></span><label class="toggle"><input type="checkbox" class="metaToggle" checked> Show sources &amp; review notes</label></div>
+  <div class="toolbar"><button class="secondary" data-print="1">Print one-page summary</button><span class="spacer"></span><label class="toggle"><input type="checkbox" class="metaToggle"> Show sources &amp; review notes</label></div>
   <div class="chips" id="guideChips"></div>
   <div id="guideBody" class="doc"></div>
 </section>
 
 <!-- ============ SITUATIONS ============ -->
 <section class="pane" id="pane-situations">
-  <div class="toolbar"><span class="spacer"></span><label class="toggle"><input type="checkbox" class="metaToggle" checked> Show sources &amp; review notes</label></div>
+  <div class="toolbar"><span class="spacer"></span><label class="toggle"><input type="checkbox" class="metaToggle"> Show sources &amp; review notes</label></div>
   <p class="doc" style="margin-top:0">Pick the situation. Each one gives the path and where to document it.</p>
   <div id="sitBody"></div>
 </section>
 
 <!-- ============ REVIEW ============ -->
 <section class="pane" id="pane-review">
+  <div class="toolbar"><label class="toggle"><input type="checkbox" class="metaToggle"> <b>Show sources &amp; review notes on every tab</b> (recommended while reviewing)</label></div>
   <div class="doc" id="reviewBody"></div>
 </section>
 
@@ -1101,7 +1095,15 @@ function loadExample(k) {
   $('#formSide').insertAdjacentHTML('afterbegin', `<div class="banner info" id="exNote"><strong>${esc(ex.label)}</strong>${esc(ex.note)}</div>`);
 }
 
+/* Sources & review notes: hidden by default; the choice is remembered in this browser only. */
+function setMeta(on) {
+  document.body.classList.toggle('hide-meta', !on);
+  document.querySelectorAll('.metaToggle').forEach(t => t.checked = on);
+  try { localStorage.setItem('ppasNavShowMeta', on ? '1' : '0'); } catch (e) {}
+}
+
 renderForm(); syncForm(); renderResults(); renderReview();
+try { if (localStorage.getItem('ppasNavShowMeta') === '1') setMeta(true); } catch (e) {}
 $('#exSel').innerHTML += EXAMPLES.map(e => `<option value="${e.k}">${esc(e.label)}</option>`).join('');
 $('#guideChips').innerHTML = GUIDE.map(g => `<button class="chip" data-k="${g.k}">${esc(g.t)}</button>`).join('');
 $('#sitBody').innerHTML = SITS.map(s => `<details class="sit" id="sit-${s.k}"><summary>${esc(s.t)}${s.when ? ` <span class="when">${esc(s.when)}</span>` : ''}</summary><div class="doc">${s.html}</div></details>`).join('');
@@ -1111,7 +1113,7 @@ document.addEventListener('change', e => {
   if (el.matches('#formSide input[data-path]')) { setPath(el.dataset.path, el.checked); $('#exNote') && $('#exNote').remove(); $('#exSel').value = ''; renderResults(); }
   else if (el.matches('#formSide input[name=reviewed]')) { state.reviewed = el.value; renderResults(); }
   else if (el.id === 'exSel') { if (el.value) loadExample(el.value); }
-  else if (el.classList.contains('metaToggle')) { document.body.classList.toggle('hide-meta', !el.checked); document.querySelectorAll('.metaToggle').forEach(t => t.checked = el.checked); }
+  else if (el.classList.contains('metaToggle')) setMeta(el.checked);
 });
 document.addEventListener('click', e => {
   const pp = e.target.closest('[data-print]'); if (pp) { e.preventDefault(); printSummary(); return; }
