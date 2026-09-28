@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PPAS Consent Form Navigator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal: #00a5b5; --teal-dk: #008a98; --teal-lt: #e6f6f8;
+    --green: #7cb342; --green-dk: #4f7d24; --green-lt: #eef6e4;
+    --blue: #5a7fc0; --blue-dk: #41619c; --blue-lt: #eaeff8;
+    --amber: #e6a117; --amber-dk: #8a5a00; --amber-lt: #fff6df;
+    --red: #c0392b; --red-lt: #fbe9e7;
+    --g100: #f5f5f5; --g200: #eeeeee; --g300: #e0e0e0; --g600: #757575; --g700: #616161; --g900: #212121;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: 'DM Sans', -apple-system, 'Segoe UI', sans-serif; color: var(--g900); background: #fff; margin: 0; padding: 20px 16px 80px; line-height: 1.45; }
+  .wrap { max-width: 1180px; margin: 0 auto; }
+  header { border-bottom: 3px solid var(--teal); padding-bottom: 10px; margin-bottom: 14px; }
+  h1 { color: var(--teal-dk); font-size: 26px; font-weight: 700; margin: 0 0 4px; }
+  header p { color: var(--g600); font-size: 14px; margin: 0; }
+  a { color: var(--blue-dk); }
+
+  .banner { border-left: 4px solid var(--amber); background: var(--amber-lt); padding: 9px 12px; font-size: 13px; margin: 10px 0; border-radius: 0 4px 4px 0; }
+  .banner.info { border-left-color: var(--blue); background: var(--g100); }
+  .banner strong:first-child { display: block; margin-bottom: 2px; }
+
+  .tabs { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 2px solid var(--teal); margin-top: 14px; }
+  .tab { padding: 8px 14px; border: 1px solid var(--g300); border-bottom: none; border-radius: 6px 6px 0 0; background: var(--g100); color: var(--g700); font-size: 14px; font-weight: 600; cursor: pointer; user-select: none; font-family: inherit; }
+  .tab.active { background: var(--teal); border-color: var(--teal-dk); color: #fff; }
+  .tab.rv-tab { background: var(--amber-lt); color: var(--amber-dk); border-color: var(--amber); }
+  .tab.rv-tab.active { background: var(--amber); color: #fff; }
+  .pane { display: none; padding-top: 14px; }
+  .pane.active { display: block; }
+
+  .toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; font-size: 13px; }
+  .toolbar .spacer { flex: 1; }
+  .toolbar label.toggle { display: flex; align-items: center; gap: 5px; }
+  button, select { font: inherit; font-size: 13px; }
+  button { font-weight: 600; padding: 7px 14px; border-radius: 4px; border: 1px solid var(--teal-dk); background: var(--teal); color: #fff; cursor: pointer; }
+  button.secondary { background: #fff; color: var(--teal-dk); }
+  button:hover { filter: brightness(0.95); }
+  select { padding: 6px 8px; border: 1px solid var(--g300); border-radius: 4px; background: #fff; max-width: 100%; }
+
+  /* Check layout */
+  .check-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+  .results { position: sticky; top: 10px; max-height: calc(100vh - 20px); overflow-y: auto; border: 1px solid var(--g300); border-radius: 8px; padding: 12px 14px; background: #fff; }
+  @media (max-width: 1100px) {
+    .check-grid { grid-template-columns: minmax(0, 1fr); }
+    .results { position: static; max-height: none; }
+    .jump { display: inline-block !important; }
+  }
+  .jump { display: none; position: fixed; right: 14px; bottom: 14px; z-index: 50; padding: 7px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; text-decoration: none; box-shadow: 0 2px 6px rgba(0,0,0,.25); color: #fff; background: var(--g700); }
+
+  .card { border: 1px solid var(--g300); border-radius: 8px; margin-bottom: 14px; overflow: hidden; }
+  .card > h3 { margin: 0; padding: 9px 12px; background: var(--g100); border-bottom: 1px solid var(--g300); font-size: 14px; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+  .card > h3 .pg { font-weight: 500; font-size: 12px; color: var(--g600); }
+  .card .body { padding: 10px 12px; }
+  .tscroll { overflow-x: auto; }
+  table.form { border-collapse: collapse; width: 100%; font-size: 13px; min-width: 520px; }
+  table.form th, table.form td { border: 1px solid var(--g300); padding: 5px 6px; }
+  table.form th { background: #fafafa; font-size: 11.5px; font-weight: 700; text-align: center; width: 13%; vertical-align: bottom; line-height: 1.2; }
+  table.form th:first-child { width: auto; text-align: left; }
+  table.form td { text-align: center; }
+  table.form td:first-child { text-align: left; }
+  table.form td.ind { padding-left: 20px; }
+  table.form tr.sub td { background: #fafafa; font-size: 12px; color: var(--g700); font-weight: 600; }
+  table.form tr.gate td { background: var(--teal-lt); }
+  table.form tr.gate td:first-child { font-weight: 600; }
+  table.form tr.brk td { background: repeating-linear-gradient(135deg, #fff, #fff 6px, var(--amber-lt) 6px, var(--amber-lt) 12px); font-size: 11.5px; color: var(--amber-dk); font-weight: 600; text-align: center; }
+  table.form input { width: 17px; height: 17px; accent-color: var(--teal-dk); cursor: pointer; }
+  .opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 6px 14px; font-size: 13.5px; }
+  .opts label, .radio label { display: flex; gap: 8px; align-items: flex-start; cursor: pointer; }
+  .opts input, .radio input { width: 17px; height: 17px; margin-top: 1px; accent-color: var(--teal-dk); flex-shrink: 0; }
+  .radio { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13.5px; margin-top: 4px; }
+  .hint { font-size: 12px; color: var(--g600); margin: 6px 0 0; }
+
+  /* Tiers */
+  .tier { display: inline-block; font-size: 10.5px; font-weight: 700; letter-spacing: .03em; padding: 2px 7px; border-radius: 3px; white-space: nowrap; text-transform: uppercase; }
+  .t-ok { background: var(--green-lt); color: var(--green-dk); border: 1px solid #c5dfa8; }
+  .t-note { background: var(--blue-lt); color: var(--blue-dk); border: 1px solid #c3d0ea; }
+  .t-unclear { background: var(--amber-lt); color: var(--amber-dk); border: 1px solid var(--amber); }
+  .t-block { background: var(--red-lt); color: var(--red); border: 1px solid #f0b4ab; }
+  .verdict { border-radius: 6px; padding: 10px 12px; margin-bottom: 10px; }
+  .verdict.v-ok { background: var(--green-lt); border-left: 5px solid var(--green); }
+  .verdict.v-note { background: var(--blue-lt); border-left: 5px solid var(--blue); }
+  .verdict.v-unclear { background: var(--amber-lt); border-left: 5px solid var(--amber); }
+  .verdict.v-block { background: var(--red-lt); border-left: 5px solid var(--red); }
+  .verdict .big { font-size: 16px; font-weight: 700; }
+  .verdict .sm { font-size: 13px; margin-top: 2px; }
+  .results h4 { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--teal-dk); margin: 14px 0 6px; }
+  .ritem { border: 1px solid var(--g300); border-radius: 6px; padding: 8px 10px; margin-bottom: 7px; font-size: 13px; }
+  .ritem .top { display: flex; gap: 8px; align-items: baseline; justify-content: space-between; flex-wrap: wrap; }
+  .ritem .nm { font-weight: 700; }
+  .ritem .reading { margin-top: 3px; }
+  .ritem .act { margin-top: 5px; padding-top: 5px; border-top: 1px dashed var(--g300); color: var(--g900); }
+  .ritem .act b { color: var(--teal-dk); }
+  .todo { margin: 0; padding-left: 18px; font-size: 13px; }
+  .todo li { margin-bottom: 5px; }
+  .flows { list-style: none; margin: 0; padding: 0; font-size: 13px; }
+  .flows li { display: grid; grid-template-columns: 22px 1fr; gap: 4px; padding: 5px 0; border-bottom: 1px solid var(--g200); }
+  .flows .ic { font-weight: 700; text-align: center; }
+  .flows .yes .ic { color: var(--green-dk); }
+  .flows .paused .ic { color: var(--amber-dk); }
+  .flows .no .ic { color: var(--g600); }
+  .flows .no.crit .ic, .flows .no.crit .fn { color: var(--red); }
+  .flows .fn { font-weight: 600; }
+  .flows .why { display: block; font-size: 12px; color: var(--g600); }
+  .placeholder { color: var(--g600); font-size: 14px; padding: 18px 6px; text-align: center; }
+
+  /* Tags */
+  .src { display: inline-block; font-size: 10px; font-weight: 700; padding: 1px 5px; border-radius: 3px; margin-left: 3px; vertical-align: 1px; letter-spacing: .02em; background: var(--g200); color: var(--g700); white-space: nowrap; }
+  .src.qs { background: var(--blue-lt); color: var(--blue-dk); }
+  .src.ask { background: #f3e5f5; color: #6a1b9a; }
+  .src.fd { background: var(--red-lt); color: var(--red); }
+  .rv { display: inline-block; font-size: 10px; font-weight: 700; color: var(--amber-dk); background: var(--amber-lt); border: 1px solid var(--amber); padding: 0 5px; border-radius: 3px; margin-left: 3px; vertical-align: 1px; }
+  .rvnote { background: var(--amber-lt); border: 1px dashed var(--amber); border-radius: 4px; padding: 6px 9px; font-size: 12.5px; margin: 6px 0; color: #5c3d00; }
+  .rvnote::before { content: "REVIEW  "; font-weight: 700; font-size: 10.5px; letter-spacing: .04em; color: var(--amber-dk); }
+  body.hide-meta .src, body.hide-meta .rv, body.hide-meta .rvnote, body.hide-meta .legend { display: none !important; }
+  .legend { font-size: 12px; color: var(--g600); margin: 4px 0 10px; line-height: 1.9; }
+
+  /* Guide & situations */
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  .chip { border: 1px solid var(--teal-dk); background: #fff; color: var(--teal-dk); border-radius: 999px; padding: 6px 12px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; }
+  .chip.active { background: var(--teal); color: #fff; }
+  .doc { max-width: 860px; font-size: 14.5px; }
+  .doc h2 { font-size: 20px; color: var(--teal-dk); margin: 4px 0 8px; }
+  .doc h3 { font-size: 15px; margin: 18px 0 6px; color: var(--g900); }
+  .doc p { margin: 6px 0; }
+  .doc ul, .doc ol { margin: 6px 0; padding-left: 22px; }
+  .doc li { margin-bottom: 4px; }
+  .min { background: var(--teal-lt); border-left: 4px solid var(--teal); padding: 8px 12px; border-radius: 0 4px 4px 0; margin: 8px 0; }
+  .min b:first-child { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--teal-dk); margin-bottom: 2px; }
+  .say { background: #fafafa; border: 1px dashed var(--g300); border-radius: 4px; padding: 8px 12px; margin: 8px 0; font-style: italic; color: var(--g700); }
+  .say::before { content: "SAY"; display: block; font-style: normal; font-weight: 700; font-size: 10.5px; letter-spacing: .06em; color: var(--teal-dk); margin-bottom: 2px; }
+  table.pat { border-collapse: collapse; width: 100%; font-size: 13px; margin: 8px 0; }
+  table.pat th, table.pat td { border: 1px solid var(--g300); padding: 6px 8px; text-align: left; vertical-align: top; }
+  table.pat th { background: var(--g100); font-size: 12px; }
+  details.sit { border: 1px solid var(--g300); border-radius: 8px; margin-bottom: 10px; max-width: 860px; }
+  details.sit > summary { cursor: pointer; padding: 10px 14px; font-weight: 700; font-size: 15px; list-style: none; display: flex; gap: 10px; align-items: baseline; }
+  details.sit > summary::-webkit-details-marker { display: none; }
+  details.sit > summary::before { content: "▸"; color: var(--teal-dk); }
+  details.sit[open] > summary::before { content: "▾"; }
+  details.sit > summary .when { font-weight: 500; font-size: 12.5px; color: var(--g600); }
+  details.sit .doc { padding: 0 16px 12px 34px; }
+  .tryit { font-size: 12px; padding: 4px 10px; margin: 4px 6px 4px 0; }
+
+  /* Start page */
+  .lead { font-size: 17px; margin: 4px 0 14px; max-width: 860px; }
+  .lead b { color: var(--teal-dk); }
+  .tldr { background: var(--teal-lt); border-left: 5px solid var(--teal); border-radius: 0 8px 8px 0; padding: 12px 16px; max-width: 860px; margin-bottom: 20px; }
+  .tldr h3 { margin: 0 0 6px; font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--teal-dk); }
+  .tldr ol { margin: 0; padding-left: 22px; font-size: 15px; }
+  .tldr li { margin-bottom: 5px; }
+  .start-h { font-size: 18px; color: var(--g900); margin: 0 0 10px; }
+  .choices { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; margin-bottom: 18px; }
+  .choice { display: flex; flex-direction: column; gap: 6px; border: 1px solid var(--g300); border-top: 4px solid var(--teal); border-radius: 8px; padding: 12px 14px; text-decoration: none; color: var(--g900); background: #fff; cursor: pointer; }
+  .choice:hover { box-shadow: 0 2px 8px rgba(0,0,0,.12); border-color: var(--teal); }
+  .choice .q { font-weight: 700; font-size: 15.5px; }
+  .choice .d { font-size: 13.5px; color: var(--g700); flex: 1; }
+  .choice .go { font-weight: 700; font-size: 13.5px; color: var(--teal-dk); }
+  .choice.rvc { border-top-color: var(--amber); background: #fffdf6; }
+  .choice.rvc .go { color: var(--amber-dk); }
+  .tryrow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; background: var(--g100); border-radius: 8px; padding: 10px 14px; font-size: 14px; margin-bottom: 14px; }
+  .steps { margin: 0 0 12px; padding-left: 22px; font-size: 13.5px; }
+  .steps li { margin-bottom: 3px; }
+  .placeholder .tryrow { justify-content: center; background: none; }
+  .bigpic { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .bp { border: 1px solid var(--g300); border-radius: 8px; padding: 10px 14px; background: #fff; }
+  .bp h4 { margin: 2px 0 6px; font-size: 14.5px; color: var(--teal-dk); }
+  .bp ul { margin: 0; padding-left: 18px; font-size: 13.5px; }
+  .bp li { margin-bottom: 6px; }
+
+  footer { margin-top: 34px; font-size: 12px; color: var(--g600); border-top: 1px solid var(--g300); padding-top: 10px; }
+  footer ul { margin: 4px 0; padding-left: 18px; }
+
+  .qs-home-pill{position:fixed;bottom:14px;left:14px;z-index:9999;background:#008a98;color:#fff;padding:6px 12px;border-radius:999px;font-family:'DM Sans','Segoe UI',sans-serif;font-size:12px;font-weight:600;text-decoration:none;box-shadow:0 2px 6px rgba(0,0,0,.25);opacity:.92;}
+  .qs-home-pill:hover{opacity:1;}
+  @media print { .qs-home-pill, .jump, .toolbar, .tabs { display: none !important; } .results { position: static; max-height: none; } }
+</style>
+</head>
+<body>
+<a class="qs-home-pill" href="index.html">&larr; All Tools</a>
+<div class="wrap">
+
+<header>
+  <h1>PPAS Consent Form Navigator</h1>
+  <p>Integrated Service Delivery Consent (PPAS Stage 2). Check a completed form, look up a section, or handle a change.</p>
+</header>
+
+<div class="banner" id="draftBanner">
+  <strong>Draft for senior team review (September 2026)</strong>
+  Rules tagged <span class="src qs">QS</span> are our proposals where the PPAS documents are silent. Amber <span class="rv">REVIEW</span> notes mark where we most want your judgement. Start with the <a href="#review" data-go="review">For reviewers</a> tab.
+</div>
+<div class="tabs" role="tablist">
+  <button class="tab" data-tab="start">Start here</button>
+  <button class="tab" data-tab="check">Check a form</button>
+  <button class="tab" data-tab="guide">Section guide</button>
+  <button class="tab" data-tab="situations">Something changed</button>
+  <button class="tab rv-tab" data-tab="review">For reviewers</button>
+</div>
+
+<!-- ============ START ============ -->
+<section class="pane" id="pane-start">
+  <p class="lead">Use this when you're working with a family's <b>PPAS Integrated Service Delivery consent form</b>. The form is easy to fill in wrongly. This tool helps you spot problems, know what to do about them, and handle changes later. New to the form? Read <a href="#start" data-scroll="bigpic">the bigger picture</a> first.</p>
+
+  <div class="tldr">
+    <h3>In short</h3>
+    <p style="margin:0 0 8px;font-size:15px">The form lets the PPAS partners, and any other providers the family names, share the child's information with each other. Families don't have to repeat their story, and services can be coordinated. It's valid for one year.</p>
+    <h3>The three things that matter most for QuickStart</h3>
+    <ol>
+      <li><b>QuickStart's minimum:</b> the QuickStart column ticked in the first row with Diagnosis covered, the first “Use of information” box, and a signature. <span class="rv">REVIEW</span></li>
+      <li><b>In each column, tick ALL <i>or</i> ONLY items, never both.</b> The ONLY list continues onto page 3.</li>
+      <li><b>If anything is unclear, don't guess.</b> Pause that sharing and ask the family what they meant.</li>
+    </ol>
+  </div>
+
+  <h3 class="start-h">What do you need to do?</h3>
+  <div class="choices">
+    <a class="choice" href="#check" data-go="check">
+      <span class="q">I have a completed form in front of me</span>
+      <span class="d">Tick what's on it. You'll see whether anything needs fixing, what to do, and what QuickStart can and can't do with it.</span>
+      <span class="go">Check a form →</span>
+    </a>
+    <a class="choice" href="#guide/partners" data-go="guide/partners">
+      <span class="q">I'm going through the form with a family, or have a question about part of it</span>
+      <span class="d">Section by section: the minimum, what the family is choosing, common mistakes, and what to say.</span>
+      <span class="go">Section guide →</span>
+    </a>
+    <a class="choice" href="#situations" data-go="situations">
+      <span class="q">Something has changed for a family</span>
+      <span class="d">Adding or removing a provider, a withdrawal, consent about to expire, or a form signed before the review.</span>
+      <span class="go">Something changed →</span>
+    </a>
+    <a class="choice rvc" href="#review" data-go="review">
+      <span class="q">I'm reviewing this draft</span>
+      <span class="d">What we'd most like your judgement on, questions for PPAS, and form-design feedback.</span>
+      <span class="go">For reviewers →</span>
+    </a>
+  </div>
+
+  <div class="tryrow">
+    <b>New to this form?</b> See the checker working first:
+    <button class="secondary" data-load="clean">A correctly completed form</button>
+    <button class="secondary" data-load="a">A common mistake</button>
+  </div>
+
+  <h3 class="start-h" id="bigpic">The bigger picture</h3>
+  <div class="bigpic">
+    <div class="bp">
+      <h4>What the form is, and isn't</h4>
+      <ul>
+        <li><b>It is</b> PPAS's Stage 2 consent, signed once a family accepts services. Stage 1 is CI&amp;CC's intake and service-matching consent, valid for 90 days. <span class="src">MEMO</span></li>
+        <li><b>It is</b> consent for the four PPAS partners (IWK Health, Nova Scotia Health, Hearing and Speech NS, and Autism NS's QuickStart), plus any other providers the family names, to collect, use and share the child's information with each other. <span class="src">FORM</span> <span class="src">MOU §1.3</span></li>
+        <li><b>It isn't</b> consent to take part in QuickStart. QuickStart's own forms cover that. <span class="src">MEMO</span></li>
+        <li><b>It isn't</b> about how anyone contacts the family. It's about how the organizations share with each other. <span class="src qs">QS</span></li>
+        <li><b>It isn't</b> a limit on record-keeping. After a year, sharing stops; nothing is deleted. <span class="src">MOU §16.1</span></li>
+      </ul>
+    </div>
+    <div class="bp">
+      <h4>Principles behind every answer here</h4>
+      <ul>
+        <li><b>The consent is the conversation.</b> The form is the written record of it, so review it with the family before they sign. <span class="src">OP GUIDE §4</span></li>
+        <li><b>Families stay in control.</b> They choose partner by partner and type by type, and can change their mind at any time. Changes aren't retroactive. <span class="src">MEMO</span> <span class="src">FORM</span></li>
+        <li><b>Share only what's needed.</b> <span class="src">MOU §8.2</span></li>
+        <li><b>Never read a form more broadly than the family clearly gave it.</b> If it's unclear, pause that sharing and ask them. <span class="src">MEMO</span> <span class="src">MOU §8.5</span></li>
+      </ul>
+    </div>
+    <div class="bp">
+      <h4>How it works for QuickStart</h4>
+      <ul>
+        <li><b>Signed in the supervisor's intro meeting</b> through DocuSign, together with QuickStart's own two forms. It must be complete before Session 1. <span class="src">WIKI</span></li>
+        <li><b>Stored in Greenspace and ShareVision.</b> In Greenspace it goes in a “Service Delivery Consent Form” note with Clinician(s) ticked. <span class="src">MEMO</span> <span class="src">WIKI</span></li>
+        <li><b>QuickStart relies on it</b> to receive the child's service-match and diagnosis information, to coordinate with the family's other providers (e.g., their HSNS SLP), and to send the Discharge Report back to CI&amp;CC at the end. <span class="src">WIKI</span> <span class="src qs">QS</span></li>
+        <li><b>When things change:</b> adding someone needs a new signed form (pre-filled); removing someone needs only written notice. <span class="src">FORM</span> <span class="src">MOU §11</span> <span class="src qs">QS</span> <span class="rv">REVIEW</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <p class="hint">This tool goes with the <a href="PPASConsentStaffGuide.html">quick reference</a>. It doesn't replace the PPAS form or the review conversation with the family. <b>Nothing you tick here is saved or sent anywhere, and there are no fields for names.</b></p>
+</section>
+
+<!-- ============ CHECK ============ -->
+<section class="pane" id="pane-check">
+  <div class="toolbar">
+    <label for="exSel"><b>Load an example:</b></label>
+    <select id="exSel"><option value="">Choose…</option></select>
+    <button class="secondary" data-load="clean">Load a correctly completed form</button>
+    <button class="secondary" id="btnBlank">Clear everything</button>
+    <span class="spacer"></span>
+    <button id="btnCopy">Copy summary</button>
+    <label class="toggle"><input type="checkbox" class="metaToggle" checked> Show sources &amp; review notes</label>
+  </div>
+  <ol class="steps">
+    <li>Tick exactly what's on the family's form, <b>including anything that looks wrong</b>. The partner table runs across pages 2 and 3, so check both.</li>
+    <li>Read the results as they update. Anything not rated <span class="tier t-ok">Fine</span> tells you what to do.</li>
+    <li>Use <b>Copy summary</b> if you want a record of the check (it contains no names).</li>
+  </ol>
+
+  <div class="check-grid">
+    <div id="formSide"></div>
+    <aside class="results" id="results" aria-live="polite"></aside>
+  </div>
+  <a href="#results" class="jump" id="jump">Results</a>
+</section>
+
+<!-- ============ GUIDE ============ -->
+<section class="pane" id="pane-guide">
+  <div class="toolbar"><span class="spacer"></span><label class="toggle"><input type="checkbox" class="metaToggle" checked> Show sources &amp; review notes</label></div>
+  <div class="chips" id="guideChips"></div>
+  <div id="guideBody" class="doc"></div>
+</section>
+
+<!-- ============ SITUATIONS ============ -->
+<section class="pane" id="pane-situations">
+  <div class="toolbar"><span class="spacer"></span><label class="toggle"><input type="checkbox" class="metaToggle" checked> Show sources &amp; review notes</label></div>
+  <p class="doc" style="margin-top:0">Pick the situation. Each one gives the path and where to document it.</p>
+  <div id="sitBody"></div>
+</section>
+
+<!-- ============ REVIEW ============ -->
+<section class="pane" id="pane-review">
+  <div class="doc" id="reviewBody"></div>
+</section>
+
+<footer>
+  <b>Sources</b> (tags used throughout):
+  <ul>
+    <li><span class="src">FORM</span> IWK PPAS Integrated Service Delivery Consent Form, final Sept 2025</li>
+    <li><span class="src">OP GUIDE</span> PPAS MOU Operational Guide v1.0, Sept 2025</li>
+    <li><span class="src">MOU</span> PPAS Information Sharing MOU, signed Sept 2025</li>
+    <li><span class="src">MEMO</span> Memo: Integrated Service Delivery Consent, Information Sharing Update, Feb 17 2026</li>
+    <li><span class="src">WIKI</span> <a href="ServiceMatch%26IntroMeeting.html">QuickStart Service Match &amp; Intro Meeting wiki</a></li>
+    <li><span class="src qs">QS</span> QuickStart proposal where the documents are silent · <span class="src ask">ASK PPAS</span> only PPAS can answer · <span class="src fd">FORM DESIGN</span> exists because of how the form is laid out</li>
+  </ul>
+  QuickStart Nova Scotia · internal staff resource · interim until the PPAS form is revised.
+</footer>
+</div>
+
+<script>
+/* ======================= DATA ======================= */
+const PARTNERS = [
+  { k: 'iwk',  name: 'IWK Health', short: 'IWK' },
+  { k: 'nsh',  name: 'Nova Scotia Health', short: 'NS Health' },
+  { k: 'hsns', name: 'Hearing and Speech Nova Scotia', short: 'HSNS' },
+  { k: 'ans',  name: "Autism Nova Scotia's QuickStart NS Program", short: 'QuickStart (ANS)' },
+];
+const P_TYPES = [
+  { k: 'med',      label: 'Personal medical history and physical reports', short: 'Medical history' },
+  { k: 'dx',       label: 'Diagnosis information (including written diagnoses or long-term prognoses)', short: 'Diagnosis' },
+  { k: 'consults', label: 'Consults or written reports of findings', short: 'Consults/written reports' },
+  { k: 'notes',    label: 'Patient care notes or clinic notes', short: 'Care/clinic notes' },
+  { k: 'diag',     label: 'Diagnostic assessments', short: 'Diagnostic assessments' },
+  { k: 'planning', label: 'Assessments for intervention/service planning', short: 'Intervention/service planning assessments' },
+  { k: 'tx',       label: 'Treatment participation (including frequency of participation and results to date)', short: 'Treatment participation' },
+];
+const PR_TYPES = [
+  { k: 'med',      label: 'Personal medical history', short: 'Medical history' },
+  { k: 'dx',       label: 'Diagnosis information (including written diagnoses or long-term prognoses)', short: 'Diagnosis' },
+  { k: 'consults', label: 'Consults or written reports of findings', short: 'Consults/written reports' },
+  { k: 'notes',    label: 'Patient care notes or clinic notes', short: 'Care/clinic notes' },
+  { k: 'diag',     label: 'Diagnostic assessments', short: 'Diagnostic assessments' },
+  { k: 'tx',       label: 'Treatment participation (including frequency of participation and results to date)', short: 'Treatment participation' },
+];
+const METHODS = [
+  { k: 'ffc', label: 'Face-to-face' },
+  { k: 'phone', label: 'By telephone' },
+  { k: 'mail', label: 'By regular or registered mail' },
+  { k: 'fax', label: 'By fax' },
+  { k: 'email', label: 'By secure email' },
+];
+/* ANS no longer sends or receives faxes (Sept 2026), so fax never counts toward what QuickStart can do.
+   Other PPAS partners may still use it, so the form's fax box itself stays valid. */
+const QS_UNUSABLE = ['fax'];
+const QS_DOC = ['mail', 'email'];
+const WIKI = 'ServiceMatch%26IntroMeeting.html';
+
+/* QuickStart information flows and the form boxes each depends on (DRAFT — for review) */
+const FLOWS = [
+  { k: 'min', name: 'Run QuickStart (the minimum)', partner: 'ans', types: ['dx'], crit: true,
+    rv: 'QuickStart minimum, as one rule: consent for QuickStart to receive the child’s diagnosis information (QuickStart column ticked in the first row, Diagnosis covered by ALL or under ONLY) and to use shared information to provide services (first Use of information box), plus a signature. The Use of information part is newly added.' },
+  { k: 'dc', name: 'Section 13: Discharge Report to CI&CC through Greenspace', partner: 'iwk', types: ['tx', 'consults'], gs: true,
+    rv: 'Draft assumes a Discharge Report counts as both “Treatment participation” and “Consults or written reports of findings”. Is one enough?' },
+  { k: 'esdm', name: 'Section 13: pre-intervention ESDM curriculum checklist to CI&CC through Greenspace', partner: 'iwk', types: ['planning'], gs: true,
+    rv: 'Draft assumes the checklist counts as “Assessments for intervention/service planning”.' },
+  { k: 'cicc', name: 'Ask CI&CC about the family’s file (phone or email)', partner: 'iwk', types: 'any', methodsAny: ['phone', 'email', 'ffc'],
+    rv: 'Open wiki item 38: does the consent cover a Parent Coach asking CI&CC without checking with the family first? Needs PPAS confirmation.' },
+  { k: 'slp', name: 'Coordinate with the family’s own HSNS SLP (calls, Session 6 goal-sharing)', partner: 'hsns', types: ['planning', 'tx'], methodsAny: ['ffc', 'phone', 'mail', 'email'],
+    rv: 'Means the family’s HSNS SLP outside QuickStart. HSNS-employed SLPs/OTs working in a QuickStart role work on QuickStart’s behalf, so draft assumes they fall under the QuickStart column. Confirm.' },
+  { k: 'nsh', name: 'Share with an NS Health diagnostic team (only if involved)', partner: 'nsh', types: ['dx', 'diag'], methodsAny: ['ffc', 'phone', 'mail', 'email'],
+    rv: 'Is there a real QuickStart flow with NS Health? Keep or drop this row.' },
+  { k: 'moveit', name: 'Staff-placed PPAS referral with the Discharge Report via MOVEit (rare)', partner: 'iwk', types: ['tx', 'consults'], methodsAll: ['email'] },
+  { k: 'docs', name: 'Send documents to a partner outside Greenspace (mail or secure email)', methodsAny: QS_DOC },
+];
+
+/* ======================= STATE ======================= */
+function blankState() {
+  const p = {}; PARTNERS.forEach(x => p[x.k] = { r: false, a: false, o: {} });
+  return {
+    p,
+    prov: [0,1,2,3].map(() => ({ named: false, org: false, contact: false, a: false, o: {} })),
+    m: { ffc: false, phone: false, mail: false, fax: false, email: false },
+    use: { svc: false, eval: false },
+    foc: { verbal: false, written: false },
+    signed: false,
+    reviewed: 'yes',
+  };
+}
+function cleanState() {
+  const s = blankState();
+  PARTNERS.forEach(x => { s.p[x.k].r = true; s.p[x.k].a = true; });
+  METHODS.forEach(m => s.m[m.k] = true);
+  s.use.svc = true; s.use.eval = true; s.foc.written = true; s.signed = true;
+  return s;
+}
+const PAGE3 = ['consults', 'notes', 'diag', 'planning', 'tx'];
+const EXAMPLES = [
+  { k: 'clean', label: 'A correctly completed form', note: 'Every partner with ALL information, every method, both uses of information, signed after the review. Try unticking boxes to see how the results change.',
+    make: cleanState },
+  { k: 'a', label: 'Meeting example A: partners ticked, no information chosen', note: 'From the supervisor meeting. The first row is ticked for all four partners; only the QuickStart column has any information chosen (ALL plus Diagnosis). The rest of the form is assumed clean.',
+    make() { const s = cleanState(); ['iwk','nsh','hsns'].forEach(k => s.p[k] = { r: true, a: false, o: {} }); s.p.ans = { r: true, a: true, o: { dx: true } }; return s; } },
+  { k: 'b', label: 'Meeting example B: ALL plus the page-3 items', note: 'From the supervisor meeting. ALL is ticked for every partner, and so are all five page-3 items. The two page-2 items are not. The rest of the form is assumed clean.',
+    make() { const s = cleanState(); PARTNERS.forEach(x => { s.p[x.k] = { r: true, a: true, o: {} }; PAGE3.forEach(t => s.p[x.k].o[t] = true); }); return s; } },
+  { k: 'c', label: 'Meeting example C: information chosen for a partner not ticked in row 1', note: 'From the supervisor meeting. Only QuickStart is ticked in the first row (with ALL and every item). HSNS has the page-3 items ticked but not the first row. The rest of the form is assumed clean.',
+    make() { const s = cleanState(); ['iwk','nsh'].forEach(k => s.p[k] = { r: false, a: false, o: {} }); s.p.ans = { r: true, a: true, o: {} }; P_TYPES.forEach(t => s.p.ans.o[t.k] = true); s.p.hsns = { r: false, a: false, o: {} }; PAGE3.forEach(t => s.p.hsns.o[t] = true); return s; } },
+  { k: 'd', label: 'QuickStart only', note: 'Only the QuickStart column is filled in (first row + ALL). Valid, but it closes several QuickStart flows.',
+    make() { const s = cleanState(); ['iwk','nsh','hsns'].forEach(k => s.p[k] = { r: false, a: false, o: {} }); return s; } },
+  { k: 'e', label: 'Telephone only', note: 'Every partner is filled in correctly, but the only communication method ticked is telephone.',
+    make() { const s = cleanState(); METHODS.forEach(m => s.m[m.k] = false); s.m.phone = true; return s; } },
+  { k: 'e2', label: 'Fax only', note: 'Every partner is filled in correctly, but the only communication method ticked is fax, which ANS no longer uses.',
+    make() { const s = cleanState(); METHODS.forEach(m => s.m[m.k] = false); s.m.fax = true; return s; } },
+  { k: 'f', label: 'Other provider named without an organization', note: 'Provider 1 is named with contact details and ALL information, but the organization can’t be identified from what was written.',
+    make() { const s = cleanState(); s.prov[0] = { named: true, org: false, contact: true, a: true, o: {} }; return s; } },
+  { k: 'h', label: 'Other provider named, nothing ticked on page 4', note: 'Provider 1 is named with organization and contact details on page 3, but nothing is ticked in column 1 on page 4.',
+    make() { const s = cleanState(); s.prov[0] = { named: true, org: true, contact: true, a: false, o: {} }; return s; } },
+  { k: 'i', label: 'Other provider numbering slip (pages 3→4)', note: 'Two providers are named in slots 1 and 2 on page 3, but the page-4 ticks are in columns 2 and 3. Provider 1 ends up with nothing, and column 3 has ticks for no one.',
+    make() { const s = cleanState(); s.prov[0] = { named: true, org: true, contact: true, a: false, o: {} }; s.prov[1] = { named: true, org: true, contact: true, a: true, o: {} }; s.prov[2] = { named: false, org: false, contact: false, a: true, o: {} }; return s; } },
+  { k: 'g', label: 'Completed before the intro meeting review', note: 'A clean form that the family signed before the supervisor reviewed it with them.',
+    make() { const s = cleanState(); s.reviewed = 'no'; return s; } },
+];
+let state = blankState();
+
+/* ======================= HELPERS ======================= */
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const src = (t, cls = '') => `<span class="src ${cls}">${t}</span>`;
+const QS = src('QS', 'qs'), ASK = src('ASK PPAS', 'ask'), FD = src('FORM DESIGN', 'fd');
+const rvn = t => `<div class="rvnote">${t}</div>`;
+const TIER_ORDER = { ok: 0, note: 1, unclear: 2, block: 3 };
+const TIER_LABEL = { ok: 'Fine', note: 'Valid, note it', unclear: 'Unclear, pause & ask', block: 'Below QuickStart minimum' };
+const tierBadge = t => `<span class="tier t-${t}">${TIER_LABEL[t]}</span>`;
+const maxTier = arr => arr.reduce((m, t) => TIER_ORDER[t] > TIER_ORDER[m] ? t : m, 'ok');
+function getPath(path) { return path.split('.').reduce((o, k) => o == null ? undefined : o[k], state); }
+function setPath(path, v) { const ks = path.split('.'); const last = ks.pop(); const o = ks.reduce((o, k) => o[k], state); o[last] = v; }
+const listTypes = (keys, types) => types.filter(t => keys.has(t.k)).map(t => t.short).join(', ');
+
+/* ======================= FORM RENDER ======================= */
+function cb(path) { return `<input type="checkbox" data-path="${path}" aria-label="${path}">`; }
+function renderForm() {
+  const H = PARTNERS.map(p => `<th>${esc(p.short === 'QuickStart (ANS)' ? 'Autism NS QuickStart' : p.name)}</th>`).join('');
+  let rows = `<tr class="gate"><td>I give consent for PPAS to collect, use, and disclose the child's personal information or personal health information with the following partner agencies</td>${PARTNERS.map(p => `<td>${cb(`p.${p.k}.r`)}</td>`).join('')}</tr>`;
+  rows += `<tr class="sub"><td colspan="5">The information that can be collected, used, and disclosed is:</td></tr>`;
+  rows += `<tr><td><b>ALL</b> information listed below with the following selected partners</td>${PARTNERS.map(p => `<td>${cb(`p.${p.k}.a`)}</td>`).join('')}</tr>`;
+  rows += `<tr class="sub"><td colspan="5"><b>ONLY</b> the following information listed below with the following selected partners:</td></tr>`;
+  P_TYPES.forEach((t, i) => {
+    if (i === 2) rows += `<tr class="brk"><td colspan="5">Page 3 of the form starts here. On the form, the ONLY heading is not repeated. ${FD}</td></tr>`;
+    rows += `<tr><td class="ind">${esc(t.label)}</td>${PARTNERS.map(p => `<td>${cb(`p.${p.k}.o.${t.k}`)}</td>`).join('')}</tr>`;
+  });
+
+  const PH = [1,2,3,4].map(n => `<th>Provider ${n}</th>`).join('');
+  let prow = `<tr class="sub"><td colspan="5">Page 3: Provider Name / Contact Information <span style="font-weight:500">(tick what is written; don't enter names)</span></td></tr>`;
+  prow += `<tr class="gate"><td>A provider is named in this slot</td>${[0,1,2,3].map(i => `<td>${cb(`prov.${i}.named`)}</td>`).join('')}</tr>`;
+  prow += `<tr><td class="ind">Organization can be identified</td>${[0,1,2,3].map(i => `<td>${cb(`prov.${i}.org`)}</td>`).join('')}</tr>`;
+  prow += `<tr><td class="ind">Contact information given</td>${[0,1,2,3].map(i => `<td>${cb(`prov.${i}.contact`)}</td>`).join('')}</tr>`;
+  prow += `<tr class="sub"><td colspan="5">Page 4: The information that can be collected, used, and disclosed is:</td></tr>`;
+  prow += `<tr><td><b>ALL</b> information listed below</td>${[0,1,2,3].map(i => `<td>${cb(`prov.${i}.a`)}</td>`).join('')}</tr>`;
+  prow += `<tr class="sub"><td colspan="5"><b>ONLY</b> the following information:</td></tr>`;
+  PR_TYPES.forEach(t => { prow += `<tr><td class="ind">${esc(t.label)}</td>${[0,1,2,3].map(i => `<td>${cb(`prov.${i}.o.${t.k}`)}</td>`).join('')}</tr>`; });
+
+  $('#formSide').innerHTML = `
+  <div class="card"><h3>Partner agencies <span class="pg">form pages 2–3</span></h3>
+    <div class="body tscroll"><table class="form"><thead><tr><th></th>${H}</tr></thead><tbody>${rows}</tbody></table></div></div>
+
+  <div class="card"><h3>Other service providers/clinicians <span class="pg">form pages 3–4 · leave blank if none named</span></h3>
+    <div class="body tscroll"><table class="form"><thead><tr><th></th>${PH}</tr></thead><tbody>${prow}</tbody></table>
+    <p class="hint">Provider numbers on page 4 must match the names on page 3. ${FD}</p></div></div>
+
+  <div class="card"><h3>Information, collection sharing and communication <span class="pg">page 5</span></h3>
+    <div class="body"><div class="opts">${METHODS.map(m => `<label>${cb(`m.${m.k}`)} ${m.label}</label>`).join('')}</div>
+    <p class="hint">ANS no longer sends or receives faxes, so fax doesn't count toward what QuickStart can do. ${QS}</p></div></div>
+
+  <div class="card"><h3>Use of information <span class="pg">page 5</span></h3>
+    <div class="body"><div class="opts" style="grid-template-columns:1fr">
+      <label>${cb('use.svc')} Use the information… to <b>assist in the provision of services</b> to the child</label>
+      <label>${cb('use.eval')} Use the information… to <b>evaluate the PPAS program</b></label>
+    </div></div></div>
+
+  <div class="card"><h3>Affirmation and consent <span class="pg">pages 5–6</span></h3>
+    <div class="body">
+      <div class="opts"><label>${cb('foc.verbal')} Form of consent: Verbal</label><label>${cb('foc.written')} Form of consent: Written</label><label>${cb('signed')} Signed and dated</label></div>
+      <div style="margin-top:10px;font-size:13.5px"><b>Was the form reviewed with the family before they signed?</b> <span class="src">not on the form</span></div>
+      <div class="radio"><label><input type="radio" name="reviewed" value="yes"> Yes, reviewed first</label><label><input type="radio" name="reviewed" value="no"> No, signed before the review</label></div>
+    </div></div>`;
+}
+function syncForm() {
+  document.querySelectorAll('#formSide input[data-path]').forEach(el => { el.checked = !!getPath(el.dataset.path); });
+  document.querySelectorAll('#formSide input[name=reviewed]').forEach(el => { el.checked = el.value === state.reviewed; });
+}
+
+/* ======================= ANALYSIS ======================= */
+const ALLP = new Set(P_TYPES.map(t => t.k));
+function analysePartner(p) {
+  const { r, a, o } = state.p[p.k];
+  const sel = new Set(P_TYPES.filter(t => o[t.k]).map(t => t.k));
+  const n = sel.size, all = P_TYPES.length;
+  const isQS = p.k === 'ans';
+  let st, reading, narrow = new Set(), broad = new Set(), tier;
+  if (!r && !a && n === 0) { st = 'none'; reading = 'Not selected. Nothing is shared with this partner.'; }
+  else if (r && a && (n === 0 || n === all)) { st = 'all'; narrow = new Set(ALLP); broad = narrow; reading = n ? 'Everything. ALL is ticked plus every ONLY item; the extra ticks are harmless.' : 'Everything (ALL).'; }
+  else if (r && !a && n > 0) { st = 'only'; narrow = sel; broad = sel; reading = `Only: ${listTypes(sel, P_TYPES)}.`; }
+  else if (r && !a && n === 0) { st = 'noscope'; broad = new Set(ALLP); reading = 'Said yes to this partner but chose no information (neither ALL nor any ONLY item). As written, nothing can be shared.'; }
+  else if (r && a) { st = 'conflict'; narrow = sel; broad = new Set(ALLP); reading = `Contradictory: ALL is ticked, but so are only some ONLY items. Read narrowly, it covers only: ${listTypes(sel, P_TYPES)}.`; }
+  else { st = 'nogate'; broad = a ? new Set(ALLP) : sel; reading = `Information is chosen (${a ? 'ALL' : listTypes(sel, P_TYPES)}), but this partner isn't ticked in the first row. Read narrowly, the family has not consented to this partner.`; }
+
+  if (st === 'all' || st === 'only') tier = 'ok';
+  else if (st === 'none') tier = 'note';
+  else tier = 'unclear';
+  if (isQS && !narrow.has('dx')) tier = 'block';
+  return { ...p, st, reading, narrow, broad, tier };
+}
+function analyseProvider(i) {
+  const pv = state.prov[i];
+  const sel = new Set(PR_TYPES.filter(t => pv.o[t.k]).map(t => t.k));
+  const n = sel.size, all = PR_TYPES.length, any = pv.a || n > 0;
+  if (!pv.named && !any) return null;
+  let tier, reading, extra = [];
+  if (!pv.named) { tier = 'unclear'; reading = `Information is chosen for Provider ${i + 1} on page 4, but no provider is named in slot ${i + 1} on page 3. Check whether the numbering slipped between pages.`; }
+  else if (!any) { tier = 'unclear'; reading = 'A provider is named, but no information is chosen for them on page 4. As written, nothing can be shared.'; }
+  else if (pv.a && n > 0 && n < all) { tier = 'unclear'; reading = `Contradictory: ALL is ticked, but so are only some ONLY items. Read narrowly, it covers only: ${listTypes(sel, PR_TYPES)}.`; }
+  else { tier = 'ok'; reading = pv.a ? 'Everything (ALL).' : `Only: ${listTypes(sel, PR_TYPES)}.`; }
+  if (pv.named && (!pv.org || !pv.contact)) { extra.push(!pv.org && !pv.contact ? 'organization and contact details' : !pv.org ? 'organization' : 'contact details'); if (tier === 'ok') tier = 'note'; }
+  return { i, tier, reading, extra, pv };
+}
+function methodsState() {
+  const ticked = METHODS.filter(m => state.m[m.k]);
+  const usable = ticked.filter(m => !QS_UNUSABLE.includes(m.k));
+  return { none: ticked.length === 0, faxOnly: ticked.length > 0 && usable.length === 0, fax: state.m.fax, talk: state.m.ffc || state.m.phone,
+    doc: QS_DOC.some(k => state.m[k]), email: state.m.email, ticked, usable };
+}
+function evalFlows(P) {
+  const ms = methodsState();
+  return FLOWS.map(f => {
+    const out = { ...f };
+    if (!state.signed) { out.s = 'no'; out.why = 'Form not signed and dated'; return out; }
+    if (!state.use.svc) { out.s = 'no'; out.why = '“Assist in the provision of services” isn’t ticked (below QuickStart’s minimum)'; return out; }
+    let mOK = true, mWhy = '';
+    const faxNote = ms.fax ? ' (QuickStart can’t use fax)' : '';
+    const needs = keys => keys.map(k => METHODS.find(m => m.k === k).label.replace('By ', '').toLowerCase()).join(' or ');
+    if (f.methodsAny && !f.methodsAny.some(k => state.m[k])) { mOK = false; mWhy = `needs ${needs(f.methodsAny)}, and none is ticked${faxNote}`; }
+    if (f.methodsAll && !f.methodsAll.every(k => state.m[k])) { mOK = false; mWhy = '“By secure email” not ticked'; }
+    const mPaused = !mOK && (ms.none || ms.faxOnly);
+    const pausedWhy = ms.faxOnly ? 'only fax is ticked, which QuickStart can’t use: clarify with the family' : 'no method ticked at all: clarify with the family';
+    if (!f.partner) { out.s = mOK ? 'yes' : mPaused ? 'paused' : 'no'; out.why = mOK ? '' : mPaused ? pausedWhy : mWhy; return out; }
+    const pa = P[f.partner];
+    const covers = set => f.types === 'any' ? set.size > 0 : f.types.every(t => set.has(t));
+    if (covers(pa.narrow) && mOK) { out.s = 'yes'; out.why = f.gs && ms.ticked.length && !ms.doc ? 'Greenspace isn’t on the form’s method list; whether this family’s method choices limit it is an open PPAS question' : ''; return out; }
+    if ((covers(pa.broad) && pa.tier !== 'ok' && pa.st !== 'none' && (mOK || mPaused)) || (covers(pa.narrow) && mPaused)) {
+      out.s = 'paused'; out.why = covers(pa.narrow) ? pausedWhy : `${pa.short} column is unclear: clarify with the family`; return out; }
+    out.s = 'no';
+    if (pa.st === 'none') out.why = `${pa.short} not selected`;
+    else if (!covers(pa.narrow)) { const miss = f.types === 'any' ? ['any information'] : f.types.filter(t => !pa.narrow.has(t)).map(t => P_TYPES.find(x => x.k === t).short); out.why = `${pa.short} column doesn’t cover: ${miss.join(', ')}`; }
+    else out.why = mWhy;
+    return out;
+  });
+}
+function isEmpty() {
+  const anyP = PARTNERS.some(p => { const x = state.p[p.k]; return x.r || x.a || Object.values(x.o).some(Boolean); });
+  const anyV = state.prov.some(v => v.named || v.a || Object.values(v.o).some(Boolean));
+  return !anyP && !anyV && !Object.values(state.m).some(Boolean) && !state.use.svc && !state.use.eval && !state.foc.verbal && !state.foc.written && !state.signed;
+}
+
+function analyse() {
+  const P = {}; PARTNERS.forEach(p => P[p.k] = analysePartner(p));
+  const provs = [0,1,2,3].map(analyseProvider).filter(Boolean);
+  // A named slot with no ticks plus a ticked slot with no name usually means the numbering slipped between pages 3 and 4.
+  const namedEmpty = provs.filter(p => p.pv.named && !p.pv.a && !Object.values(p.pv.o).some(Boolean));
+  const unnamedTicked = provs.filter(p => !p.pv.named);
+  if (namedEmpty.length && unnamedTicked.length) {
+    const nums = arr => arr.map(p => p.i + 1).join(' and ');
+    namedEmpty.forEach(p => p.reading += ` Page 4 has ticks under provider ${nums(unnamedTicked)}, which has no name. The numbering has probably slipped between pages.`);
+    unnamedTicked.forEach(p => p.reading += ` Provider ${nums(namedEmpty)} is named but has no ticks, so these may be meant for them.`);
+  }
+  const flows = evalFlows(P);
+  const ms = methodsState();
+  const other = [];
+  // Methods
+  const faxAside = ms.fax ? ' Fax is also ticked, but ANS no longer sends or receives faxes, so it doesn’t help QuickStart.' : '';
+  const lower = ms2 => ms2.map(m => m.label.replace('By ', '').toLowerCase()).join(', ');
+  if (ms.none) other.push({ nm: 'Communication methods', tier: 'unclear', reading: 'No method is ticked. As written, PPAS can’t communicate with partners by any means. Almost certainly missed.', act: 'Ask the family which methods they’re comfortable with, then correct with a pre-filled re-sign (every sharing flow depends on this).' });
+  else if (ms.faxOnly) other.push({ nm: 'Communication methods', tier: 'unclear', reading: 'Only fax is ticked. ANS no longer sends or receives faxes, so for QuickStart this is the same as no method at all: no calls, no mail, no email and no documents with any partner.', act: 'Ask the family which other methods they’re comfortable with, then correct with a pre-filled re-sign (every QuickStart sharing flow depends on this). Fax can stay ticked; other PPAS partners may still use it.', rv: 'Rated the same as nothing ticked, because QuickStart can’t use fax. Agree?' });
+  else {
+    const limits = [];
+    if (!ms.talk) limits.push('No face-to-face or telephone: QuickStart can’t talk with partners about this family (e.g., calls with CI&CC or the family’s SLP).');
+    if (!ms.doc) limits.push('No mail or secure email: QuickStart can’t send documents to partners.');
+    else if (!ms.email) limits.push('No secure email: a staff-placed referral package via MOVEit isn’t covered (rare).');
+    if (limits.length) other.push({ nm: 'Communication methods', tier: 'note', reading: `QuickStart can use: ${lower(ms.usable)}. ${limits.join(' ')}${faxAside}`,
+      act: `Valid. No new form. Make sure staff know what this rules out.${!ms.doc ? ' Whether it also limits Greenspace is an open PPAS question.' : ''}${ms.usable.length === 1 && ms.usable[0].k === 'phone' ? ' A lone “By telephone” tick can mean the family read this section as how to contact them, so it’s worth checking with them.' : ''}` });
+    else other.push({ nm: 'Communication methods', tier: 'ok', reading: `${ms.ticked.length} of 5 ticked, including secure email.${ms.fax ? ' (Fax is ticked but not used by ANS.)' : ''}` });
+  }
+  // Use
+  if (!state.use.svc) other.push({ nm: 'Use of information: provision of services', tier: 'block', reading: 'Not ticked. As written, information shared through PPAS can’t be used to provide services to the child, including the diagnosis information QuickStart needs. It also contradicts the partner table (“collect, use, and disclose”), so it’s most likely an oversight.', act: 'Review with the family and correct with a pre-filled re-sign before Session 1. Explain why QuickStart needs it (see <a href="#guide/use" data-go="guide/use">Section guide › Use of information</a>). If the family doesn’t want to give it, talk with a supervisor.', rv: 'Newly added to QuickStart’s minimum on the same reasoning as the Diagnosis rule: QuickStart has to be able to use the diagnosis information shared with it, not just receive it. The quick reference currently marks this section optional. Senior team’s call.' });
+  if (!state.use.eval) other.push({ nm: 'Use of information: program evaluation', tier: 'ok', reading: 'Not ticked. This is optional and the family’s choice; nothing changes day to day.', rv: 'Does QuickStart contribute any data to PPAS program evaluation? If so, this family should be excluded from it.' });
+  // Form of consent
+  const f = state.foc;
+  if (!f.verbal && !f.written) other.push({ nm: 'Form of consent', tier: 'note', reading: 'Neither Verbal nor Written is ticked. The signature shows it was written consent.', act: 'No new form for this alone. Record it. Which box DocuSign families should tick is an open PPAS question.' });
+  else if (f.verbal && f.written) other.push({ nm: 'Form of consent', tier: 'note', reading: 'Both boxes ticked. Only one applies.', act: 'No new form for this alone. The signature shows written consent; record it.' });
+  else if (f.verbal && state.signed) other.push({ nm: 'Form of consent', tier: 'note', reading: '“Verbal” is ticked, but the form is signed.', act: 'No new form for this alone. Written consent is what happened; record it.' });
+  // Signature
+  if (!state.signed) other.push({ nm: 'Signature and date', tier: 'block', reading: 'Not signed and dated. The form isn’t valid written consent yet.', act: 'Complete the signing, ideally in the meeting. Consent forms must be complete before Session 1.' });
+  // Reviewed
+  if (state.reviewed === 'no') other.push({ nm: 'Signed before the review', tier: 'unclear', reading: 'The form says a PPAS staff member reviewed it with the family, but they signed before that happened.', act: 'Go through the completed form with them now. If their choices stand and the form is otherwise fine, record in the intro meeting notes that the review happened (date) and the family confirmed. If anything changes or is unclear, do a pre-filled re-sign in the meeting. See <a href="#situations/early" data-go="situations/early">Something changed › Completed before the review</a>.', rv: 'QS proposal. Is a recorded review enough when the family confirms a clean form?' });
+  const tiers = [...Object.values(P).map(x => x.tier), ...provs.map(x => x.tier), ...other.map(x => x.tier)];
+  return { P, provs, flows, other, overall: maxTier(tiers) };
+}
+
+/* ======================= ACTIONS ======================= */
+function partnerAction(pa, flows) {
+  const related = flows.filter(f => f.partner === pa.k && f.k !== 'min');
+  const paused = related.filter(f => f.s === 'paused').map(f => f.name);
+  const closed = related.filter(f => f.s === 'no').map(f => f.name);
+  if (pa.tier === 'ok') return '';
+  if (pa.tier === 'block') return `<b>Correct before Session 1.</b> QuickStart needs its own column ticked in the first row, with Diagnosis covered (ALL, or Diagnosis under ONLY). Review with the family and do a pre-filled re-sign. ${src('WIKI')}`;
+  if (pa.tier === 'note') return `<b>Valid, no new form.</b> The family chose not to share with ${esc(pa.short)}. ${closed.length ? `This rules out: ${closed.map(esc).join('; ')}.` : ''} Make sure staff know. If the family didn't realise this, use the explanation in the <a href="#guide/partners" data-go="guide/partners">Section guide</a>. ${QS}`;
+  if (pa.k === 'ans') return `<b>Pause, ask, re-sign.</b> Share only what the form clearly covers. Ask the family what they meant ${src('MOU §8.5')}. Because this is QuickStart's own column, correct it with a pre-filled re-sign so the form says what the family means. ${QS}`;
+  const base = `<b>Pause, ask, then decide.</b> Share nothing with ${esc(pa.short)} beyond what the form clearly covers ${src('MEMO')}. Ask the family what they meant ${src('MOU §8.5')}.`;
+  if (paused.length) return `${base} If QuickStart will need <i>${paused.map(esc).join('; ')}</i>, correct with a pre-filled re-sign before that sharing happens. If not, record their answer (ShareVision + Greenspace note) and correct the form at the next natural touchpoint. ${QS}`;
+  return `${base} The narrow reading already covers what QuickStart normally needs from ${esc(pa.short)}, so record their answer (ShareVision + Greenspace note) and correct the form at the next natural touchpoint. ${QS}`;
+}
+function providerAction(pr) {
+  if (pr.tier === 'unclear') return `<b>Pause, ask, then decide.</b> Don't contact or share with Provider ${pr.i + 1} beyond what's clear. Ask the family. If QuickStart will work with this provider, correct with a pre-filled re-sign; otherwise record their answer and correct at the next natural touchpoint. ${QS}`;
+  if (pr.extra.length) return `<b>Valid, no new form.</b> Confirm the ${pr.extra[0]} with the family and record it in ShareVision's community partners section. This doesn't change who the family consented to. ${QS}`;
+  return '';
+}
+
+/* ======================= RESULTS RENDER ======================= */
+const VERDICT = {
+  ok: ['Fine', 'Nothing to fix. Upload to Greenspace and ShareVision as usual.'],
+  note: ['Valid, with limits to note', 'No new form is needed. Some choices close QuickStart flows. Make sure staff know which.'],
+  unclear: ['Unclear in places', 'Pause the unclear parts and ask the family what they meant. See each item for whether a re-sign is needed.'],
+  block: ['Below QuickStart’s minimum', 'Correct with a pre-filled re-sign before Session 1.'],
+};
+function renderResults() {
+  const box = $('#results'), jump = $('#jump');
+  if (isEmpty()) {
+    box.innerHTML = `<div class="placeholder">Results appear here as you tick the boxes on the left.<div class="tryrow">Or start from: <button class="secondary" data-load="clean">A correctly completed form</button> <button class="secondary" data-load="a">A common mistake</button></div></div>`;
+    jump.style.background = 'var(--g700)'; jump.textContent = 'Results';
+    return;
+  }
+  const A = analyse();
+  const [vt, vs] = VERDICT[A.overall];
+  const counts = { block: 0, unclear: 0, note: 0 };
+  [...Object.values(A.P), ...A.provs, ...A.other].forEach(x => { if (counts[x.tier] != null) counts[x.tier]++; });
+  let h = `<div class="verdict v-${A.overall}"><div class="big">${vt}</div><div class="sm">${vs}</div>
+    <div class="sm" style="margin-top:6px">${counts.block ? tierBadge('block') + ' ×' + counts.block + ' ' : ''}${counts.unclear ? tierBadge('unclear') + ' ×' + counts.unclear + ' ' : ''}${counts.note ? tierBadge('note') + ' ×' + counts.note : ''}</div></div>`;
+
+  h += `<h4>Partner agencies</h4>`;
+  PARTNERS.forEach(p => {
+    const pa = A.P[p.k]; const act = partnerAction(pa, A.flows);
+    h += `<div class="ritem"><div class="top"><span class="nm">${esc(pa.short)}</span>${tierBadge(pa.tier)}</div><div class="reading">${pa.reading}</div>${act ? `<div class="act">${act}</div>` : ''}</div>`;
+  });
+  if (A.provs.length) {
+    h += `<h4>Other service providers</h4>`;
+    A.provs.forEach(pr => { const act = providerAction(pr); h += `<div class="ritem"><div class="top"><span class="nm">Provider ${pr.i + 1}</span>${tierBadge(pr.tier)}</div><div class="reading">${pr.reading}${pr.extra.length ? ` Missing: ${pr.extra[0]}.` : ''}</div>${act ? `<div class="act">${act}</div>` : ''}</div>`; });
+  }
+  h += `<h4>Methods, use &amp; signature</h4>`;
+  A.other.forEach(o => { h += `<div class="ritem"><div class="top"><span class="nm">${o.nm}</span>${tierBadge(o.tier)}</div><div class="reading">${o.reading}</div>${o.act ? `<div class="act">${o.act}</div>` : ''}${o.rv ? rvn(o.rv) : ''}</div>`; });
+
+  h += `<h4>What QuickStart can and can't do with this form ${src('DRAFT')}</h4><ul class="flows">`;
+  A.flows.forEach(f => {
+    const ic = f.s === 'yes' ? '✓' : f.s === 'paused' ? '⏸' : '✕';
+    const label = f.s === 'yes' ? 'Covered' : f.s === 'paused' ? 'Paused until clarified' : 'Not covered';
+    h += `<li class="${f.s}${f.crit && f.s === 'no' ? ' crit' : ''}"><span class="ic" title="${label}">${ic}</span><span><span class="fn">${esc(f.name)}</span><span class="why">${label}${f.why ? ': ' + esc(f.why) : ''}</span>${f.rv ? rvn(esc(f.rv)) : ''}</span></li>`;
+  });
+  h += `</ul><p class="hint">Greenspace flows aren't checked against the method boxes. Whether Greenspace needs one is an open PPAS question. ${ASK}</p>`;
+  box.innerHTML = h;
+  const col = { ok: 'var(--green-dk)', note: 'var(--blue-dk)', unclear: 'var(--amber-dk)', block: 'var(--red)' }[A.overall];
+  jump.style.background = col; jump.textContent = 'Results: ' + vt;
+}
+
+function summaryText() {
+  if (isEmpty()) return 'Nothing ticked yet.';
+  const A = analyse(); const d = new Date().toISOString().slice(0, 10);
+  const strip = s => s.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+  let t = `PPAS Integrated Service Delivery consent check (${d})\nOverall: ${VERDICT[A.overall][0]}\n`;
+  PARTNERS.forEach(p => { const pa = A.P[p.k]; t += `- ${pa.short}: ${TIER_LABEL[pa.tier]}: ${strip(pa.reading)}\n`; });
+  A.provs.forEach(pr => t += `- Provider ${pr.i + 1}: ${TIER_LABEL[pr.tier]}: ${strip(pr.reading)}${pr.extra.length ? ' Missing: ' + pr.extra[0] + '.' : ''}\n`);
+  A.other.filter(o => o.tier !== 'ok').forEach(o => t += `- ${o.nm}: ${TIER_LABEL[o.tier]}: ${strip(o.reading)}\n`);
+  const closed = A.flows.filter(f => f.s !== 'yes');
+  if (closed.length) { t += 'Not covered / paused:\n'; closed.forEach(f => t += `- ${f.name} (${f.s === 'paused' ? 'paused' : 'not covered'}${f.why ? ': ' + f.why : ''})\n`); }
+  return t;
+}
+
+/* ======================= SECTION GUIDE ======================= */
+const GUIDE = [
+ { k: 'details', t: 'Pages 1–2: child & who consents', html: `
+  <h2>Pages 1–2: the child, and who is giving consent</h2>
+  <div class="min"><b>Minimum</b><b>Page 1:</b> the child's name, date of birth and health card number, plus the parent/guardian's name and relationship to the child. <b>Page 2:</b> the parent/guardian's full name again, in the line that starts “By signing this form, I”. ${src('FORM')} ${QS}</div>
+  <p class="hint">“Name on Health Card” is only needed if it's different from the child's name. The Medical Records K# is an IWK record number, and the form doesn't say whether it's required. The form doesn't mark any page-1 field as required, so this minimum is our reading.</p>
+  <h3>Who can consent</h3>
+  <ul>
+   <li>A <b>parent</b> means a biological or adoptive parent who is the child's legal guardian, or a non-parent with legal guardian status (e.g., the Department of Community Services). ${src('MOU §1.5')}</li>
+   <li>It does <b>not</b> include a foster parent. ${src('MOU §1.5')}</li>
+   <li>If parents are separated or divorced, it means the custodial parent with legal authority to make care and treatment decisions. ${src('MOU §1.5')}</li>
+   <li>The form tells families they may be asked for supporting documents, such as a custody agreement or guardianship appointment. ${src('FORM p.1')}</li>
+  </ul>
+  <h3>Watch for</h3>
+  <ul>
+   <li>Guardianship situations that don't look complex at first glance. Re-verify during the Greenspace pre-review before the intro meeting. ${src('WIKI §10')}</li>
+   <li>Custody or access disputes: see Operational Guide §5 and Appendix 8.5 (IWK legal advice), and consult before proceeding. ${src('OP GUIDE §5')}</li>
+  </ul>` },
+ { k: 'partners', t: 'Partner agencies table', html: `
+  <h2>Partner agencies table (pages 2–3)</h2>
+  <p>Most of the errors seen so far happened here. The <a href="#guide/providers" data-go="guide/providers">Other service providers</a> table works the same way and can go wrong in the same ways. For each of the four partners, the table asks <b>three questions in order</b>:</p>
+  <ol>
+   <li><b>Yes to this partner?</b> Tick the first row (“I give consent for PPAS to collect, use, and disclose…”).</li>
+   <li><b>If yes: ALL information, or ONLY some?</b> Tick <b>ALL</b>, or go to question 3. <b>Never both.</b></li>
+   <li><b>If ONLY: which types?</b> Tick each type to share. The list runs onto page 3.</li>
+  </ol>
+  <p>A partner with no first-row tick gets nothing. A partner with a first-row tick but no ALL and no ONLY items also gets nothing. ${src('FORM')}</p>
+  <div class="min"><b>QuickStart minimum (this table's part)</b>QuickStart column: first row ticked, <b>plus</b> either ALL <b>or</b> “Diagnosis information” under ONLY. Not both: ticking ALL and then also Diagnosis makes the column contradictory. QuickStart is for children with a suspected, provisional, or confirmed autism diagnosis. The other part of the minimum is the first <a href="#guide/use" data-go="guide/use">Use of information</a> box. ${src('WIKI')} ${QS}</div>
+  ${rvn('The current quick reference lists “Diagnosis, QuickStart column” as its own required field. That may be how families end up with ALL + Diagnosis (meeting example A). Proposed: reword the quick reference to “Diagnosis covered: via ALL, or via Diagnosis under ONLY”.')}
+  <h3>The page break ${FD}</h3>
+  <p>The ONLY list starts on page 2 and continues on page 3. On page 3 only the partner names repeat, not the “ONLY the following…” heading. So “Consults… Treatment participation” looks like a new, stand-alone question. When reviewing, point out that page 3 is still part of the ONLY list.</p>
+  <h3>What each partner means for QuickStart</h3>
+  <table class="pat"><tr><th>Partner</th><th>Who they are in PPAS ${src('MEMO')}</th><th>If the family doesn't include them ${QS}</th></tr>
+   <tr><td>IWK Health</td><td>Clinical Intake &amp; Care Coordination (CI&amp;CC), PPAS intervention services, foundational education, autism diagnostic services</td><td>At the end of QuickStart we can't send the Discharge Report or ESDM checklist to CI&amp;CC. We can't check the family's file with CI&amp;CC.</td></tr>
+   <tr><td>Nova Scotia Health</td><td>Autism diagnostic services (Mental Health and Addictions Program)</td><td>We can't share with an NS Health diagnostic team.</td></tr>
+   <tr><td>Hearing and Speech NS</td><td>PPAS intervention services, foundational education, HSNS communication services</td><td>We can't coordinate with the family's own HSNS SLP (e.g., Session 6 goal-sharing).</td></tr>
+   <tr><td>Autism NS QuickStart</td><td>QuickStart NS</td><td>QuickStart can't proceed. This column is the minimum.</td></tr></table>
+  <h3>Common misreadings</h3>
+  <table class="pat"><tr><th>What's on the form</th><th>What it means</th><th>Rating</th></tr>
+   <tr><td>First row ticked, but no ALL and no ONLY items</td><td>Nothing can be shared with that partner</td><td>${tierBadge('unclear')}</td></tr>
+   <tr><td>ALL <i>and</i> every ONLY item</td><td>Still “everything”; extra ticks are harmless</td><td>${tierBadge('ok')}</td></tr>
+   <tr><td>ALL <i>and</i> some ONLY items</td><td>Contradictory. Read narrowly: only those items</td><td>${tierBadge('unclear')} (${tierBadge('block')} if QuickStart loses Diagnosis)</td></tr>
+   <tr><td>Items ticked, but the partner not ticked in the first row</td><td>Read narrowly: not consented</td><td>${tierBadge('unclear')}</td></tr>
+   <tr><td>Only QuickStart filled in</td><td>Valid; several QuickStart flows are closed</td><td>${tierBadge('note')}</td></tr></table>
+  <p><button class="secondary tryit" data-ex="a">Try example A</button><button class="secondary tryit" data-ex="b">Try example B</button><button class="secondary tryit" data-ex="c">Try example C</button><button class="secondary tryit" data-ex="d">Try QuickStart only</button></p>
+  <h3>Why “read narrowly”</h3>
+  <p>Sharing is limited to the minimum needed ${src('MOU §8.2')}. If consent is “missing, expired, or unclear”, staff pause information sharing ${src('MEMO')}. Disagreements about what can be shared are settled by asking the parent ${src('MOU §8.5')}. So never read a form more broadly than the family clearly gave it. Pause the unclear part and ask.</p>
+  <div class="say">This table is really three questions for each organization: do you want us to share with them at all, and if so, everything or just some types? If it's just some, you tick those types. The list carries on to the next page.</div>
+  <div class="say">You've chosen to share with QuickStart only, which is completely fine. So you know what it means: at the end of the program we wouldn't be able to send [child]'s discharge report to the IWK intake team. You can change this at any time.</div>
+  ${rvn('Scripts: would you say these to a family? Do they explain consequences without steering the choice? Operational Guide §2.3 expects consequences to be explained.')}` },
+ { k: 'providers', t: 'Other service providers', html: `
+  <h2>Other service providers/clinicians (pages 3–4)</h2>
+  <p>People outside the four PPAS partners who are involved in the child's care, for example an NSECDIS early interventionist, a private therapist, a family doctor, or a childcare resource.</p>
+  <div class="min"><b>Minimum</b>None. This section is optional. ${src('FORM')}</div>
+  <h3>How it works: the same three questions as the partner table</h3>
+  <ol>
+   <li><b>Yes to this provider?</b> Write their name, organization and contact information in a numbered slot (1–4) on page 3. Naming them is the “yes”.</li>
+   <li><b>If yes: ALL information, or ONLY some?</b> On page 4, in <b>that provider's numbered column</b>, tick ALL or go to question 3. <b>Never both.</b></li>
+   <li><b>If ONLY: which types?</b> Tick each type to share, in the same column.</li>
+  </ol>
+  <p>A provider named on page 3 with nothing ticked on page 4 gets nothing. Ticks on page 4 in a column with no name on page 3 go to no one. ${src('FORM')}</p>
+  <h3>How it differs from the partner table ${FD}</h3>
+  <ul>
+   <li><b>The “yes” and the “what” are on different pages,</b> linked only by the provider number. If the numbers slip between pages 3 and 4, a named provider gets nothing and the ticks go to an empty slot.</li>
+   <li>The ONLY heading does appear on page 4, so the page-break problem in the partner table doesn't happen here.</li>
+   <li>Page 4's list is shorter: no “Assessments for intervention/service planning”, and “Personal medical history” has no “and physical reports”. ${src('FORM')}</li>
+  </ul>
+  <h3>Common misreadings</h3>
+  <table class="pat"><tr><th>What's on the form</th><th>What it means</th><th>Rating</th></tr>
+   <tr><td>Provider named, nothing ticked in their page-4 column</td><td>Nothing can be shared with them</td><td>${tierBadge('unclear')}</td></tr>
+   <tr><td>Ticks in a page-4 column with no name in that slot on page 3</td><td>Shared with no one; check whether the numbering slipped</td><td>${tierBadge('unclear')}</td></tr>
+   <tr><td>ALL <i>and</i> every ONLY item</td><td>Still “everything”; extra ticks are harmless</td><td>${tierBadge('ok')}</td></tr>
+   <tr><td>ALL <i>and</i> some ONLY items</td><td>Contradictory. Read narrowly: only those items</td><td>${tierBadge('unclear')}</td></tr>
+   <tr><td>Name without an organization</td><td>Valid, but hard to act on later</td><td>${tierBadge('note')}</td></tr></table>
+  <p><button class="secondary tryit" data-ex="h">Try: named, nothing ticked</button><button class="secondary tryit" data-ex="i">Try: numbering slip</button><button class="secondary tryit" data-ex="f">Try: no organization</button></p>
+  <h3>Watch for: someone who works for one of the four partners</h3>
+  <p>A family may list, say, their HSNS SLP here rather than ticking HSNS in the partner table. Make their choice clear: do they want <b>the whole organization</b> (tick that partner's column), or <b>just that person</b> (name them here)? ${QS}</p>
+  ${rvn('If a family names a partner organization’s clinician here but leaves that partner unticked, is sharing with that one person covered? The provider section’s own wording suggests yes, for that person only. Possibly an ASK PPAS item.')}
+  <h3>The organization problem ${FD}</h3>
+  <p>The form has no organization field, so a name alone can be hard to act on later. Write the organization (and role) with the name, e.g., “J. Smith, NSECDIS (Early Interventionist)”. ${QS}</p>
+  <p>If a signed form has only a name, confirm the organization with the family and record it in ShareVision's community partners section. No new form is needed; this doesn't change who they consented to. ${QS}</p>
+  <h3>When to fill it in</h3>
+  <p>After the community partners conversation, so the list reflects who is actually involved. The Greenspace pre-review lists any referrals CI&amp;CC made to other services. ${src('WIKI §10')}</p>
+  ${rvn('The wiki lists the community partners discussion after the consent review in the intro meeting. Does the OneNote template follow that order? If so, providers may be filled in before they come up.')}
+  <div class="say">If other people are involved in [child]'s care that you'd like us to be able to talk with, like an early interventionist or your family doctor, you can add them here. Please include where they work, not just their name.</div>` },
+ { k: 'methods', t: 'Communication methods', html: `
+  <h2>Information, collection sharing and communication (page 5)</h2>
+  <p>The family chooses how PPAS may communicate with, or share information with, partners and organizations. It is <b>not</b> about how anyone contacts the family. The form doesn't require any single box. ${src('FORM')}</p>
+  <div class="min"><b>QuickStart minimum: none on this page (for now)</b>No single box is required. QuickStart does expect at least one method it can use: face-to-face, telephone, mail or secure email. Nothing ticked, or fax only, is treated as ${tierBadge('unclear')}: pause and ask. See “Why there's no hard minimum yet” below. ${QS}</div>
+  <table class="pat"><tr><th>Ticked</th><th>What it allows</th></tr>
+   <tr><td>Face-to-face, telephone</td><td>Conversations only</td></tr>
+   <tr><td>Regular or registered mail, secure email</td><td>Sending documents</td></tr>
+   <tr><td>Secure email</td><td>Also covers a staff-placed referral package via MOVEit ${QS}</td></tr>
+   <tr><td>Fax</td><td><b>Nothing, for QuickStart.</b> ANS no longer sends or receives faxes. Other PPAS partners may still use it, so it's a valid choice, just not one QuickStart can act on. ${QS}</td></tr></table>
+  <h3>Watch for</h3>
+  <ul>
+   <li><b>Fax only:</b> for QuickStart this is the same as ticking nothing: no calls, no documents. Ask them to also choose a method QuickStart can use. ${tierBadge('unclear')}</li>
+   <li><b>Telephone only:</b> valid, but no documents can be sent. Explain this before they tick. ${tierBadge('note')}</li>
+   <li><b>Read as “how to contact me”:</b> families may take these boxes as how <i>they</i> want to be contacted. A single “By telephone” tick may be this misreading, so explain what the section is for before they choose. ${QS}</li>
+   <li><b>Nothing ticked:</b> as written, no sharing can happen at all. Almost certainly missed. ${tierBadge('unclear')}</li>
+   <li><b>Greenspace isn't on the list,</b> though the MOU lists it as a sharing method. Whether a phone-only choice limits Greenspace is unknown. ${src('MOU §8.6')} ${ASK} ${FD}</li>
+  </ul>
+  <h3>Why there's no hard minimum yet</h3>
+  <p>QuickStart's minimum includes <b>receiving</b> the child's diagnosis information. With QuickStart-only consent, QuickStart isn't sharing anything outward, but the diagnosis information still has to come in. So it's fair to ask whether a usable method belongs in the minimum.</p>
+  <p>In practice, that information reaches QuickStart through <b>Greenspace</b>, which isn't one of these boxes. The MOU lists Greenspace as a sharing channel of its own, alongside the ones on the form. ${src('MOU §8.6')}</p>
+  <ul>
+   <li><b>If Greenspace doesn't depend on these boxes:</b> a form with no usable method still meets QuickStart's minimum; only sharing outside Greenspace is closed. This is the reading the tool uses for now. ${QS}</li>
+   <li><b>If the boxes do govern Greenspace:</b> a usable method becomes part of QuickStart's minimum, and nothing ticked or fax only would be below minimum. ${ASK}</li>
+  </ul>
+  ${rvn('Whether this section gets a minimum depends on the PPAS answer about Greenspace.')}
+  <div class="say">This part isn't about how we contact you. It's how the organizations you've chosen can share information with each other about [child]. If you choose phone only, they can talk with each other but can't send anything in writing, like a report.</div>
+  <div class="say">QuickStart doesn't use fax any more. If you'd like fax for the other organizations that's fine, but please also pick at least one other option so QuickStart can stay in touch with them too.</div>` },
+ { k: 'use', t: 'Use of information', html: `
+  <h2>Use of information (page 5)</h2>
+  <div class="min"><b>QuickStart minimum (this section's part)</b>The first box, “assist in the provision of services to the child”, must be ticked. The second box is optional. ${QS}</div>
+  <p>With the partner table's part (QuickStart column + Diagnosis), this makes QuickStart's minimum one rule: <b>consent for QuickStart to receive the child's diagnosis information, and to use shared information to provide services.</b></p>
+  <ul>
+   <li><b>“Assist in the provision of services to the child”</b> is the main purpose of the whole form (“create a service plan… coordinate services… provide services”). Receiving diagnosis information isn't enough on its own; this box is what lets QuickStart use it. If it's unticked, the form is ${tierBadge('block')}. It also contradicts the partner table (“collect, use, and disclose”), so it's most likely an oversight. ${src('FORM')} ${QS}</li>
+   <li><b>“Evaluate the PPAS program”</b> is optional and the family's choice. ${src('FORM')}</li>
+  </ul>
+  <h3>Explain why it's needed</h3>
+  <p>The Operational Guide allows consent to be required for a purpose that's integral to the service, <b>as long as the reason is explained</b>. Optional purposes must be easy to decline. The form doesn't mark which box is which, so staff need to say it. ${src('OP GUIDE §2.3–2.4')} ${FD}</p>
+  ${rvn('Newly added to QuickStart’s minimum on the same reasoning as the Diagnosis rule. The current quick reference marks this whole section optional and would need updating if this stands. Senior team’s call; the question is also on the PPAS list, so QuickStart isn’t stricter or looser than the other partners.')}
+  <div class="say">There are two uses listed. The first is what lets the organizations you've chosen actually use what they share to help [child]. QuickStart needs this one. The second, about evaluating and improving PPAS overall, is completely your choice.</div>` },
+ { k: 'affirm', t: 'Affirmation & signature', html: `
+  <h2>Affirmation, form of consent, signature (pages 5–6)</h2>
+  <div class="min"><b>Minimum</b>Signed and dated by the parent/guardian, <b>after</b> a staff member has reviewed the form with them. ${src('FORM')} ${src('OP GUIDE §4.2')}</div>
+  <ul>
+   <li><b>The review comes first.</b> The form says “A PPAS staff member has reviewed… with me”. The consent is the conversation; the form is the written confirmation of it. ${src('OP GUIDE §4')}</li>
+   <li><b>Valid for one year</b> from the date signed. This limits <i>sharing</i>, not record-keeping; see <a href="#guide/affirm" data-go="guide/affirm">What “valid for one year” means</a> below. ${src('FORM')} ${src('MOU §10.3')}</li>
+   <li><b>Leaving a partner out.</b> At signing, the family simply doesn't tick that partner. On paper, the form also lets them strike out a partner's name and initial it. ${src('FORM')}</li>
+   <li><b>Changing their mind later:</b> they can withdraw in whole or in part at any time by written notice; this isn't retroactive. See <a href="#situations" data-go="situations">Something changed</a>. ${src('FORM')}</li>
+   <li><b>Form of consent:</b> for a signed form (paper or DocuSign), “Written” is most likely right, since electronic consent is accepted as the alternative to written. Awaiting confirmation. ${src('MEMO')} ${ASK}</li>
+   <li><b>Storage:</b> Greenspace <i>and</i> ShareVision. In Greenspace, use a “Service Delivery Consent Form” note and tick <b>Clinician(s)</b> under Shared With. ${src('MEMO')} ${src('WIKI')} <a href="${WIKI}#upload-destinations-by-form">Wiki: upload destinations</a></li>
+  </ul>
+  <h3 id="one-year">What “valid for one year” does and doesn't mean</h3>
+  <p>Staff and families sometimes read the one-year limit as “the child's information gets deleted after a year”. It doesn't.</p>
+  <ul>
+   <li><b>What the form covers:</b> collecting, using and disclosing the child's information <b>among the PPAS partners</b>. ${src('MOU §1.3')} ${src('FORM')}</li>
+   <li><b>What expiry changes:</b> no new sharing between partners until the family signs again. Staff pause sharing in both directions. That means nothing new is requested from partners, and nothing new is sent or added to Greenspace. ${src('MEMO')}</li>
+   <li><b>What expiry doesn't change:</b> each organization keeps what it holds, including information it received through PPAS, under its own practices, policies and the law. ${src('MOU §16.1')} Ending consent is never retroactive. ${src('FORM')}</li>
+   <li><b>QuickStart's own records</b> of the child's participation are governed by ANS's policies, privacy law, and clinicians' professional college record-keeping standards (e.g., OT, SLP), not by this form. The consent form itself must be kept in the child's ANS record. ${src('MEMO')}</li>
+   <li><b>Taking part in QuickStart</b> rests on QuickStart's own forms (e.g., the Participation and Confidentiality Agreement), which are still required alongside this one. ${src('MEMO')} ${src('WIKI')}</li>
+  </ul>
+  ${rvn('One grey area the documents don’t address: after the consent lapses, can QuickStart keep using information it already received from a partner? The memo only says to pause sharing. Renewing before expiry while services continue avoids the question. Possibly an ASK PPAS item.')}
+  <div class="say">The one year is about sharing. After a year, the organizations stop sharing new information about [child] with each other unless you renew it. Nothing gets erased: each organization keeps its own records, as the law and professional standards require.</div>` },
+];
+
+/* ======================= SITUATIONS ======================= */
+const SITS = [
+ { k: 'early', t: 'The family completed the forms before the intro meeting review', when: 'e.g., the DocuSign envelope arrived early', html: `
+  <p>The form says a staff member reviewed it with the family. If they signed first, that wasn't true yet. The consent is the conversation, so the review still has to happen. ${src('OP GUIDE §4')}</p>
+  <ol>
+   <li>In the meeting, go through the completed form with the family section by section. Use <a href="#check" data-go="check">Check a form</a> to spot problems.</li>
+   <li>Ask whether their choices still stand now that they've heard the explanation.</li>
+   <li><b>Form fine, nothing changes:</b> record in the intro meeting notes (ShareVision) that the form was completed before the meeting, reviewed with the caregiver on [date], and the family confirmed their choices. No new form. ${QS}</li>
+   <li><b>Anything changes, or anything is unclear:</b> do a pre-filled re-sign during the meeting, so it's still completed in the moment. <a href="${WIKI}#docusign-prefill-advanced-edit">Wiki: pre-filling in DocuSign</a></li>
+  </ol>
+  ${rvn('QS proposal. Is a recorded review enough when the family confirms a clean form? And to prevent it without losing in-meeting completion: would a line in the reminder email and DocuSign message help, e.g. “Feel free to read these ahead, but please wait to sign until we go through them together”?')}` },
+ { k: 'add', t: 'The family wants to add a partner or community provider', when: 'e.g., newly connected with NSECDIS partway through', html: `
+  <p>Adding sharing needs new consent: reviewed, signed, and on the form. A verbal yes doesn't extend a signed form. The Integrated consent is recorded in writing where feasible; verbal consent is for low-risk situations and Stage 1 intake. ${src('MEMO')} ${src('OP GUIDE §3')}</p>
+  <ol>
+   <li>Don't share with the new partner or provider until the new form is signed.</li>
+   <li>Pre-fill a new form with everything from the family's last signed form, leaving only the new part for them. <a href="${WIKI}#consent-changes-during-programming">Wiki: consent changes during programming</a></li>
+   <li>Review it with the caregiver. They add the new part and sign (in person, or DocuSign pre-filled via Advanced Edit).</li>
+   <li>Upload to Greenspace and ShareVision, and document the change (Greenspace note + ShareVision “updated consent” announcement). ${src('WIKI')}</li>
+  </ol>` },
+ { k: 'remove', t: 'The family wants to remove a partner or provider, or share less', when: 'partial withdrawal', html: `
+  <p>The form says consent can be withdrawn “in whole or in part at any time, by providing written notice to PPAS”. <b>No new form is needed.</b> ${src('FORM')} ${src('MOU §11')}</p>
+  ${rvn('This differs from the current wiki, which asks for a pre-filled re-sign for removals as well as additions. Proposed: removals by written notice. The wiki would be aligned after this review.')}
+  <ol>
+   <li>Ask the family to confirm in writing. An email is enough. ${src('MEMO')}</li>
+   <li>Stop the affected sharing straight away.</li>
+   <li>Record what was withdrawn, the date you received it, and how you learned of it (e.g., by email). ${src('MOU §11.1.1')}</li>
+   <li>Make sure the staff working with the child know. ${src('MOU §11.1.2')}</li>
+   <li>Notify the other PPAS partners where applicable. ${src('MOU §11.1.3')}</li>
+   <li>Document: a Greenspace note (tick Clinician(s) under Shared With) with the family's written notice attached, plus a ShareVision “updated consent” announcement. ${src('WIKI')} ${QS}</li>
+  </ol>
+  <p>Withdrawal isn't retroactive: anything already shared stays shared. ${src('FORM')}</p>
+  ${rvn('Is a Greenspace note enough to notify the other partners (MOU §11.1.3), or should IWK as consent steward be told directly? Possibly an ASK PPAS item.')}` },
+ { k: 'verbal', t: 'The family says they want to stop sharing, but not in writing', when: 'said in a session or on a call', html: `
+  <ol>
+   <li><b>Act on it straight away.</b> Pause the sharing they mentioned. The MOU expects revocations to be recorded however they arrive (“verbally, in-person, in writing”). ${src('MOU §11.1.1')}</li>
+   <li>Ask them to confirm in writing (an email is fine), since the form and memo describe written notice. ${src('FORM')} ${src('MEMO')}</li>
+   <li>Record what they asked, the date, that it was verbal, and who they told.</li>
+   <li>Keep the pause in place whether or not the written confirmation arrives. Then follow <a href="#situations/remove" data-go="situations/remove">remove a partner</a> or <a href="#situations/full" data-go="situations/full">full withdrawal</a>. ${QS}</li>
+  </ol>` },
+ { k: 'full', t: 'The family withdraws consent completely', when: 'rare', html: `
+  <ol>
+   <li>Stop all PPAS information sharing for the child. ${src('MOU §11')}</li>
+   <li>The family's written communication is the authoritative document. No new DocuSign is sent. ${src('WIKI')}</li>
+   <li>Record the date and that it's a full revocation. Tell staff working with the child, and notify the other partners where applicable. ${src('MOU §11.1')}</li>
+   <li>Document: a new Greenspace note, plus a ShareVision “withdrawal of consent” announcement. <a href="${WIKI}#consent-changes-during-programming">Wiki: full withdrawal</a></li>
+   <li>Any sharing later needs a brand-new signed form. ${src('MOU §10.3')}</li>
+  </ol>
+  ${rvn('The sources don’t say whether a full withdrawal affects QuickStart participation itself. Worth settling.')}` },
+ { k: 'expiry', t: 'Consent will expire before QuickStart ends', when: 'one year from signing', html: `
+  <ul>
+   <li>The consent is valid for one year from the date signed. ${src('FORM')} ${src('MOU §10.3')} Once it expires, pause sharing. ${src('MEMO')}</li>
+   <li>Expiry doesn't mean deleting anything. QuickStart's records stay under ANS's own retention rules. See <a href="#guide/affirm" data-go="guide/affirm">Section guide › Affirmation &amp; signature</a>. ${src('MOU §16.1')}</li>
+   <li>Renew before expiry with a pre-filled re-sign, reviewed with the caregiver like the original.</li>
+  </ul>
+  ${rvn('Who tracks expiry dates, and where (e.g., the Participation Info workbook consent tab)? Which families are most at risk (long waits before Session 1, ESDM)?')}` },
+ { k: 'dc', t: 'End of service: before sharing the Discharge Report with CI&CC', when: 'Section 13, Scenario 1a / 2a', html: `
+  <ol>
+   <li>Before the Greenspace upload, check the family's form covers IWK for the report (see the flows list in <a href="#check" data-go="check">Check a form</a>).</li>
+   <li><b>Covered:</b> the Section 13 “Asking About Sharing the Report” conversation confirms it. Proceed. ${src('WIKI §13')}</li>
+   <li><b>Not covered:</b> a verbal yes at discharge doesn't add IWK to the form (see <a href="#situations/add" data-go="situations/add">adding a partner</a>). Either do a pre-filled re-sign if the family wants to share, or treat it as a “no” per Section 13 and document the preference. The family can still share their copy of the report with CI&amp;CC themselves. ${QS}</li>
+  </ol>
+  ${rvn('This check isn’t in the wiki’s Section 13 yet. Is it worth adding after review?')}` },
+ { k: 'custody', t: 'Custody, guardianship or foster care questions', when: '', html: `
+  <ul>
+   <li>Foster parents can't give this consent. Legal guardians (including the Department of Community Services) can. With separated or divorced parents, it's the custodial parent with legal authority for care decisions. ${src('MOU §1.5')}</li>
+   <li>For disputes or unclear arrangements, see Operational Guide §5 and Appendix 8.5 (IWK legal advice), and consult before proceeding. ${src('OP GUIDE §5')}</li>
+  </ul>` },
+];
+
+/* ======================= REVIEWERS ======================= */
+function renderReview() {
+  $('#reviewBody').innerHTML = `
+  <h2>For reviewers: what to look for</h2>
+  <p>The PPAS form is being redesigned, but we don't know when. Until then, this tool aims to help staff read completed forms consistently and know when a problem is big enough to need a new signature. It holds three kinds of content, tagged throughout:</p>
+  <ul>
+   <li>${src('FORM')} ${src('OP GUIDE')} ${src('MOU')} ${src('MEMO')} ${src('WIKI')} come straight from the source documents.</li>
+   <li>${QS} marks our proposals where the documents are silent. The memo gives each partner organization the job of training staff on “when and how consent forms must be updated”, so this is ours to set.</li>
+   <li>${ASK} marks questions only PPAS can answer.</li>
+  </ul>
+  <p>Amber <span class="rv">REVIEW</span> notes throughout mark specific questions. The main things we'd like your judgement on:</p>
+  <ol>
+   <li><b>The ratings.</b> In <a href="#check" data-go="check">Check a form</a>, load each example from the menu. Do the four ratings (Fine / Valid, note it / Unclear, pause &amp; ask / Below QuickStart minimum) match how you'd handle each case?</li>
+   <li><b>“Never read a form more broadly than the family clearly gave it.”</b> Every “Unclear” rating comes from this. Is it too strict anywhere? Example B comes out <i>below minimum</i>: ALL plus only page-3 items means Diagnosis isn't clearly covered for QuickStart. Does that feel right?</li>
+   <li><b>When a new signature is needed.</b> An unclear form gets a pre-filled re-sign when it affects the QuickStart column or a flow QuickStart will actually use. Otherwise, record the family's answer and correct the form at the next natural touchpoint. Valid-but-limiting choices never need one.</li>
+   <li><b>QuickStart's minimum, stated as one rule:</b> consent for QuickStart to receive the child's diagnosis information (QuickStart column + Diagnosis) and to use shared information to provide services (first Use of information box), plus a signature. The Diagnosis part is the team's existing working rule. The Use of information part is <b>newly added</b> on the same reasoning: receiving diagnosis information is only useful if QuickStart can use it. Agree? The quick reference currently marks Use of information optional. See <a href="#guide/use" data-go="guide/use">Section guide › Use of information</a>.</li>
+   <li><b>Removals by written notice</b> instead of a re-sign (Something changed › remove). This differs from the current wiki.</li>
+   <li><b>The QuickStart flows list</b> (bottom of the results). Which information types does a Discharge Report or ESDM checklist count as? Are any flows missing or wrong (e.g., NS Health)?</li>
+   <li><b>The scripts.</b> Would you say them to a family? Do they explain consequences without steering?</li>
+   <li><b>Completed before the review.</b> In-meeting completion via DocuSign must stay. Is a recorded review enough when the family confirms a clean form?</li>
+   <li><b>What's missing.</b> Patterns you've seen on real forms that aren't here. Also: do families ever arrive with a current Integrated consent from another PPAS service? If so, should QuickStart redo it?</li>
+  </ol>
+
+  <h3>Questions for PPAS ${ASK}</h3>
+  <ul>
+   <li>Does Greenspace count as a sharing method? The MOU lists it (§8.6); the form's method list doesn't. Do the method boxes limit Greenspace sharing at all? The answer decides whether “at least one usable method” becomes part of QuickStart's minimum.</li>
+   <li>Can QuickStart upload clinical documents (Discharge Report, ESDM checklist) to Greenspace if the family didn't include IWK? The consent form itself is fine: IWK is the Consent Documentation Steward (MOU §1.2).</li>
+   <li>Which “form of consent” box applies to DocuSign signatures: Written?</li>
+   <li>Is “Use the information… to assist in the provision of services” intended as required for PPAS services? QuickStart treats it as required so that shared diagnosis information can actually be used.</li>
+   <li>Does the consent cover a Parent Coach asking CI&amp;CC about a family's file without checking with the family first? (wiki open item 38)</li>
+   <li>Is a Greenspace note enough to “notify the other Parties” of a withdrawal (MOU §11.1.3)?</li>
+   <li>After the consent expires, can a partner keep <i>using</i> information it already received through PPAS for the child's ongoing services? (Retention itself is clear: MOU §16.1 leaves it to each organization.)</li>
+  </ul>
+
+  <h3>Form design issues for the PPAS redesign ${FD}</h3>
+  <p>Every rule tagged FORM DESIGN exists only because of how the form is laid out. Together they are our feedback for the redesign, and they show which rules to retire once the new form arrives.</p>
+  <ol>
+   <li>The ONLY list is split across pages 2–3, and the heading isn't repeated on page 3, so page-3 items read as a new question.</li>
+   <li>ALL and ONLY can both be ticked. A single either/or choice per partner would prevent contradictory columns.</li>
+   <li>“Yes to this partner” (first row) is separate from what to share, so either can be filled without the other.</li>
+   <li>Other providers: no organization field, and provider numbers must be matched by hand across pages 3 and 4.</li>
+   <li>The provider information list differs from the partner list (no intervention/service planning assessments).</li>
+   <li>Greenspace isn't a listed communication method, though the MOU uses it.</li>
+   <li>The communication methods section doesn't say it's about organizations sharing with each other, so families can read it as how they want to be contacted (e.g., ticking only “By telephone”).</li>
+   <li>No way to add a provider without re-completing the whole form. That's routine for QuickStart as community partners change.</li>
+   <li>The form of consent is Verbal/Written only; nothing fits electronic (DocuSign) consent.</li>
+   <li>Nothing marks which purposes are essential and which are optional (Use of information), though the Operational Guide (§2.3) says they should be clearly distinguished.</li>
+  </ol>`;
+}
+
+/* ======================= WIRING ======================= */
+function goto(hash) {
+  const [tab, sub] = (hash || 'start').replace(/^#/, '').split('/');
+  const t = ['start', 'check', 'guide', 'situations', 'review'].includes(tab) ? tab : 'start';
+  document.querySelectorAll('.tab').forEach(b => b.classList.toggle('active', b.dataset.tab === t));
+  document.querySelectorAll('.pane').forEach(p => p.classList.toggle('active', p.id === 'pane-' + t));
+  if (t === 'guide') showGuide(sub || GUIDE[0].k);
+  if (t === 'situations' && sub) { const d = document.getElementById('sit-' + sub); if (d) { d.open = true; setTimeout(() => d.scrollIntoView({ behavior: 'smooth', block: 'start' }), 30); } }
+  else window.scrollTo({ top: 0 });
+}
+function showGuide(k) {
+  const g = GUIDE.find(x => x.k === k) || GUIDE[0];
+  document.querySelectorAll('#guideChips .chip').forEach(c => c.classList.toggle('active', c.dataset.k === g.k));
+  $('#guideBody').innerHTML = g.html;
+}
+function loadExample(k) {
+  const ex = EXAMPLES.find(e => e.k === k); if (!ex) return;
+  state = ex.make(); syncForm(); renderResults();
+  $('#exSel').value = k;
+  $('#exNote') && $('#exNote').remove();
+  $('#formSide').insertAdjacentHTML('afterbegin', `<div class="banner info" id="exNote"><strong>${esc(ex.label)}</strong>${esc(ex.note)}</div>`);
+}
+
+renderForm(); syncForm(); renderResults(); renderReview();
+$('#exSel').innerHTML += EXAMPLES.map(e => `<option value="${e.k}">${esc(e.label)}</option>`).join('');
+$('#guideChips').innerHTML = GUIDE.map(g => `<button class="chip" data-k="${g.k}">${esc(g.t)}</button>`).join('');
+$('#sitBody').innerHTML = SITS.map(s => `<details class="sit" id="sit-${s.k}"><summary>${esc(s.t)}${s.when ? ` <span class="when">${esc(s.when)}</span>` : ''}</summary><div class="doc">${s.html}</div></details>`).join('');
+
+document.addEventListener('change', e => {
+  const el = e.target;
+  if (el.matches('#formSide input[data-path]')) { setPath(el.dataset.path, el.checked); $('#exNote') && $('#exNote').remove(); $('#exSel').value = ''; renderResults(); }
+  else if (el.matches('#formSide input[name=reviewed]')) { state.reviewed = el.value; renderResults(); }
+  else if (el.id === 'exSel') { if (el.value) loadExample(el.value); }
+  else if (el.classList.contains('metaToggle')) { document.body.classList.toggle('hide-meta', !el.checked); document.querySelectorAll('.metaToggle').forEach(t => t.checked = el.checked); }
+});
+document.addEventListener('click', e => {
+  const tab = e.target.closest('.tab'); if (tab) { location.hash = tab.dataset.tab; return; }
+  const chip = e.target.closest('#guideChips .chip'); if (chip) { location.hash = 'guide/' + chip.dataset.k; return; }
+  const go = e.target.closest('[data-go]'); if (go) { e.preventDefault(); location.hash = go.dataset.go; return; }
+  const tr = e.target.closest('.tryit, [data-load]'); if (tr) { location.hash = 'check'; loadExample(tr.dataset.ex || tr.dataset.load); return; }
+  const sc = e.target.closest('[data-scroll]'); if (sc) { e.preventDefault(); document.getElementById(sc.dataset.scroll).scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+  if (e.target.id === 'btnBlank') { state = blankState(); $('#exNote') && $('#exNote').remove(); $('#exSel').value = ''; syncForm(); renderResults(); }
+  if (e.target.id === 'btnCopy') {
+    const t = summaryText(), b = e.target;
+    const done = () => { b.textContent = 'Copied'; setTimeout(() => b.textContent = 'Copy summary', 1500); };
+    (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(done).catch(() => { window.prompt('Copy the summary:', t); });
+  }
+});
+window.addEventListener('hashchange', () => goto(location.hash));
+goto(location.hash);
+</script>
+</body>
+</html>
