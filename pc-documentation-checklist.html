@@ -80,6 +80,7 @@
   .src.Q { background: var(--blue-lt); color: var(--blue-dk); }
   .src.X { background: var(--green-lt); color: var(--green-dk); }
   .src.O { background: var(--g200); color: var(--g700); }
+  .src.M { background: var(--amber-lt); color: #8a5a00; }
   .verify { display: inline-block; font-size: 11px; font-weight: 700; color: #8a5a00; background: var(--amber-lt); border: 1px solid var(--amber); padding: 0 6px; border-radius: 3px; margin-left: 4px; }
   body.hide-src .src, body.hide-src .legend { display: none; }
   .note { background: var(--g100); border-left: 4px solid var(--blue); padding: 8px 12px; font-size: 13px; margin: 8px 0; border-radius: 0 4px 4px 0; }
@@ -129,7 +130,7 @@
 </header>
 
 <div class="interim no-print">
-  <strong>About this checklist.</strong> It consolidates the Session Documentation Checklist (Excel), the QS Supervisor Wiki (CI&amp;CC integration &amp; Greenspace steps) and the PC workplan rules. Items marked <span class="verify">verify</span> have conflicting timings across sources — confirm with your supervisor.
+  <strong>About this checklist.</strong> It consolidates the Session Documentation Checklist (Excel), the QuickStart Manual, the QS Supervisor Wiki (CI&amp;CC integration &amp; Greenspace steps) and the PC workplan rules. Items marked <span class="verify">verify</span> have conflicting timings across sources — confirm with your supervisor.
 </div>
 
 <div class="tabs no-print" id="tabs"></div>
@@ -170,7 +171,7 @@
 <p style="font-size:13px;color:var(--g600);margin:0 0 8px">Tick as each session's documentation is done. Session notes are due within 48 hours <span class="src Q">WORKPLAN</span>; attendance before the next team member's session <span class="src O">OT/SLP</span>.</p>
 <table class="grid" id="grid"></table>
 
-<div class="legend">Sources: <span class="src W">WIKI</span> QS Supervisor Wiki &nbsp; <span class="src Q">WORKPLAN</span> PC workplan rules &nbsp; <span class="src X">EXCEL</span> Session Documentation Checklist &nbsp; <span class="src O">OT/SLP</span> SLP/OT prep checklist pattern</div>
+<div class="legend">Sources: <span class="src W">WIKI</span> QS Supervisor Wiki &nbsp; <span class="src Q">WORKPLAN</span> PC workplan rules &nbsp; <span class="src X">EXCEL</span> Session Documentation Checklist &nbsp; <span class="src O">OT/SLP</span> SLP/OT prep checklist pattern &nbsp; <span class="src M">QS MANUAL</span> QuickStart Manual</div>
 
 </div>
 <div class="empty no-print" id="empty" style="display:none">No families yet. Click <strong>+ Add family</strong> above to start. Records are saved in this browser only — use initials, not full names.</div>
@@ -236,7 +237,7 @@ const PHASES = [
       { id: 'p3-excel', text: 'Goals added to the Excel Data Sheet and shared with the family.', src: 'X' },
     ]},
   ]},
-  { id: 'p4', title: 'S7–S16 — Coaching', when: 'Progress report at S12; surveys at S16', from: 7, to: 16, groups: [
+  { id: 'p4', title: 'S7–S16 — Coaching', when: 'Progress report at S12; paper surveys at S16', from: 7, to: 16, groups: [
     { name: 'Every session', items: [
       { id: 'p4-grid', text: 'Session note within 48 h, attendance, activity log, child goal data and parent fidelity — tick per session in the grid below.', sub: 'Workplan: fidelity and goal data on 90%+ of sessions.', src: 'Q' },
       { id: 'p4-stag', text: 'Watch for goal stagnation (2+ consecutive "−") or 2+ sessions without goal data — adjust goals or teaching steps. When ~80% of goals are mastered, add goals.', src: 'Q' },
@@ -253,17 +254,18 @@ const PHASES = [
       { id: 'p4-consent', text: `If the family adds or changes a partner/program: the supervisor sends the revised DocuSign to the parent and you. <strong>You</strong> download the signed PDF and upload it to Greenspace (Notes → Create a Note → "Service Delivery Consent Form", Shared With: tick <strong>Clinician(s)</strong>) and to ShareVision, then delete the local copy (${w('consent-changes-during-programming')}).`, src: 'W' },
     ]},
     { name: 'S16', items: [
-      { id: 'p4-survey', text: 'Send the family surveys.', sub: 'Collected at S17; digital surveys emailed at S18.', src: 'X' },
+      { id: 'p4-survey', text: 'Give the family the two paper surveys in a legal-sized envelope: the <strong>Participation Survey</strong> and the <strong>Measure of Process of Care (MPOC)</strong>.', sub: 'Collected at S17. Same surveys for both programs.', src: 'MX' },
     ]},
   ]},
   { id: 'p5', title: 'S17 — Reassessment', when: 'Post-intervention measures; discharge planning starts', from: 17, to: 17, groups: [
     { name: 'Reassessment', items: [
       { id: 'p5-esdm', text: 'Post-intervention ESDM curriculum checklist re-administered.', sub: 'Workplan: due S17, overdue at S18.', src: 'QX' },
-      { id: 'p5-copm', text: `COPM post-assessment completed. ${V}`, sub: 'Workplan: due S17. Excel places the COPM at S19.', src: 'QX' },
-      { id: 'p5-surveys', text: 'Collect completed surveys.', src: 'X' },
+      { id: 'p5-copm', text: 'COPM post-assessment brought to and completed at S17.', src: 'MQ' },
+      { id: 'p5-surveys', text: 'Collect the completed paper surveys.', src: 'MX' },
     ]},
     { name: 'Discharge planning', items: [
       { id: 'p5-dcgoals', text: 'Write discharge goals (3+), send to the family and add to the Excel Data Sheet.', sub: 'Workplan: due S17 + 14 days; supervisor review 3 working days.', src: 'QX' },
+      { id: 'p6-digital', text: `If the family did not complete the paper surveys: include the online survey link(s) in the email that sends the discharge goals (<a href="https://autismnovascotia.sharepoint.com/sites/ASDParent-MediatedCoaching/SitePages/Forms-and-Surveys.aspx" target="_blank">Forms and Surveys</a>).`, sub: 'Copy the link to either survey, or both, as appropriate.', src: 'M' },
       { id: 'p5-book', text: 'Book the follow-up sessions S18 and S19.', src: 'X' },
       { id: 'p5-report', text: 'Start the Discharge Report.', sub: 'Workplan: start 14 days before S19; submit 7 days before S19 so the supervisor can review.', src: 'Q' },
       { id: 'p5-prep', text: `Before the closing conversation: review the family against Section 12 Area 2 — is there a reason for them to call CI&amp;CC now? (${w('before-the-closing-conversation')})`, src: 'W' },
@@ -272,7 +274,6 @@ const PHASES = [
   { id: 'p6', title: 'S18–S19 — Follow-ups', when: 'Closing conversation; final measures', from: 18, to: 19, groups: [
     { name: 'S18', items: [
       { id: 'p6-book19', text: 'Book S19 (team meeting, call or PC session) and send the S19 invitation.', src: 'X' },
-      { id: 'p6-digital', text: 'Email the digital surveys.', src: 'X' },
       { id: 'p6-fid', text: 'Parent fidelity scored at S18.', src: 'Q' },
     ]},
     { name: 'Closing conversation (S17–19)', items: [
@@ -294,6 +295,7 @@ const PHASES = [
     ]},
     { name: 'Scenario 2 — Discontinued (Greenspace)', items: [
       { id: 'p7-d-request', text: 'Request discontinuation from your supervisor (decision within 3 working days).', src: 'Q' },
+      { id: 'p7-d-exit', text: 'Early discharge: email the family the <strong>Exit Survey</strong>.', src: 'M' },
       { id: 'p7-d-letter', text: 'Write the QS Discharge letter (within 7 days of approval; supervisor reviews), then give it to the family and record the date. A letter is required for unable-to-contact and attendance/participation endings; not for caregiver choice.', src: 'Q' },
       { id: 'p7-d-profile', text: `Greenspace Profile: QS stream; Status = "Discontinued"; Reason = matching dropdown; QS End Date = <strong>the date the letter was given</strong> (${w('scenario-2-discontinued')}).`, src: 'WQ' },
       { id: 'p7-d-note', text: 'Document note — Title <em>QuickStart Nova Scotia Discontinued - [reason]</em>, Comments "See attached Discharge letter for more details.", attach the letter. Shared With: tick <strong>Clinician(s)</strong>.', src: 'W' },
@@ -324,8 +326,8 @@ const GRID_COLS = [
   { id: 'child', label: 'Child goal data<br><small>Excel</small>' },
   { id: 'parent', label: 'Parent fidelity<br><small>Excel</small>' },
 ];
-const MILESTONES = { 5: 'Baseline · ESDM checklist', 6: 'Goal sharing', 12: 'Progress report', 16: 'Send surveys', 17: 'Reassessment · COPM · D/C goals', 18: 'Book S19 · digital surveys', 19: 'Closing conversation' };
-const SRC_NAMES = { W: 'WIKI', Q: 'WORKPLAN', X: 'EXCEL', O: 'OT/SLP' };
+const MILESTONES = { 5: 'Baseline · ESDM checklist', 6: 'Goal sharing', 12: 'Progress report', 16: 'Paper surveys out', 17: 'Reassessment · COPM · collect surveys · D/C goals', 18: 'Book S19', 19: 'Closing conversation' };
+const SRC_NAMES = { W: 'WIKI', Q: 'WORKPLAN', X: 'EXCEL', O: 'OT/SLP', M: 'QS MANUAL' };
 
 let state = { checks: {} };
 
