@@ -288,9 +288,9 @@ const PHASES = [
     ]},
     { name: 'Scenario 1 — Completed (Greenspace)', items: [
       { id: 'p7-c-profile', text: `Greenspace Profile → QuickStart Nova Scotia: QS stream = "PC Program"; Status = "Completed"; QS Start Date = S1; QS End Date = last session actually attended (S18/19 count) (${w('scenario-1-completed')}).`, src: 'WQ' },
-      { id: 'p7-c-note1', text: 'Document note — Title <em>QuickStart Nova Scotia Completed - Discharge Report</em>, Comments "See attached Discharge Report for more details.", attach the report. Shared With: tick <strong>Clinician(s)</strong>.', src: 'W' },
-      { id: 'p7-c-note2', text: 'Document note — <em>QuickStart Nova Scotia Completed - pre-intervention ESDM curriculum checklist</em>, attach it. Shared With: tick <strong>Clinician(s)</strong>.', src: 'W' },
-      { id: 'p7-c-note3', text: 'Document note — <em>QuickStart Nova Scotia Completed - post-intervention ESDM curriculum checklist</em>, attach it. Shared With: tick <strong>Clinician(s)</strong>.', src: 'W' },
+      { id: 'p7-c-note1', text: 'Document note — Title <em>QuickStart Nova Scotia Completed - Discharge Report</em>, Comments "See attached Discharge Report for more details. Password: [DC Report password]", attach the report. Shared With: tick <strong>Clinician(s)</strong>.', src: 'W' },
+      { id: 'p7-c-note2', text: 'Document note — <em>QuickStart Nova Scotia Completed - pre-intervention ESDM curriculum checklist</em>, attach it. Shared With: tick <strong>Clinician(s)</strong>.', sub: 'Attach the Excel file if it was completed digitally, or a scan if it was done on paper (do not copy a paper checklist into Excel just to upload it). If the file is password-protected, add "Password: [password]" to the Comments.', src: 'W' },
+      { id: 'p7-c-note3', text: 'Document note — <em>QuickStart Nova Scotia Completed - post-intervention ESDM curriculum checklist</em>, attach it. Shared With: tick <strong>Clinician(s)</strong>.', sub: 'Attach the Excel file if it was completed digitally, or a scan if it was done on paper (do not copy a paper checklist into Excel just to upload it). If the file is password-protected, add "Password: [password]" to the Comments.', src: 'W' },
       { id: 'p7-c-privacy', text: 'Attach the report and checklists <strong>only</strong> if the family consented to sharing with CI&amp;CC. No consent → create the notes without attachments.', src: 'WQ' },
     ]},
     { name: 'Scenario 2 — Discontinued (Greenspace)', items: [
@@ -298,7 +298,7 @@ const PHASES = [
       { id: 'p7-d-exit', text: 'Early discharge: email the family the <strong>Exit Survey</strong>.', src: 'M' },
       { id: 'p7-d-letter', text: 'Write the QS Discharge letter (within 7 days of approval; supervisor reviews), then give it to the family and record the date. A letter is required for unable-to-contact and attendance/participation endings; not for caregiver choice.', src: 'Q' },
       { id: 'p7-d-profile', text: `Greenspace Profile: QS stream; Status = "Discontinued"; Reason = matching dropdown; QS End Date = <strong>the date the letter was given</strong> (${w('scenario-2-discontinued')}).`, src: 'WQ' },
-      { id: 'p7-d-note', text: 'Document note — Title <em>QuickStart Nova Scotia Discontinued - [reason]</em>, Comments "See attached Discharge letter for more details.", attach the letter. Shared With: tick <strong>Clinician(s)</strong>.', src: 'W' },
+      { id: 'p7-d-note', text: 'Document note — Title <em>QuickStart Nova Scotia Discontinued - [reason]</em>, Comments "See attached Discharge letter for more details.", attach the letter. Shared With: tick <strong>Clinician(s)</strong>.', sub: 'If the letter is password-protected, add "Password: [password]" to the Comments.', src: 'W' },
     ]},
     { name: 'ShareVision discharge file (both scenarios)', items: [
       { id: 'p7-sv-consents', text: 'Consents', src: 'X' },
@@ -306,7 +306,7 @@ const PHASES = [
       { id: 'p7-sv-copm', text: 'COPM', src: 'X' },
       { id: 'p7-sv-excel', text: 'Excel Data Sheet, and the Input Report tab from it', src: 'X' },
       { id: 'p7-sv-goals', text: 'Goals (PDF)', src: 'X' },
-      { id: 'p7-sv-pw', text: `Add the document password as an announcement on the profile page ${V}`, sub: 'Confirm whether documents are still password-protected before upload; if so this stays.', src: 'X' },
+      { id: 'p7-sv-pw', text: `Add the document password as an announcement on the profile page ${V}`, sub: 'The Discharge Report is password-protected. In Greenspace, the password goes in the Comments of the note instead.', src: 'X' },
       { id: 'p7-sv-other', text: 'Any additional documentation (professional reports, recommendation letters)', src: 'X' },
       { id: 'p7-sv-report', text: 'Discharge Report PDF (Completed) or Discharge letter (Discontinued)', src: 'X' },
       { id: 'p7-sv-section', text: 'Complete the discharge section in ShareVision', src: 'X' },
