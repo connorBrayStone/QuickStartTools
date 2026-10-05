@@ -464,6 +464,7 @@
   <div class="toc-row"><a href="#email-template-3-calendar-event-body" class="toc-h3">Email Template 3: Calendar Event Body</a><button type="button" class="toc-copy" data-anchor="email-template-3-calendar-event-body" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
   <div class="toc-row"><a href="#email-template-4-reminder-email" class="toc-h3">Email Template 4: Reminder Email</a><button type="button" class="toc-copy" data-anchor="email-template-4-reminder-email" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
   <div class="toc-row"><a href="#email-template-5-s1-4-scheduling-confirmation" class="toc-h3">Email Template 5: S1-4 Scheduling Confirmation</a><button type="button" class="toc-copy" data-anchor="email-template-5-s1-4-scheduling-confirmation" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
+  <div class="toc-row"><a href="#email-template-6-cicc-intake-status-inquiry-child-not-yet-matched" class="toc-h3">Email Template 6: CI&amp;CC Intake Status Inquiry (Child Not Yet Matched)</a><button type="button" class="toc-copy" data-anchor="email-template-6-cicc-intake-status-inquiry-child-not-yet-matched" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
   <div class="toc-row"><a href="#archive" class="toc-h2">Archive</a><button type="button" class="toc-copy" data-anchor="archive" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
   <div class="toc-row"><a href="#end-of-service--not-matched-by-cicc-variants-transitional" class="toc-h3">End-of-Service — "Not Matched by CI&amp;CC" Variants (transitional)</a><button type="button" class="toc-copy" data-anchor="end-of-service--not-matched-by-cicc-variants-transitional" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
   <div class="toc-row"><a href="#receipt-and-transfer-of-referrals-to-cicc-transition-period" class="toc-h3">Receipt and Transfer of Referrals to CI&amp;CC (Transition Period)</a><button type="button" class="toc-copy" data-anchor="receipt-and-transfer-of-referrals-to-cicc-transition-period" title="Copy a direct link to this section" aria-label="Copy link to this section">&#128279;</button></div>
@@ -1021,7 +1022,7 @@
 <li><strong>Zone allocation accuracy:</strong> Children appearing in the correct zone tab. (E.g., a Central child should not appear in the Northern tab.) Flag and re-route any cross-zone entries with CI&amp;CC for correction.</li>
 <li><strong>Cohort openings match expected structure:</strong> The available openings in the sheet should match what's expected for the next enrolling cohort(s). Raise any structural discrepancies (missing rows, mis-sequenced cohort numbers, etc.) with the QS Manager.</li>
 <li><strong>Duplicate or ambiguous acronyms:</strong> Two children with the same acronym in the same zone need disambiguation.</li>
-<li><strong>Missing matches as cohorts approach (~8 weeks pre-start trigger):</strong> QuickStart intro meetings are conducted approximately 4-6 weeks before a family's actual start date (see <a href="#step-9d-contact-family-to-schedule-intro-meeting">Step 9D</a>), and require lead time to receive the match, contact the family, and schedule the meeting. The practical floor is therefore approximately <strong>8 weeks pre-cohort</strong>: if a match for an upcoming cohort opening hasn't been received by then, send a general inquiry email to PPAS Intake regarding any pending matches and the expected timeline for the intake meeting. The same applies if entries on the sheet appear to need consolidation or removal but haven't been (e.g., a child entry that should have been moved to Waitlist Provisional, or removed entirely after being matched elsewhere).</li>
+<li><strong>Missing matches as cohorts approach (~8 weeks pre-start trigger):</strong> QuickStart intro meetings are conducted approximately 4-6 weeks before a family's actual start date (see <a href="#step-9d-contact-family-to-schedule-intro-meeting">Step 9D</a>), and require lead time to receive the match, contact the family, and schedule the meeting. The practical floor is therefore approximately <strong>8 weeks pre-cohort</strong>: if a match for an upcoming cohort opening hasn't been received by then, send CI&amp;CC a status inquiry using <a href="#email-template-6-cicc-intake-status-inquiry-child-not-yet-matched">Email Template 6</a>, with one email per child. Also email <a href="#contacting-cicc">CI&amp;CC</a> if entries on the sheet appear to need consolidation or removal but haven't been (e.g., a child entry that should have been moved to Waitlist Provisional, or removed entirely after being matched elsewhere).</li>
 <li><strong>Waitlist Provisional cases (highest-priority monitoring):</strong> New entries on the Waitlist Provisional tab require timely QS Clinical Team review per <a href="#section-35-review-of-waitlist-provisional-cases">Section 3.5</a>. The 7:00 AM email digest flags these.</li>
 </ul>
 <p><strong>Where supervisor responsibility ends.</strong> Direct data entry into the capacity sharing sheet remains CI&amp;CC's responsibility for incoming families. The supervisor's role here is permanent-product review and quality assurance — flagging issues to CI&amp;CC for correction, not making corrections directly. The exception is the Waitlist Provisional zone-tab updates, which the QS Clinical Team owns per Section 3.5 (e.g., adding the child's acronym and DOB to an identified opening once a workable cohort fit is found).</p>
@@ -1154,6 +1155,7 @@
 <li><strong>PC opening</strong> → consider <strong>green</strong> rows; confirm the child will still be <strong>≤33m15d</strong> at the opening (and confirm exact cohort fit by age at start on the Capacity Sheet).</li>
 <li><strong>ESDM opening</strong> → consider <strong>green and yellow</strong> rows (under 37 months).</li>
 <li><strong>Red</strong> → the child has aged out: update the status to <strong>"Ineligible"</strong> and follow the end-of-service steps in <a href="#scenario-3-ineligible--aged-out-by-next-available-start-time">Scenario 3</a>.</li>
+<li><strong>No matched waitlist child is eligible</strong> → check the Capacity Sharing Sheet's Waitlist Provisional tab for a child who would be age-eligible for the opening (same age bands as above) but hasn't been matched yet. Ask CI&amp;CC where that family is in intake using <a href="#email-template-6-cicc-intake-status-inquiry-child-not-yet-matched">Email Template 6</a>, with one email per child. If CI&amp;CC confirms intake is complete and no match has come through, move on to the next child and/or post the opening as unfilled.</li>
 </ul>
 <h4 id="green-band-families-the-dual-program-pc-vs-esdm-choice">Green-band families: the dual-program (PC vs ESDM) choice <span class="topic-tag" data-topic="esdm" style="background:#fce8d4;color:#a85a1a;border:1px solid #f0c098">ESDM</span> <span class="topic-tag" data-topic="waitlist" style="background:#fbe3ef;color:#9d2463;border:1px solid #eeaecd">Waitlist</span></h4>
 <p>There is <strong>one waitlist</strong> (status "Waitlist"), and both of QuickStart's ESDM-based programs — the <strong>Parent Coaching (PC) Program</strong> and the <strong>ESDM Program</strong> — draw from it. A <strong>green</strong>-band child (≤33m15d) is eligible for <strong>either</strong>, so when a green-band family is the next to be contacted and an opening of one type comes up, make their options across <strong>both</strong> programs explicit before they decide:</p>
@@ -2700,8 +2702,8 @@
 <hr />
 <h2 id="email-templates">Email Templates</h2>
 <blockquote>
-<p><strong>Responsible:</strong> <span class="role-badge" data-topic="role-qs-admin" style="background:#2980b9">QS Admin</span> (primary sender for Templates 1–4); <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> (primary sender for Template 5, and may send any template when covering or when staffing requires)</p>
-<p>The following email templates are utilized as part of the processes for following up on received service matches from CI&amp;CC. Refer to <a href="#step-9d-contact-family-to-schedule-intro-meeting">Step 9D</a> for the sequence in which these are sent, and <a href="#step-11e-scheduling-confirmation-email">Step 11E</a> for Template 5.</p>
+<p><strong>Responsible:</strong> <span class="role-badge" data-topic="role-qs-admin" style="background:#2980b9">QS Admin</span> (primary sender for Templates 1–4); <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> (primary sender for Templates 5 and 6, and may send any template when covering or when staffing requires)</p>
+<p>The following email templates are utilized as part of the processes for following up on received service matches from CI&amp;CC. Refer to <a href="#step-9d-contact-family-to-schedule-intro-meeting">Step 9D</a> for the sequence in which these are sent, and <a href="#step-11e-scheduling-confirmation-email">Step 11E</a> for Template 5. Template 6 is the exception: it goes to CI&amp;CC rather than a family, to ask about a child who has not been matched yet.</p>
 <p><strong>Usage note:</strong> Template 1 is sent when the additional screeners indicated the child was fully eligible. This email can be sent without needing to connect with the supervisor.</p>
 <p><strong>Template 1 or 1B?</strong> Both are initial-contact emails sent within 48-72 hours of the service match; which one applies depends on how far out the family's cohort start date is. Use <strong>Template 1</strong> when the start date is 6 months or less away (confirms the match and offers meeting times), and <strong>Template 1B</strong> when it is more than 6 months away (confirms the match only, with scheduling deferred to 3 months before the start date). See <a href="#step-9d-contact-family-to-schedule-intro-meeting">Step 9D</a>.</p>
 </blockquote>
@@ -2831,6 +2833,50 @@ Administrative Support, QuickStart NS</p>
 <blockquote>
 <p><span class="topic-tag" data-topic="open-item" style="background:#fde8e8;color:#9b1c1c;border:1px solid #f5a3a3">Open Item</span> <strong>OPEN ITEM:</strong> Populate the zone-specific office-location details (parking, entry, on-arrival instructions) for each office beyond Halifax, so supervisors in all zones have a ready-made block to substitute into Email Template 5.</p>
 </blockquote>
+<h3 id="email-template-6-cicc-intake-status-inquiry-child-not-yet-matched">Email Template 6: CI&amp;CC Intake Status Inquiry (Child Not Yet Matched)</h3>
+<p><em>Sent by <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> to ask CI&amp;CC where a family is in intake when the child is on the Capacity Sharing Sheet but has not been matched to QuickStart. This is an interim template: an inquiries tab is being added to the Capacity Sharing Sheet and may replace it.</em></p>
+<p><strong>When to use:</strong> the ~8-week missing-match check in <a href="#capacity-sharing-sheet--ongoing-qs-supervisor-monitoring">Capacity Sharing Sheet monitoring</a>, and an opening that no matched waitlist child is eligible for (<a href="#working-the-waitlist-when-an-opening-arises">Working the Waitlist When an Opening Arises</a>).</p>
+<p><strong>How to send:</strong> one email per child, to the CI&amp;CC intake inbox (see <a href="#contacting-cicc">Contacting CI&amp;CC</a>). Identify the child by acronym and date of birth from the capacity sheet. Always include the Greenspace ID when CI&amp;CC has entered it on the capacity sheet; if it isn't there, delete that line. Replace the bracketed reason with the sentence from the table below that fits.</p>
+<p><strong>Subject:</strong> QuickStart NS – Intake Status Inquiry – [Child acronym]</p>
+<div class="email-copy-wrap"><button type="button" class="email-copy-btn" aria-label="Copy email body to clipboard">&#128203; Copy email body</button></div><blockquote class="email-template-body">
+<p>Hello,</p>
+<p>I'm following up on the status of the following child, who is listed on the Capacity Sharing Sheet but has not yet been matched to QuickStart NS:</p>
+<ul>
+<li><strong>Child acronym:</strong> [e.g. JaWa-C]</li>
+<li><strong>Date of birth:</strong> [MM/DD/YYYY]</li>
+<li><strong>Greenspace ID:</strong> [ID from the capacity sheet; delete this line if it isn't there]</li>
+<li><strong>Capacity Sharing Sheet:</strong> [Zone] tab, [cohort and opening #] / Waitlist Provisional tab</li>
+</ul>
+<p>[Reason for asking: paste the sentence that fits from the table below the template.]</p>
+<p>Would you be able to let us know:</p>
+<ul>
+<li>whether this family has completed their intake meeting yet, and if not, the expected timing; or</li>
+<li>if intake has already been completed, can you simply confirm that. We understand you may not be able to share the outcome, so we'll take a completed intake with no match to QuickStart as an indication that the family either declined or was not eligible for our services, and will move on to consideration of the next child and/or posting the opening as unfilled.</li>
+</ul>
+<p>Thank you,</p>
+<p>[Your Name]<br />
+[Zone] Zone Supervisor, QuickStart NS</p>
+</blockquote>
+<p><strong>Reason sentences:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>Reason sentence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Missing match, cohort approaching:</strong> the child is in an opening for an upcoming cohort and no match has arrived by about 8 weeks before the start date</td>
+<td>"This child is entered in an opening for the [Month Year] cohort in [Zone], and we have not yet received a service match. With the start date approaching, we'd like to plan accordingly."</td>
+</tr>
+<tr>
+<td><strong>New opening, no eligible waitlist child:</strong> an opening has come up, no child already matched to QuickStart is age-eligible, and this child on the Waitlist Provisional tab would be</td>
+<td>"We will shortly be adding a new opening in [Zone] [e.g. ahead of the next general enrollment cohort, due to staffing and capacity changes]. No children currently matched to QuickStart with a waitlist status are age-eligible for this opening, and this child would be a candidate based on their current age."</td>
+</tr>
+</tbody>
+</table>
+<p>For a situation not listed, write a one- or two-sentence reason in the same style: what the opening is, and why this child is being asked about.</p>
 <!-- sync-marker -->
 
 <hr />
@@ -3201,6 +3247,12 @@ QuickStart Nova Scotia</p>
 <td>41</td>
 <td>13 (Scenario 2)</td>
 <td>Decide whether the Discontinued closeout should also upload whichever ESDM curriculum checklists were completed (typically the pre-intervention checklist, done by S5), and on what consent. Uploading to Greenspace shares the file with CI&amp;CC, and a discontinued family may not have had the Scenario 1 consent conversation</td>
+<td>Connor</td>
+</tr>
+<tr>
+<td>42</td>
+<td>Email Template 6</td>
+<td>Template 6 (CI&amp;CC intake status inquiry for a child not yet matched) is interim. An inquiries tab is being added to the Capacity Sharing Sheet; once it's in place, decide whether status inquiries move there and whether Template 6 is retired</td>
 <td>Connor</td>
 </tr>
 </tbody>
