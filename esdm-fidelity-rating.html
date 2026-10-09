@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ESDM Fidelity Rating</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal: #00a5b5; --teal-dk: #008a98; --teal-lt: #e6f6f8;
+    --green: #7cb342; --green-dk: #4f7d25; --green-lt: #eef6e4;
+    --blue: #5a7fc0; --blue-dk: #41619c; --blue-lt: #eaeff8;
+    --amber: #e6a117; --amber-dk: #8a5a00; --amber-lt: #fff6df;
+    --red: #c0392b; --red-lt: #fbe9e7;
+    --g50: #fafbfc; --g100: #f5f5f5; --g200: #eeeeee; --g300: #e0e0e0; --g500: #9e9e9e; --g600: #757575; --g700: #616161; --g900: #212121;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: 'DM Sans', -apple-system, 'Segoe UI', sans-serif; color: var(--g900); background: #fff; margin: 0; padding: 20px 16px 80px; line-height: 1.45; }
+  .wrap { max-width: 980px; margin: 0 auto; }
+  header { border-bottom: 3px solid var(--teal); padding-bottom: 10px; margin-bottom: 16px; }
+  h1 { color: var(--teal-dk); font-size: 26px; font-weight: 700; margin: 0 0 4px; }
+  header p { color: var(--g600); font-size: 14px; margin: 0; }
+  h2 { font-size: 18px; color: var(--teal-dk); margin: 28px 0 10px; }
+  .interim { background: var(--amber-lt); border-left: 4px solid var(--amber); padding: 8px 12px; font-size: 13px; margin: 12px 0 16px; border-radius: 0 4px 4px 0; }
+  .muted { color: var(--g600); font-size: 13px; }
+
+  button { font: inherit; font-size: 13px; font-weight: 600; padding: 7px 14px; border-radius: 4px; border: 1px solid var(--teal-dk); background: var(--teal); color: #fff; cursor: pointer; }
+  button.secondary { background: #fff; color: var(--teal-dk); }
+  button.danger { background: #fff; color: var(--red); border-color: var(--red); }
+  button.link { background: none; border: none; padding: 2px 0; color: var(--teal-dk); font-weight: 600; }
+  button.link.danger { color: var(--red); }
+  button:hover { filter: brightness(0.96); }
+  input[type=text], input[type=date], input[type=number], select, textarea { font: inherit; font-size: 14px; padding: 7px 8px; border: 1px solid var(--g300); border-radius: 4px; background: #fff; color: var(--g900); width: 100%; }
+  textarea { resize: vertical; }
+  input:focus, select:focus, textarea:focus { outline: 2px solid var(--teal-lt); border-color: var(--teal); }
+  label.f { display: block; font-weight: 600; font-size: 12px; color: var(--g700); margin-bottom: 3px; }
+
+  /* Anchors panel */
+  .anchors { border: 1px solid var(--g300); border-radius: 6px; padding: 12px 14px; margin-bottom: 16px; background: var(--g50); font-size: 13px; }
+  .anchors.loaded { border-left: 4px solid var(--green); }
+  .anchors.missing { border-left: 4px solid var(--blue); }
+  .anchors.drag { background: var(--teal-lt); border-color: var(--teal); }
+  .anchors .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .anchors .row .grow { flex: 1; min-width: 220px; }
+  .anchors details { margin-top: 8px; }
+  .anchors summary { cursor: pointer; color: var(--teal-dk); font-weight: 600; }
+  .anchors ul { margin: 6px 0 0; padding-left: 20px; }
+  .anchors li { margin: 3px 0; }
+  .warn-list { color: var(--amber-dk); background: var(--amber-lt); padding: 6px 10px; border-radius: 4px; margin-top: 8px; }
+
+  /* Observation tabs */
+  .tabs { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 2px solid var(--teal); }
+  .tab { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border: 1px solid var(--g300); border-bottom: none; border-radius: 6px 6px 0 0; background: var(--g100); color: var(--g700); font-size: 13px; font-weight: 600; cursor: pointer; user-select: none; max-width: 280px; }
+  .tab .sub { font-weight: 500; font-size: 11px; color: var(--g600); white-space: nowrap; }
+  .tab .st { font-size: 11px; }
+  .tab .st.met { color: var(--green-dk); }
+  .tab .st.notmet { color: var(--red); }
+  .tab .st.prog { color: var(--g600); }
+  .tab.active { background: var(--teal); border-color: var(--teal-dk); color: #fff; }
+  .tab.active .sub, .tab.active .st { color: rgba(255,255,255,.9); }
+  .tab.add { background: #fff; color: var(--teal-dk); border-style: dashed; }
+  .empty { background: var(--g100); border-radius: 6px; padding: 24px; text-align: center; color: var(--g600); font-size: 14px; margin: 14px 0; }
+
+  .details { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; background: var(--g100); border-radius: 0 0 6px 6px; padding: 12px; margin-bottom: 12px; }
+  .toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 6px; }
+  .toolbar .spacer { flex: 1; }
+  .toolbar .toggle { font-size: 13px; display: inline-flex; align-items: center; gap: 6px; }
+  .toolbar .toggle select { width: auto; padding: 4px 6px; font-size: 13px; }
+  .seg { display: inline-flex; align-items: center; border: 1px solid var(--teal-dk); border-radius: 4px; overflow: hidden; }
+  .seg span { font-size: 12px; font-weight: 600; color: var(--g700); padding: 0 8px; }
+  .seg button { border: none; border-left: 1px solid var(--teal-dk); border-radius: 0; background: #fff; color: var(--teal-dk); padding: 6px 12px; }
+  .seg button.on { background: var(--teal); color: #fff; }
+  .autosave { font-size: 12px; color: var(--g600); display: block; margin-bottom: 14px; }
+
+  /* Panels */
+  details.panel { border: 1px solid var(--g300); border-radius: 6px; margin-bottom: 12px; background: #fff; }
+  details.panel > summary { list-style: none; cursor: pointer; padding: 10px 14px; display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 15px; color: var(--teal-dk); }
+  details.panel > summary::-webkit-details-marker { display: none; }
+  details.panel > summary::after { content: '▾'; margin-left: auto; color: var(--g500); font-size: 13px; }
+  details.panel:not([open]) > summary::after { content: '▸'; }
+  details.panel > summary .count { font-size: 12px; font-weight: 600; color: var(--g600); }
+  .panel-body { padding: 0 14px 12px; }
+  .kf-row { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; align-items: center; padding: 8px 0; border-top: 1px solid var(--g200); font-size: 13px; }
+  .kf-row:first-child { border-top: none; }
+  .kf-row .kf-note { grid-column: 1 / -1; font-size: 13px; padding: 5px 8px; }
+  .yn { display: inline-flex; gap: 4px; }
+  .yn button { padding: 3px 10px; font-size: 12px; background: #fff; color: var(--g600); border-color: var(--g300); }
+  .yn button.on.yes { background: var(--green-lt); color: var(--green-dk); border-color: var(--green); }
+  .yn button.on.no { background: var(--red-lt); color: var(--red); border-color: var(--red); }
+
+  /* Activities */
+  .acts { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+  .pill { background: #fff; color: var(--g700); border: 1px solid var(--g300); border-radius: 999px; padding: 5px 12px; font-size: 13px; }
+  .pill .pc { font-weight: 500; font-size: 11px; color: var(--g600); margin-left: 4px; }
+  .pill.on { background: var(--teal); color: #fff; border-color: var(--teal-dk); }
+  .pill.on .pc { color: rgba(255,255,255,.9); }
+  .pill.nc { text-decoration: line-through; opacity: .7; }
+  .pill.add { border-style: dashed; color: var(--teal-dk); }
+  .card { border: 1px solid var(--g300); border-radius: 8px; padding: 14px; background: #fff; }
+  .act-fields { display: grid; grid-template-columns: 1.2fr 2fr 1fr; gap: 10px; margin-bottom: 10px; }
+  .notcoded { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; padding: 8px 10px; border-radius: 6px; background: var(--g100); border: 1px solid var(--g200); margin-bottom: 10px; cursor: pointer; }
+  .notcoded input { margin-top: 3px; accent-color: var(--amber-dk); }
+  .notcoded.on { background: var(--amber-lt); border-color: var(--amber); color: var(--amber-dk); font-weight: 600; }
+  .nc-msg { text-align: center; padding: 22px; background: var(--g100); border-radius: 6px; color: var(--g600); font-size: 13px; }
+
+  details.jar { border: 1px solid var(--g200); border-radius: 6px; margin-bottom: 12px; }
+  details.jar > summary { cursor: pointer; padding: 8px 12px; font-weight: 700; font-size: 14px; color: var(--teal-dk); }
+  details.jar > summary .hint { font-weight: 500; font-size: 12px; color: var(--g600); font-style: italic; margin-left: 6px; }
+  .jar-body { padding: 0 12px 10px; }
+  .jar-intro { font-size: 12px; background: var(--blue-lt); color: var(--blue-dk); border-radius: 4px; padding: 8px 10px; margin-bottom: 10px; }
+  .jar-sec { border-left: 3px solid var(--g300); padding-left: 10px; margin-bottom: 10px; }
+  .jar-sec.setup { border-color: #2563eb; } .jar-sec.theme { border-color: #16a34a; } .jar-sec.closing { border-color: #ea580c; }
+  .jar-sec .jt { font-weight: 700; font-size: 13px; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+  .jar-sec .jt small { font-weight: 500; color: var(--g600); font-style: italic; }
+  .jar-sec details { font-size: 12px; color: var(--g600); margin: 2px 0 4px; }
+  .jar-sec details summary { cursor: pointer; }
+  .jar-sec details ul { margin: 2px 0; padding-left: 18px; }
+  .jar-two { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .jar-two .lbl { font-size: 11px; font-weight: 600; color: var(--g600); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 2px; }
+  .jar-two textarea { font-size: 13px; }
+  .tip { font-size: 12px; color: var(--g600); background: var(--g100); border-radius: 4px; padding: 6px 10px; }
+
+  .rating-as { font-size: 13px; color: var(--g700); margin: 4px 0 8px; display: flex; flex-wrap: wrap; gap: 6px 14px; }
+  .group-h { margin: 14px 0 4px; font-weight: 700; font-size: 12px; color: var(--teal-dk); text-transform: uppercase; letter-spacing: .04em; }
+  .group-h small { text-transform: none; letter-spacing: 0; font-weight: 500; color: var(--g600); margin-left: 6px; }
+  .item { border-top: 1px solid var(--g200); padding: 10px 0 8px; }
+  .item-head { display: flex; gap: 10px; align-items: flex-start; flex-wrap: wrap; }
+  .letter { flex: 0 0 26px; height: 26px; border-radius: 50%; background: var(--teal-lt); color: var(--teal-dk); font-weight: 700; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; }
+  .item.scored .letter { background: var(--teal); color: #fff; }
+  .item.low .letter { background: var(--red); color: #fff; }
+  .item-title { flex: 1; min-width: 200px; }
+  .item-title .t { font-weight: 600; font-size: 14px; }
+  .item-title .focus { font-size: 12px; color: var(--g600); }
+  .scores { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+  .sc { width: 36px; padding: 6px 0; text-align: center; background: #fff; color: var(--g700); border: 1px solid var(--g300); }
+  .sc.na { width: auto; padding: 6px 8px; font-size: 12px; }
+  .sc.on { color: #fff; }
+  .sc.on.v1, .sc.on.v2 { background: var(--red); border-color: var(--red); }
+  .sc.on.v3 { background: var(--amber); border-color: var(--amber); }
+  .sc.on.v4, .sc.on.v5 { background: var(--green-dk); border-color: var(--green-dk); }
+  .sc.on.vNO { background: var(--g600); border-color: var(--g600); }
+  .other { font-size: 12px; color: var(--g600); background: var(--g100); border-radius: 999px; padding: 2px 8px; margin-left: 4px; white-space: nowrap; }
+  .anchor-now { margin: 6px 0 0 36px; font-size: 13px; background: var(--teal-lt); border-radius: 4px; padding: 6px 10px; }
+  details.desc { margin: 6px 0 0 36px; font-size: 13px; }
+  details.desc > summary { cursor: pointer; color: var(--teal-dk); font-size: 12px; font-weight: 600; }
+  .desc-body { padding: 6px 0 2px; }
+  .desc-body p { margin: 0 0 6px; }
+  .desc-body h4 { margin: 8px 0 4px; font-size: 13px; }
+  .desc-body ul { margin: 0 0 6px; padding-left: 18px; }
+  .desc-body .anc { padding: 5px 8px; border-radius: 4px; margin: 3px 0; border: 1px solid var(--g200); }
+  .desc-body .anc.sel { background: var(--teal-lt); border-color: var(--teal); }
+  textarea.note { margin: 6px 0 0 36px; width: calc(100% - 36px); font-size: 13px; padding: 5px 8px; min-height: 32px; overflow: hidden; }
+  .act-foot { margin-top: 10px; padding-top: 10px; border-top: 2px solid var(--g200); font-size: 13px; display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; }
+  .act-foot .spacer { flex: 1; }
+
+  /* Results */
+  .boxes { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 12px; }
+  .box { border: 1px solid var(--g300); border-radius: 8px; padding: 12px; text-align: center; }
+  .box .bl { font-size: 12px; font-weight: 600; color: var(--g600); }
+  .box .bv { font-size: 28px; font-weight: 700; }
+  .box .bd { font-size: 12px; color: var(--g600); }
+  .bv.good { color: var(--green-dk); } .bv.mid { color: var(--amber-dk); } .bv.bad { color: var(--red); } .bv.none { color: var(--g500); }
+  .tbl-wrap { overflow-x: auto; margin-bottom: 12px; }
+  table.t { border-collapse: collapse; width: 100%; font-size: 13px; }
+  table.t th, table.t td { border: 1px solid var(--g300); padding: 5px 7px; text-align: center; vertical-align: middle; }
+  table.t th { background: var(--g100); font-weight: 600; font-size: 12px; }
+  table.t td.l, table.t th.l { text-align: left; }
+  .ok { color: var(--green-dk); font-weight: 700; } .no { color: var(--red); font-weight: 700; } .na { color: var(--g500); }
+  .verdict { font-weight: 700; }
+  .verdict.met { color: var(--green-dk); } .verdict.notmet { color: var(--red); } .verdict.prog, .verdict.few, .verdict.empty { color: var(--g600); }
+  table.matrix td { min-width: 46px; }
+  table.matrix td .ms { font-weight: 700; font-size: 14px; }
+  table.matrix td .mf { font-size: 11px; color: var(--g600); margin-left: 3px; }
+  table.matrix td.c1, table.matrix td.c2 { background: var(--red-lt); }
+  table.matrix td.c3 { background: var(--amber-lt); }
+  table.matrix td.c4, table.matrix td.c5 { background: var(--green-lt); }
+  table.matrix td.nc { background: var(--g100); color: var(--g500); }
+  table.matrix tr.cur td.l { font-weight: 700; }
+  .note-box { background: var(--g100); border-left: 4px solid var(--blue); padding: 8px 12px; font-size: 13px; margin: 8px 0 12px; border-radius: 0 4px 4px 0; }
+  .note-box.good { border-left-color: var(--green); background: var(--green-lt); }
+
+  .feedback { background: var(--blue-lt); border: 1px solid var(--blue); border-radius: 8px; padding: 14px; display: grid; gap: 10px; }
+  .feedback label.f { color: var(--blue-dk); }
+
+  details.saved-note { font-size: 12px; color: var(--g700); margin: 24px 0 0; }
+  details.saved-note summary { cursor: pointer; color: var(--teal-dk); font-weight: 600; }
+  details.saved-note ul { margin: 4px 0 0; padding-left: 18px; }
+  footer { margin-top: 20px; font-size: 12px; color: var(--g600); border-top: 1px solid var(--g300); padding-top: 10px; }
+
+  .qs-home-pill{position:fixed;bottom:14px;left:14px;z-index:9999;background:#008a98;color:#fff;padding:6px 12px;border-radius:999px;font-family:'DM Sans','Segoe UI',sans-serif;font-size:12px;font-weight:600;text-decoration:none;box-shadow:0 2px 6px rgba(0,0,0,.25);opacity:.92;}
+  .qs-home-pill:hover{opacity:1;}
+
+  #printView { display: none; }
+  @media (max-width: 680px) {
+    .act-fields, .jar-two { grid-template-columns: 1fr; }
+    .anchor-now, details.desc { margin-left: 0; }
+    textarea.note { margin-left: 0; width: 100%; }
+  }
+  @media print {
+    body { padding: 0; font-size: 11px; }
+    .wrap > *:not(#printView), .qs-home-pill { display: none !important; }
+    #printView { display: block; }
+    #printView h1 { font-size: 18px; margin: 0 0 2px; }
+    #printView h2 { font-size: 14px; margin: 14px 0 6px; break-after: avoid; }
+    #printView h3 { font-size: 12px; margin: 10px 0 4px; break-after: avoid; }
+    #printView table.t { font-size: 10.5px; }
+    #printView table.t th, #printView table.t td { padding: 3px 5px; }
+    #printView .p-act { break-inside: avoid; }
+    #printView .p-meta td { border: none; padding: 1px 12px 1px 0; text-align: left; }
+    #printView p, #printView li { margin: 2px 0; }
+    #printView .pre { white-space: pre-wrap; }
+    table.matrix td.c1, table.matrix td.c2, table.matrix td.c3, table.matrix td.c4, table.matrix td.c5, table.matrix td.nc { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+<a class="qs-home-pill" href="index.html">&larr; All Tools</a>
+<div class="wrap">
+
+<header>
+  <h1>ESDM Fidelity Rating</h1>
+  <p>Score a clinician's joint-activity routines on the 13 items of the ESDM Fidelity Rating System (2nd edition). Self-rating and supervisor rating sit side by side, and the fidelity criteria are checked as you go.</p>
+</header>
+
+<div class="interim">
+  <strong>Interim tool.</strong> QSIS will hold ESDM fidelity observations (Staff Profile → Fidelity Measures). Until then, score here, then print the sheet or export the file for the staff member's supervision record.
+</div>
+
+<section id="anchorsPanel" class="anchors"></section>
+
+<div class="tabs" id="tabs"></div>
+<div class="empty" id="empty" style="display:none">No observations yet. Click <strong>+ New observation</strong> above to start, or bring in one someone exported. Observations are saved in this browser only — use the child's initials, not their name.
+  <p style="margin:12px 0 0"><button type="button" class="secondary" data-action="import">⬆ Import .json</button></p></div>
+
+<div id="workspace" style="display:none">
+  <div class="details">
+    <div><label class="f" for="f-interventionist">Clinician observed</label><input type="text" id="f-interventionist" data-field="interventionist" placeholder="Name" autocomplete="off"></div>
+    <div><label class="f" for="f-role">Role</label>
+      <select id="f-role" data-field="role">
+        <option value="">—</option><option>Parent Coach</option><option>Senior Parent Coach</option><option>ESDM Interventionist</option><option>SLP</option><option>OT</option><option>Supervisor</option><option>Other</option>
+      </select></div>
+    <div><label class="f" for="f-child">Child (initials only)</label><input type="text" id="f-child" data-field="child" placeholder="e.g. J.S." autocomplete="off"></div>
+    <div><label class="f" for="f-date">Session date</label><input type="date" id="f-date" data-field="date"></div>
+    <div><label class="f" for="f-format">Observed</label>
+      <select id="f-format" data-field="format"><option value="video">From video</option><option value="live">Live</option></select></div>
+    <div><label class="f" for="f-minutes">Length observed (minutes)</label><input type="number" id="f-minutes" data-field="minutes" min="0" step="1" placeholder="e.g. 30"></div>
+    <div><label class="f" for="f-rater">Supervisor (rater)</label><input type="text" id="f-rater" data-field="rater" placeholder="Name" autocomplete="off"></div>
+    <div><label class="f" for="f-selfDate">Self-rating date</label><input type="date" id="f-selfDate" data-field="selfDate"></div>
+    <div><label class="f" for="f-supDate">Supervisor review date</label><input type="date" id="f-supDate" data-field="supDate"></div>
+  </div>
+
+  <div class="toolbar">
+    <div class="seg" role="group" aria-label="Rating as"><span>Rating as</span><button type="button" data-rater="sup">Supervisor</button><button type="button" data-rater="self">Self</button></div>
+    <label class="toggle"><input type="checkbox" id="showOther"> Show the other rating</label>
+    <label class="toggle">Item order
+      <select id="order"><option value="az">A–M</option><option value="review">Review grouping</option></select></label>
+    <span class="spacer"></span>
+    <button type="button" class="secondary" data-action="print">🖨 Print</button>
+    <button type="button" class="secondary" data-action="export">⬇ Export .json</button>
+    <button type="button" class="secondary" data-action="import">⬆ Import .json</button>
+    <button type="button" class="danger" data-action="delete">Delete</button>
+  </div>
+  <span class="autosave" id="autosaveMsg">Changes save automatically in this browser.</span>
+
+  <details class="panel" id="kfPanel" open>
+    <summary>Key ESDM factors for fidelity <span class="count" id="kfCount"></span></summary>
+    <div class="panel-body" id="kf"></div>
+  </details>
+
+  <h2>Activities</h2>
+  <p class="muted" style="margin:-4px 0 10px">One activity is one joint-activity routine, from the set-up through the transition into the next. Watch the whole activity once before scoring it.</p>
+  <div class="acts" id="acts"></div>
+  <div id="actCard"></div>
+
+  <h2>Results</h2>
+  <div id="results"></div>
+
+  <h2>Feedback</h2>
+  <div class="feedback">
+    <div><label class="f" for="f-keep">Keep doing (strengths)</label><textarea id="f-keep" data-field="feedbackKeep" rows="3" placeholder="Specific strengths you saw"></textarea></div>
+    <div><label class="f" for="f-consider">Consider doing (growth areas)</label><textarea id="f-consider" data-field="feedbackConsider" rows="3" placeholder="One or two concrete next steps"></textarea></div>
+  </div>
+</div>
+
+<div id="printView"></div>
+
+<details class="saved-note">
+  <summary>Where is this saved?</summary>
+  <ul>
+    <li>Only in this browser on this computer. Nothing is sent anywhere, backed up or synced. It won't appear in another browser, on another computer or in a private window, and it's lost if browser data is cleared.</li>
+    <li>This tool is not a record. Print the sheet or export the file and keep it wherever your supervision records go.</li>
+    <li>Use the child's initials only.</li>
+    <li>To pass an observation between people (for example, a self-rating then the supervisor's rating), use <strong>Export .json</strong> and <strong>Import .json</strong>. Importing an observation that is already here replaces the copy here.</li>
+    <li>The item descriptions, if you load them, are kept in this browser too. <em>Remove</em> in the panel at the top clears them.</li>
+  </ul>
+</details>
+
+<footer>Items, scale and fidelity criteria: Early Start Denver Model Fidelity Rating System, in <em>Early Start Denver Model for Young Autistic Children</em>, 2nd edition, by Sally J. Rogers and Geraldine Dawson (The Guilford Press, 2026). The one-line summaries on this page are QuickStart NS's own; the full descriptions and anchors are not reproduced here. Key factors and JAR prompts: QuickStart NS.</footer>
+</div>
+
+<input type="file" id="anchorFile" accept=".md,.txt,text/markdown,text/plain" hidden>
+<input type="file" id="importFile" accept=".json,application/json" hidden>
+
+<script>
+'use strict';
+
+/* ═══════════════ Instrument (titles from the coding sheet; summaries are QS's own words) ═══════════════ */
+const ITEMS = [
+  { key: 'A', title: 'Supporting child attention', focus: "Getting the child's attention onto you and the activity, and keeping it there." },
+  { key: 'B', title: 'Quality of teaching, including use of ABC format', focus: 'Clear and frequent antecedent → behaviour → consequence teaching, with repetition matched to the child.' },
+  { key: 'C', title: 'Use of instructional techniques', focus: 'Prompting and fading, shaping, chaining and handling errors, so the child becomes more independent.' },
+  { key: 'D', title: "Optimizing the child's emotional state and activity level", focus: 'Helping the child into, and keeping them in, a mood and energy level that suits learning.' },
+  { key: 'E', title: 'Use of intervention techniques for challenging behaviors', focus: 'Understanding what a challenging behaviour is for, and responding with positive strategies that get learning going again.' },
+  { key: 'F', title: 'Quality of dyadic engagement', focus: 'Real back-and-forth — turns, shared smiles, reciprocal exchanges — rather than directing from the side.' },
+  { key: 'G', title: "Optimizing the child's motivation for participating in the activity", focus: 'Child choice and motivation: following the lead, choosing reinforcers, mixing easy and new targets, ending before boredom.' },
+  { key: 'H', title: 'Showing positive emotion', focus: 'Genuine, natural positive emotion that suits the child.' },
+  { key: 'I', title: "Sensitivity and responsivity to the child's communicative cues", focus: 'Noticing and answering the child\'s cues and communications so they feel heard.' },
+  { key: 'J', title: 'Multiple and varied communicative opportunities', focus: 'Chances for the child to communicate for many purposes, not only requesting.' },
+  { key: 'K', title: "Appropriateness of adult's language for child's communication/language level", focus: "Language pitched at the child's level, with narration and models just above it." },
+  { key: 'L', title: 'Joint-activity structure and elaboration', focus: 'A four-part activity — set-up, theme, elaboration, closing — teaching several objectives.' },
+  { key: 'M', title: 'Transitions between activities', focus: 'Closing one activity and moving into the next with the child involved and little downtime. N/O if no transition was observed.' },
+];
+const ITEM = Object.fromEntries(ITEMS.map(it => [it.key, it]));
+const REVIEW_GROUPS = [
+  { title: 'The joint activity itself', sub: 'was there a minimal frame for teaching?', keys: ['L', 'M'] },
+  { title: 'Joint engagement', sub: 'why and how the activity worked', keys: ['A', 'D', 'E', 'F', 'G', 'H', 'I'] },
+  { title: 'Embedded teaching and communication', sub: '', keys: ['B', 'C', 'J', 'K'] },
+];
+const CODE_SHORT = {
+  5: 'Expert — nothing to add.',
+  4: 'Competent — no errors, though an expert might have gone further.',
+  3: 'Mixed — strengths outweigh weaknesses, with clear misses; needs refinement.',
+  2: 'Inadequate — tried, but the weaknesses outweigh the strengths.',
+  1: 'Poor — no strengths.',
+};
+const RATER_REMINDERS = [
+  "Have the child's current objectives and plan in front of you while you code.",
+  'Watch an activity in full before scoring it. One replay at most, at normal speed.',
+  'An activity that never became a JAR — it fell apart before an established theme, so there was no frame for teaching — is not rated: mark it Not coded.',
+  'Code each problem once, under the item closest to it (code a second item only if the first problem caused it).',
+  'Torn between two scores? Give the higher one — unless performance changed during the activity; then score the inconsistency.',
+  'Watch for halo and recency effects: one great or poor moment should not colour the other items.',
+];
+const KEY_FACTORS = [
+  { id: 'video', label: 'Video', q: 'Was the video about 30 minutes, with most activities scorable?' },
+  { id: 'data', label: 'Data', q: 'Was data being taken at about 15-minute intervals?' },
+  { id: 'environment', label: 'Set-up / environment', q: 'Was there a variety of zones, with activity flow throughout?' },
+  { id: 'activities', label: 'Activities', q: 'Was there a good balance of sensory social routines and object-based play?' },
+  { id: 'goalImpl', label: 'Goal implementation', q: 'Were goal steps and antecedents followed?' },
+];
+const JAR_PROMPTS = {
+  setup: [
+    ['Step 1 — Is the child Happy, Relaxed and Engaged (HRE)?', ['Are preferred materials and activities available?', 'Is the child attending to the activity?', 'Is the child motivated by the activity?', 'Is the child attending to and motivated by you being part of the activity?']],
+    ["Step 2 — Did you prepare to step into the spotlight of the child's HRE?", ['Reducing potential distractions', 'Face-to-face positioning at their level', "Remaining sensitive and responsive to the child's comfort zone"]],
+    ["Step 3 — Did you join in by following the child's lead?", ["Active listening — noticing the child's goals within the activity", 'Narrating what is happening', 'Offering help — making success easy', "Imitating the child's actions, sounds or words", 'Being the giver of good things!']],
+  ],
+  theme: ['What are you doing together? Can you name the theme?', 'Can you name your active role?', "Can you name the child's active role?", "Is there shared awareness of one another's roles?", 'Is the back-and-forth within those roles consistent?', 'Does the child understand what to expect within the activity?'],
+  progression: ['How do your active roles change or progress?', 'Can you name the new theme?', 'Can you name your new active role?', "Can you name the child's new active role?", 'Is there shared awareness of the new roles?', 'Was this a variation (change) or an elaboration (addition) of the previous theme?'],
+  closing: ['Was there a clear end to the activity and a transition to something else?', 'Type of closing: child was ready to move on / activity becoming repetitive / losing teaching value', 'Was the child HRE during the closing and transition?', 'If the child was not ready to move on, were adjustments made to support the transition?'],
+};
+const MAX_ACTS = 10, MAX_THEMES = 10;
+const RATERS = { sup: 'Supervisor', self: 'Self' };
+
+/* ═══════════════ Helpers ═══════════════ */
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const mdInline = s => esc(s).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\*(.+?)\*/g, '<em>$1</em>');
+const plain = s => String(s ?? '').replace(/\*+/g, '');
+const norm = s => String(s ?? '').trim().toLowerCase().replace(/\s+/g, ' ');
+const str = v => typeof v === 'string' ? v : (v == null ? '' : String(v));
+const newId = () => 'o' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+function todayStr() { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+function fmtDate(s) { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || ''); return m ? `${MONTHS[+m[2] - 1]} ${+m[3]}, ${m[1]}` : (s || '—'); }
+const fmtPct = p => p == null ? '—' : (Math.round(p * 10) / 10).toFixed(1) + '%';
+const scoreLabel = v => v === 'NO' ? 'N/O' : (v == null ? '' : String(v));
+
+/* ═══════════════ Scoring (pure) ═══════════════ */
+/* Per rater, the coded activities in order: every activity not marked Not coded, up to the last one this rater has
+   scored (an unscored activity between scored ones is still to score; unscored ones at the end are ignored).
+   Percent = total of the scores / (5 × number of items scored); N/O is left out.
+   The manual's test is on three consecutively coded activities: run3 is the best run of three fully scored ones in a row. */
+function raterStats(o, r) {
+  const seq = o.activities.map((a, i) => ({ a, i })).filter(x => !x.a.notCoded);
+  let last = -1;
+  seq.forEach((x, j) => { if (ITEMS.some(it => (x.a[r] || {})[it.key] != null)) last = j; });
+  const acts = []; let total = 0, possible = 0, n = 0, missing = 0; const low = [];
+  for (const { a, i } of seq.slice(0, last + 1)) {
+    const s = a[r] || {};
+    let t = 0, p = 0, cnt = 0, miss = 0, lowN = 0;
+    for (const it of ITEMS) {
+      const v = s[it.key];
+      if (v == null) miss++;
+      else if (v !== 'NO') { t += v; p += 5; cnt++; if (v < 3) { lowN++; low.push({ act: i, key: it.key, v }); } }
+    }
+    acts.push({ i, t, p, cnt, miss, low: lowN, pct: p ? t / p * 100 : null });
+    total += t; possible += p; n += cnt; missing += miss;
+  }
+  let run3 = null;
+  for (let j = 0; j + 3 <= acts.length; j++) {
+    const w = acts.slice(j, j + 3);
+    if (w.some(x => x.miss)) continue;
+    const t = w.reduce((s, x) => s + x.t, 0), p = w.reduce((s, x) => s + x.p, 0), lowN = w.reduce((s, x) => s + x.low, 0);
+    const win = { acts: w.map(x => x.i), t, p, low: lowN, pct: p ? t / p * 100 : null };
+    win.pass = lowN === 0 && win.pct != null && win.pct >= 80;
+    if (!run3 || betterRun(win, run3)) run3 = win;
+  }
+  return { acts, total, possible, n, missing, low, run3, pct: possible ? total / possible * 100 : null, mean: n ? total / n : null };
+}
+/* Passing first, then fewer scores under 3, then the higher percent; on a tie the earlier run stays. */
+function betterRun(a, b) {
+  if (a.pass !== b.pass) return a.pass;
+  if (a.low !== b.low) return a.low < b.low;
+  return (a.pct ?? 0) > (b.pct ?? 0);
+}
+const actList = w => w.acts.map(i => i + 1).join(', ');
+function verdict(st) {
+  if (!st.acts.length) return { k: 'empty', label: 'Not scored yet' };
+  const w = st.run3;
+  if (w && w.pass) return { k: 'met', w, label: `Meets the fidelity criteria (activities ${actList(w)})` };
+  if (st.missing) return { k: 'prog', w, label: `In progress — ${st.missing} item${st.missing > 1 ? 's' : ''} still to score` };
+  if (st.acts.length < 3) { const need = 3 - st.acts.length; return { k: 'few', w, label: `Needs ${need} more coded activit${need > 1 ? 'ies' : 'y'}` }; }
+  return { k: 'notmet', w, label: w.low ? 'Does not meet the fidelity criteria — every run of three has a score under 3' : 'Does not meet the fidelity criteria — no run of three reaches 80%' };
+}
+/* Children are compared on letters and digits only, so "J.S.", "JS" and "j s" are one child. */
+const childKey = s => norm(s).replace(/[^\p{L}\p{N}]+/gu, '');
+/* Agreement over items both raters scored with a number. The manual's reliability adjustment counts 5s as 4s. */
+function agreement(o) {
+  let both = 0, exact = 0, adj = 0;
+  for (const a of o.activities) {
+    if (a.notCoded) continue;
+    for (const it of ITEMS) {
+      const s = a.sup[it.key], f = a.self[it.key];
+      if (typeof s === 'number' && typeof f === 'number') { both++; if (s === f) exact++; if (Math.min(s, 4) === Math.min(f, 4)) adj++; }
+    }
+  }
+  return { both, exact: both ? exact / both * 100 : null, adj: both ? adj / both * 100 : null };
+}
+/* The clinician's run of observations meeting the criteria (supervisor's scores), newest first.
+   Observations still being scored are skipped; the first decided one that is not met ends the run. */
+function clinicianHistory(o, list) {
+  const name = norm(o.interventionist);
+  if (!name) return null;
+  const rows = list.filter(x => norm(x.interventionist) === name)
+    .map(x => ({ o: x, sup: verdict(raterStats(x, 'sup')), supSt: raterStats(x, 'sup'), selfSt: raterStats(x, 'self') }))
+    .sort((a, b) => (b.o.date || '').localeCompare(a.o.date || '') || (b.o.createdAt || '').localeCompare(a.o.createdAt || ''));
+  let run = 0, noChild = 0, skipped = 0, ended = false; const kids = new Set();
+  for (const r of rows) {
+    if (ended) break;
+    if (r.sup.k === 'met') { run++; const k = childKey(r.o.child); if (k) kids.add(k); else noChild++; }
+    else if (r.sup.k === 'notmet') ended = true;
+    else skipped++;
+  }
+  return { rows, run, children: kids.size, noChild, skipped };
+}
+
+/* ═══════════════ Parsing the team's text version (.md) ═══════════════ */
+function parseAnchors(text) {
+  const out = { title: '', edition: '', items: {}, codes: {}, instructions: [] };
+  let sec = null, item = null;
+  for (const raw of String(text).split(/\r?\n/)) {
+    const line = raw.trim();
+    if (!line || /^-{3,}$/.test(line)) continue;
+    let m;
+    if ((m = /^#\s+(.+)$/.exec(line))) { if (!out.title) out.title = m[1].trim(); continue; }
+    if (/^##\s+/.test(line)) { sec = null; item = null; continue; }
+    if ((m = /^###\s+([A-M])\.\s+(.+)$/.exec(line))) { item = out.items[m[1]] = { title: m[2].trim(), desc: [], anchors: {} }; sec = 'item'; continue; }
+    if ((m = /^###\s+(.+)$/.exec(line))) {
+      const h = m[1].trim();
+      if (/^instructions to raters/i.test(h)) { sec = 'instr'; item = null; }
+      else if (/^codes\b/i.test(h)) { sec = 'codes'; item = null; }
+      else if (sec === 'item' && item) item.desc.push({ h });
+      else { sec = null; item = null; }
+      continue;
+    }
+    if ((m = /^\*\*\s*([1-5])\s*[—–-]+\s*\*\*\s*(.*)$/.exec(line))) {
+      if (sec === 'item' && item) item.anchors[m[1]] = m[2].trim();
+      else if (sec === 'codes') out.codes[m[1]] = m[2].trim();
+      continue;
+    }
+    if ((m = /^[-*]\s+(.+)$/.exec(line)) && !/^\*\*/.test(line)) {
+      if (sec === 'instr') out.instructions.push(m[1].trim());
+      else if (sec === 'item' && item) item.desc.push({ li: m[1].trim() });
+      continue;
+    }
+    if (sec === 'item' && item && !Object.keys(item.anchors).length) item.desc.push({ p: line });
+    if (!sec && !out.edition && (m = /\b(first|second|third|\d+(?:st|nd|rd|th))\s+edition\b/i.exec(line))) out.edition = m[0];
+  }
+  return out;
+}
+function anchorWarnings(p) {
+  const w = [];
+  const missing = ITEMS.filter(it => !p.items[it.key]).map(it => it.key);
+  if (missing.length) w.push(`No description found for item${missing.length > 1 ? 's' : ''} ${missing.join(', ')}.`);
+  const short = ITEMS.filter(it => p.items[it.key] && Object.keys(p.items[it.key].anchors).length < 5).map(it => it.key);
+  if (short.length) w.push(`Fewer than five score anchors for item${short.length > 1 ? 's' : ''} ${short.join(', ')}.`);
+  if (!/second|2nd/i.test(p.edition || '')) w.push("This file doesn't say it's the second edition. Check you loaded the right one.");
+  return w;
+}
+
+/* ═══════════════ State + storage ═══════════════ */
+const K_OBS = 'esdmFidelity_obs', K_ACTIVE = 'esdmFidelity_active', K_ANCH = 'esdmFidelity_anchors', K_PREFS = 'esdmFidelity_prefs';
+let all = [], active = -1, actIdx = 0, anchors = null;
+const prefs = { rater: 'sup', showOther: false, order: 'az' };
+const openDesc = new Set();
+let openJar = true;
+
+function normScores(s) {
+  const out = {};
+  if (s && typeof s === 'object') for (const it of ITEMS) {
+    const v = s[it.key];
+    if (v === 'NO' && it.key === 'M') out[it.key] = 'NO';
+    else if (Number.isInteger(v) && v >= 1 && v <= 5) out[it.key] = v;
+  }
+  return out;
+}
+function newAct(n) { return { name: 'Activity ' + n, goals: '', time: '', notCoded: false, sup: {}, self: {}, notes: {}, jar: { setup: '', setupTeaching: '', themes: [{ notes: '', teaching: '' }], closing: '', closingTeaching: '' } }; }
+function normAct(a, i) {
+  a = a && typeof a === 'object' ? a : {};
+  const j = a.jar && typeof a.jar === 'object' ? a.jar : {};
+  let themes = Array.isArray(j.themes) ? j.themes.slice(0, MAX_THEMES).map(t => ({ notes: str(t && t.notes), teaching: str(t && t.teaching) })) : [];
+  if (!themes.length) themes = [{ notes: '', teaching: '' }];
+  const notes = {};
+  if (a.notes && typeof a.notes === 'object') for (const it of ITEMS) if (a.notes[it.key]) notes[it.key] = str(a.notes[it.key]);
+  return { name: a.name == null ? 'Activity ' + (i + 1) : str(a.name), goals: str(a.goals), time: str(a.time), notCoded: !!a.notCoded, sup: normScores(a.sup), self: normScores(a.self), notes,
+    jar: { setup: str(j.setup), setupTeaching: str(j.setupTeaching), themes, closing: str(j.closing), closingTeaching: str(j.closingTeaching) } };
+}
+function normObs(o) {
+  if (!o || typeof o !== 'object' || !Array.isArray(o.activities)) return null;
+  const kf = {}, kfNotes = {};
+  for (const f of KEY_FACTORS) {
+    if (o.kf && (o.kf[f.id] === 'yes' || o.kf[f.id] === 'no')) kf[f.id] = o.kf[f.id];
+    if (o.kfNotes && o.kfNotes[f.id]) kfNotes[f.id] = str(o.kfNotes[f.id]);
+  }
+  const acts = o.activities.slice(0, MAX_ACTS).map(normAct);
+  return { v: 1, id: str(o.id) || newId(), interventionist: str(o.interventionist), role: str(o.role), child: str(o.child), date: str(o.date),
+    format: o.format === 'live' ? 'live' : 'video', minutes: str(o.minutes), rater: str(o.rater), selfDate: str(o.selfDate), supDate: str(o.supDate),
+    kf, kfNotes, activities: acts.length ? acts : [newAct(1)], feedbackKeep: str(o.feedbackKeep), feedbackConsider: str(o.feedbackConsider),
+    createdAt: str(o.createdAt) || new Date().toISOString(), savedAt: str(o.savedAt) };
+}
+/* Anything stored that can't be read is copied aside before it could be overwritten. */
+let storageNote = '';
+function readObservations() {
+  let text = null;
+  try { text = localStorage.getItem(K_OBS); } catch { return []; }
+  if (!text) return [];
+  let raw = null;
+  try { raw = JSON.parse(text); } catch { raw = null; }
+  const list = Array.isArray(raw) ? raw.map(normObs).filter(Boolean) : [];
+  if (!Array.isArray(raw) || list.length < raw.length) {
+    const key = K_OBS + '_unreadable_' + Date.now();
+    try { localStorage.setItem(key, text); storageNote = `Some saved observations couldn't be read. The original data was kept in this browser's storage under “${key}”.`; }
+    catch { storageNote = "Some saved observations couldn't be read, and there was no room to keep a copy."; }
+  }
+  return list;
+}
+function loadState() {
+  all = readObservations();
+  try { const a = JSON.parse(localStorage.getItem(K_ANCH) || 'null'); if (a && a.items && typeof a.items === 'object') anchors = a; } catch { anchors = null; }
+  try {
+    const p = JSON.parse(localStorage.getItem(K_PREFS) || '{}') || {};
+    if (p.rater === 'sup' || p.rater === 'self') prefs.rater = p.rater;
+    if (p.order === 'az' || p.order === 'review') prefs.order = p.order;
+    prefs.showOther = !!p.showOther;
+  } catch { /* defaults */ }
+  let a = -1;
+  try { a = parseInt(localStorage.getItem(K_ACTIVE) ?? '-1', 10); } catch { a = -1; }
+  active = a >= 0 && a < all.length ? a : (all.length ? 0 : -1);
+}
+function persist() {
+  try {
+    localStorage.setItem(K_OBS, JSON.stringify(all));
+    localStorage.setItem(K_ACTIVE, String(active));
+    localStorage.setItem(K_PREFS, JSON.stringify(prefs));
+    return true;
+  } catch {
+    $('autosaveMsg').textContent = 'Could not save — browser storage is unavailable. Export the file before closing this page.';
+    return false;
+  }
+}
+const cur = () => active >= 0 ? all[active] : null;
+const curAct = () => { const o = cur(); return o ? o.activities[actIdx] || null : null; };
+let savedTimer = null;
+function touched() {
+  const o = cur(); if (!o) return;
+  o.savedAt = new Date().toISOString();
+  if (persist()) {
+    const el = $('autosaveMsg'); el.textContent = 'Saved in this browser.';
+    clearTimeout(savedTimer); savedTimer = setTimeout(() => { el.textContent = 'Changes save automatically in this browser.'; }, 1500);
+  }
+}
+
+/* ═══════════════ Anchors panel ═══════════════ */
+function renderAnchorsPanel() {
+  const el = $('anchorsPanel');
+  const codesList = n => anchors && anchors.codes && anchors.codes[n] ? mdInline(anchors.codes[n]) : esc(CODE_SHORT[n]);
+  const codes = `<details><summary>The 1–5 scale${anchors && Object.keys(anchors.codes || {}).length ? '' : ' (summary)'}</summary><ul>${[5, 4, 3, 2, 1].map(n => `<li><strong>${n}</strong> — ${codesList(n)}</li>`).join('')}</ul></details>`;
+  const instr = anchors && anchors.instructions && anchors.instructions.length
+    ? `<details><summary>Instructions to raters</summary><ul>${anchors.instructions.map(t => `<li>${mdInline(t)}</li>`).join('')}</ul></details>`
+    : `<details><summary>Reminders for raters (summary)</summary><ul>${RATER_REMINDERS.map(t => `<li>${esc(t)}</li>`).join('')}</ul></details>`;
+  const criteria = `<details><summary>What counts as fidelity</summary><ul><li>Three consecutively coded activities (activities marked Not coded are skipped) with no item scored under 3,</li><li>and a mean of at least 80% of the possible score across those three.</li><li>Met for three consecutive children.</li><li>An observation can include more than three activities; it meets the criteria when any three in a row do.</li><li>Item M can be scored N/O when no transition was observed; it is then left out of the calculation.</li></ul></details>`;
+  if (anchors) {
+    const n = Object.keys(anchors.items).length;
+    const w = anchorWarnings(anchors);
+    el.className = 'anchors loaded';
+    el.innerHTML = `<div class="row"><div class="grow"><strong>Item descriptions loaded</strong> from your copy${anchors.fileName ? ' (' + esc(anchors.fileName) + ')' : ''}: ${esc(anchors.title || 'Fidelity Rating System')}${anchors.edition ? ', ' + esc(anchors.edition.toLowerCase()) : ''} — ${n} item${n === 1 ? '' : 's'}. Open <em>Description and all five anchors</em> under any item, or hover a score for its anchor.</div>
+      <button type="button" class="secondary" data-action="load-anchors">Load another file</button><button type="button" class="link danger" data-action="remove-anchors">Remove</button></div>
+      ${w.length ? `<div class="warn-list">${w.map(esc).join('<br>')}</div>` : ''}${criteria}${codes}${instr}`;
+  } else {
+    el.className = 'anchors missing';
+    el.innerHTML = `<div class="row"><div class="grow"><strong>Item descriptions and score anchors are not on this page.</strong> They are Rogers &amp; Dawson's text (© 2026 The Guilford Press, for the book's purchasers), so this public site doesn't publish them. Load the team's text version to see them beside each item — it stays in this browser. The file is <em>ESDM Fidelity Rating System (2nd Edition) - Text Version.md</em>; ask your supervisor if you don't have it. You can also drop the file on this box.</div>
+      <button type="button" data-action="load-anchors">Load the text version…</button></div>${criteria}${codes}${instr}`;
+  }
+}
+function loadAnchorsText(text, fileName) {
+  const p = parseAnchors(text);
+  if (!Object.keys(p.items).length) { alert("That file doesn't look like the Fidelity Rating System text version: no items (### A. …) were found."); return false; }
+  p.fileName = fileName || '';
+  p.loadedAt = new Date().toISOString();
+  anchors = p;
+  try { localStorage.setItem(K_ANCH, JSON.stringify(p)); } catch { /* kept for this visit only */ }
+  renderAnchorsPanel();
+  if (cur()) renderActCard();
+  return true;
+}
+function readAnchorFile(file) {
+  if (!file) return;
+  const rd = new FileReader();
+  rd.onload = () => loadAnchorsText(String(rd.result || ''), file.name);
+  rd.readAsText(file);
+}
+
+/* ═══════════════ Tabs ═══════════════ */
+function obsStatus(o) {
+  const vs = verdict(raterStats(o, 'sup'));
+  if (vs.k !== 'empty') return vs;
+  const vf = verdict(raterStats(o, 'self'));
+  return vf.k === 'empty' ? vs : { ...vf, self: true };
+}
+function renderTabs() {
+  const el = $('tabs');
+  el.innerHTML = all.map((o, i) => {
+    const v = obsStatus(o);
+    const st = v.k === 'met' ? '<span class="st met">✓ met</span>' : v.k === 'notmet' ? '<span class="st notmet">✗ not met</span>' : v.k === 'empty' ? '' : '<span class="st prog">in progress</span>';
+    return `<button type="button" class="tab ${i === active ? 'active' : ''}" data-action="switch" data-i="${i}" aria-pressed="${i === active}" title="${esc(v.label)}${v.self ? ' (self-rating only)' : ''}">${esc(o.interventionist || '(clinician)')} <span class="sub">${esc(o.child || '—')} · ${esc(fmtDate(o.date))}</span>${st}</button>`;
+  }).join('') + '<button type="button" class="tab add" data-action="new">+ New observation</button>';
+  $('workspace').style.display = active >= 0 ? '' : 'none';
+  $('empty').style.display = active >= 0 ? 'none' : '';
+}
+
+/* ═══════════════ Observation ═══════════════ */
+function renderObs() {
+  const o = cur();
+  renderTabs();
+  if (!o) return;
+  document.querySelectorAll('#workspace [data-field]').forEach(inp => { inp.value = o[inp.dataset.field] ?? ''; });
+  document.querySelectorAll('.seg [data-rater]').forEach(b => { b.classList.toggle('on', b.dataset.rater === prefs.rater); b.setAttribute('aria-pressed', b.dataset.rater === prefs.rater); });
+  $('showOther').checked = prefs.showOther;
+  $('order').value = prefs.order;
+  renderKF(); renderActPills(); renderActCard(); renderResults();
+}
+function renderKF() {
+  const o = cur();
+  $('kf').innerHTML = KEY_FACTORS.map(f => {
+    const v = o.kf[f.id];
+    return `<div class="kf-row"><div><strong>${esc(f.label)}</strong> — ${esc(f.q)}</div>
+      <div class="yn"><button type="button" data-kf="${f.id}" data-val="yes" class="${v === 'yes' ? 'on yes' : ''}" aria-pressed="${v === 'yes'}">Yes</button><button type="button" data-kf="${f.id}" data-val="no" class="${v === 'no' ? 'on no' : ''}" aria-pressed="${v === 'no'}">No</button></div>
+      <input type="text" class="kf-note" data-kf-note="${f.id}" value="${esc(o.kfNotes[f.id] || '')}" placeholder="Comment (optional)" aria-label="${esc(f.label)} comment"></div>`;
+  }).join('');
+  const yes = KEY_FACTORS.filter(f => o.kf[f.id] === 'yes').length, no = KEY_FACTORS.filter(f => o.kf[f.id] === 'no').length;
+  $('kfCount').textContent = yes + no ? `${yes} yes · ${no} no` : '';
+}
+function actState(a) {
+  if (a.notCoded) return 'not coded';
+  const s = a[prefs.rater];
+  const n = ITEMS.filter(it => s[it.key] != null).length;
+  if (n < ITEMS.length) return `${n}/13`;
+  let t = 0, p = 0;
+  for (const it of ITEMS) if (s[it.key] !== 'NO') { t += s[it.key]; p += 5; }
+  return fmtPct(t / p * 100);
+}
+function renderActPills() {
+  const o = cur();
+  $('acts').innerHTML = o.activities.map((a, i) => `<button type="button" class="pill ${i === actIdx ? 'on' : ''} ${a.notCoded ? 'nc' : ''}" data-action="act" data-i="${i}" aria-pressed="${i === actIdx}">${i + 1}. ${esc(a.name || 'Activity')} <span class="pc">· ${esc(actState(a))}</span></button>`).join('')
+    + (o.activities.length < MAX_ACTS ? '<button type="button" class="pill add" data-action="add-act">+ Activity</button>' : '');
+}
+function jarSec(cls, title, sub, prompts, valKey, teachKey, a, themeIdx) {
+  const v = themeIdx == null ? a.jar[valKey] : a.jar.themes[themeIdx].notes;
+  const t = themeIdx == null ? a.jar[teachKey] : a.jar.themes[themeIdx].teaching;
+  const attr = themeIdx == null ? f => `data-jar="${f}"` : f => `data-theme="${themeIdx}" data-tf="${f === valKey ? 'notes' : 'teaching'}"`;
+  const pl = prompts.map(p => Array.isArray(p) ? `<li>${esc(p[0])}<ul>${p[1].map(s => `<li>${esc(s)}</li>`).join('')}</ul></li>` : `<li>${esc(p)}</li>`).join('');
+  const remove = themeIdx ? `<button type="button" class="link danger" data-action="remove-theme" data-i="${themeIdx}">× remove</button>` : '';
+  return `<div class="jar-sec ${cls}"><div class="jt">${esc(title)} <small>${esc(sub)}</small>${remove}</div>
+    <details><summary>Prompts</summary><ul>${pl}</ul></details>
+    <div class="jar-two"><div><div class="lbl">What did it look like?</div><textarea rows="2" ${attr(valKey)} aria-label="${esc(title)}: what did it look like?">${esc(v)}</textarea></div>
+    <div><div class="lbl">Teaching opportunities</div><textarea rows="2" ${attr(teachKey)} aria-label="${esc(title)}: teaching opportunities">${esc(t)}</textarea></div></div></div>`;
+}
+function jarHTML(a) {
+  const themes = a.jar.themes.map((th, i) => jarSec('theme', i === 0 ? 'Initial theme' : 'Progression ' + (i + 1), i === 0 ? 'What are you doing together?' : 'How do your active roles change?', i === 0 ? JAR_PROMPTS.theme : JAR_PROMPTS.progression, 'notes', 'teaching', a, i)).join('');
+  return `<details class="jar" ${openJar ? 'open' : ''}><summary>Activity &amp; JAR analysis <span class="hint">4-part joint activity routine</span></summary><div class="jar-body">
+    <div class="jar-intro"><strong>4-part JAR framework:</strong> it always starts with the <strong>Setup</strong> (finding HRE and building rapport). Setup and <strong>Closing &amp; Transition</strong> bookend the middle — <strong>co-construction</strong> of an initial theme with possible progressions (variations or elaborations). The minimal frame for teaching is Setup → Theme → Closing.</div>
+    ${jarSec('setup', 'Setup', 'Finding HRE and building rapport', JAR_PROMPTS.setup, 'setup', 'setupTeaching', a)}
+    ${themes}
+    ${a.jar.themes.length < MAX_THEMES ? '<p style="margin:0 0 10px"><button type="button" class="link" data-action="add-theme">+ Add theme progression</button></p>' : ''}
+    ${jarSec('closing', 'Closing & transition', 'Ending the activity and moving on', JAR_PROMPTS.closing, 'closing', 'closingTeaching', a)}
+    <div class="tip"><strong>Review grouping tip:</strong> start with L and M (the JAR itself — was there a minimal frame for teaching?), then A and D–I (joint engagement — why and how the JAR happened), then B, C, J and K (the teaching and communication embedded in it). <em>Item order → Review grouping</em> lists the items this way.</div>
+  </div></details>`;
+}
+function descHTML(A, v) {
+  let h = '', ul = [];
+  const flush = () => { if (ul.length) { h += `<ul>${ul.map(t => `<li>${mdInline(t)}</li>`).join('')}</ul>`; ul = []; } };
+  for (const d of A.desc || []) {
+    if (d.li) { ul.push(d.li); continue; }
+    flush();
+    if (d.h) h += `<h4>${mdInline(d.h)}</h4>`;
+    else if (d.p) h += `<p>${mdInline(d.p)}</p>`;
+  }
+  flush();
+  h += [1, 2, 3, 4, 5].map(n => A.anchors[n] ? `<div class="anc ${v === n ? 'sel' : ''}"><strong>${n} —</strong> ${mdInline(A.anchors[n])}</div>` : '').join('');
+  return h;
+}
+function itemRowHTML(it, a) {
+  const r = prefs.rater, other = r === 'sup' ? 'self' : 'sup';
+  const v = a[r][it.key], ov = a[other][it.key];
+  const A = anchors && anchors.items ? anchors.items[it.key] : null;
+  const tip = n => A && A.anchors[n] ? plain(A.anchors[n]) : CODE_SHORT[n];
+  let btns = [1, 2, 3, 4, 5].map(n => `<button type="button" class="sc ${v === n ? 'on v' + n : ''}" data-score="${it.key}" data-val="${n}" aria-pressed="${v === n}" aria-label="${esc(it.key + '. ' + it.title)}: score ${n}" title="${esc(n + ' — ' + tip(n))}">${n}</button>`).join('');
+  if (it.key === 'M') btns += `<button type="button" class="sc na ${v === 'NO' ? 'on vNO' : ''}" data-score="M" data-val="NO" aria-pressed="${v === 'NO'}" aria-label="${esc('M. ' + it.title)}: no opportunity" title="No opportunity — no transition observed; left out of the calculation">N/O</button>`;
+  const otherChip = prefs.showOther && ov != null ? `<span class="other">${RATERS[other]}: ${scoreLabel(ov)}</span>` : '';
+  const now = A && typeof v === 'number' && A.anchors[v] ? `<div class="anchor-now"><strong>${v} —</strong> ${mdInline(A.anchors[v])}</div>` : '';
+  const desc = A ? `<details class="desc" ${openDesc.has(it.key) ? 'open' : ''}><summary>Description and all five anchors</summary><div class="desc-body">${descHTML(A, v)}</div></details>` : '';
+  return `<div class="item ${v != null ? 'scored' : ''} ${typeof v === 'number' && v < 3 ? 'low' : ''}" data-item="${it.key}">
+    <div class="item-head"><span class="letter">${it.key}</span><div class="item-title"><div class="t">${esc(it.title)}</div><div class="focus">${esc(it.focus)}</div></div><div class="scores">${btns}${otherChip}</div></div>
+    ${now}${desc}
+    <textarea class="note" rows="1" data-note="${it.key}" placeholder="Notes — what you saw that led to this score" aria-label="Notes for item ${it.key}">${esc(a.notes[it.key] || '')}</textarea></div>`;
+}
+function itemsHTML(a) {
+  if (prefs.order === 'review') return REVIEW_GROUPS.map(g => `<div class="group-h">${esc(g.title)}${g.sub ? `<small>${esc(g.sub)}</small>` : ''}</div>` + g.keys.map(k => itemRowHTML(ITEM[k], a)).join('')).join('');
+  return ITEMS.map(it => itemRowHTML(it, a)).join('');
+}
+function actFootHTML(a) {
+  if (a.notCoded) return '';
+  const s = a[prefs.rater];
+  const n = ITEMS.filter(it => s[it.key] != null).length;
+  let t = 0, p = 0; const low = [];
+  for (const it of ITEMS) { const v = s[it.key]; if (typeof v === 'number') { t += v; p += 5; if (v < 3) low.push(it.key); } }
+  return `<span><strong>${RATERS[prefs.rater]}:</strong> ${n} of 13 scored</span><span>Total ${t} / ${p}</span><span>${p ? fmtPct(t / p * 100) : '—'}</span>${low.length ? `<span class="no">Under 3: ${low.join(', ')}</span>` : ''}`;
+}
+function renderActCard() {
+  const o = cur(), el = $('actCard');
+  if (!o) { el.innerHTML = ''; return; }
+  if (actIdx >= o.activities.length) actIdx = o.activities.length - 1;
+  const a = curAct();
+  el.innerHTML = `<div class="card">
+    <div class="act-fields">
+      <div><label class="f" for="a-name">Activity</label><input type="text" id="a-name" data-act-field="name" value="${esc(a.name)}" placeholder="e.g. Bubbles, Pop-up pal, Snack"></div>
+      <div><label class="f" for="a-goals">Objectives targeted</label><input type="text" id="a-goals" data-act-field="goals" value="${esc(a.goals)}" placeholder="Which of the child's steps were being taught"></div>
+      <div><label class="f" for="a-time">Time on video</label><input type="text" id="a-time" data-act-field="time" value="${esc(a.time)}" placeholder="e.g. 03:10–07:45"></div>
+    </div>
+    <label class="notcoded ${a.notCoded ? 'on' : ''}"><input type="checkbox" data-act-flag="notCoded" ${a.notCoded ? 'checked' : ''}> <span>Not coded — the activity never became a joint-activity routine: it fell apart before an established theme, so there was no minimal frame for teaching (Setup → Theme → Closing) and nothing to rate. It is left out of the scores. Once a theme is established the activity is rated, and how well it was set up and closed shows in items L and M.</span></label>
+    ${jarHTML(a)}
+    ${a.notCoded ? '<div class="nc-msg">This activity is marked Not coded and is left out of the scores.</div>' : `
+      <div class="rating-as"><span>Scoring as <strong>${RATERS[prefs.rater]}</strong> — switch with <em>Rating as</em> above.</span><span>Hover a score for ${anchors ? 'its anchor' : 'what it means'}.</span></div>
+      <div id="itemList">${itemsHTML(a)}</div>`}
+    <div class="act-foot" id="actFoot">${actFootHTML(a)}<span class="spacer"></span>${o.activities.length > 1 ? '<button type="button" class="link danger" data-action="remove-act">Remove this activity</button>' : ''}</div>
+  </div>`;
+  el.querySelectorAll('textarea.note').forEach(autoGrow);
+}
+function autoGrow(t) { t.style.height = 'auto'; t.style.height = Math.max(32, t.scrollHeight + 2) + 'px'; }
+function refreshAfterScore(key) {
+  const a = curAct();
+  const row = document.querySelector(`#itemList .item[data-item="${key}"]`);
+  if (row) {
+    const html = itemRowHTML(ITEM[key], a);
+    row.insertAdjacentHTML('afterend', html);
+    row.remove();
+    const nr = document.querySelector(`#itemList .item[data-item="${key}"] textarea.note`);
+    if (nr) autoGrow(nr);
+  }
+  const o = cur();
+  $('actFoot').innerHTML = actFootHTML(a) + '<span class="spacer"></span>' + (o.activities.length > 1 ? '<button type="button" class="link danger" data-action="remove-act">Remove this activity</button>' : '');
+  renderActPills(); renderResults(); renderTabs();
+}
+
+/* ═══════════════ Results ═══════════════ */
+function box(label, st, v) {
+  const cls = st.pct == null ? 'none' : st.pct >= 80 ? 'good' : st.pct >= 60 ? 'mid' : 'bad';
+  const w = st.run3;
+  const runLine = w ? `Best three in a row: ${fmtPct(w.pct)} (activities ${actList(w)})` : (st.acts.length ? 'No three fully scored activities in a row yet' : '');
+  return `<div class="box"><div class="bl">${esc(label)} — all coded activities</div><div class="bv ${cls}">${fmtPct(st.pct)}</div><div class="bd">${st.possible ? `${st.total} / ${st.possible} · mean ${st.mean.toFixed(2)} of 5` : 'no scores yet'}</div>${runLine ? `<div class="bd">${esc(runLine)}</div>` : ''}<div class="bd verdict ${v.k}">${esc(v.label)}</div></div>`;
+}
+const mark = (ok, detail) => ok == null ? '<span class="na">—</span>' : `<span class="${ok ? 'ok' : 'no'}">${ok ? '✓' : '✗'}</span>${detail ? ' ' + detail : ''}`;
+function criteriaHTML(sup, self, vs, vf) {
+  const cell = (st, v, which) => {
+    if (v.k === 'empty') return '<span class="na">—</span>';
+    const w = st.run3;
+    if (which === 'three') return w ? mark(true, `activities ${actList(w)}`) : mark(false, `(${st.acts.length} coded${st.missing ? ', not all fully scored' : ''})`);
+    if (!w) return '<span class="na">—</span>';
+    if (which === 'low') return mark(w.low === 0, w.low ? `(${w.low})` : '');
+    return mark(w.pct != null && w.pct >= 80, fmtPct(w.pct));
+  };
+  const lowList = (st, label) => st.low.length ? `<div class="muted"><strong>${label} — under 3:</strong> ${st.low.map(l => `activity ${l.act + 1} · ${l.key} (${l.v})`).join('; ')}</div>` : '';
+  return `<div class="tbl-wrap"><table class="t"><thead><tr><th class="l">Criterion (this child)</th><th>Supervisor</th><th>Self</th></tr></thead><tbody>
+    <tr><td class="l">Three consecutively coded activities, fully scored</td><td>${cell(sup, vs, 'three')}</td><td>${cell(self, vf, 'three')}</td></tr>
+    <tr><td class="l">No item scored under 3 in those three</td><td>${cell(sup, vs, 'low')}</td><td>${cell(self, vf, 'low')}</td></tr>
+    <tr><td class="l">Mean at least 80% of the possible score in those three</td><td>${cell(sup, vs, 'eighty')}</td><td>${cell(self, vf, 'eighty')}</td></tr>
+    <tr><td class="l"><strong>Result</strong></td><td class="verdict ${vs.k}">${esc(vs.label)}</td><td class="verdict ${vf.k}">${esc(vf.label)}</td></tr>
+  </tbody></table></div>
+  <p class="muted" style="margin-top:-6px">With more than three activities, the run of three shown is the one that passes, or the closest to passing.</p>${lowList(sup, 'Supervisor')}${lowList(self, 'Self')}`;
+}
+function matrixHTML(o) {
+  const acts = o.activities;
+  const head = acts.map((a, i) => `<th title="${esc(a.name)}">${i + 1}${a.notCoded ? '<br><small>not coded</small>' : ''}</th>`).join('');
+  const rows = ITEMS.map(it => `<tr><td class="l">${it.key}. ${esc(it.title)}</td>` + acts.map(a => {
+    if (a.notCoded) return '<td class="nc">—</td>';
+    const s = a.sup[it.key], f = a.self[it.key];
+    const base = typeof s === 'number' ? s : (s == null && typeof f === 'number' ? f : null);
+    const cls = base ? 'c' + base : '';
+    return `<td class="${cls}">${s != null ? `<span class="ms">${scoreLabel(s)}</span>` : ''}${f != null ? `<span class="mf">${scoreLabel(f)}</span>` : ''}</td>`;
+  }).join('') + '</tr>').join('');
+  const pctRow = (r, label) => `<tr><td class="l">${label} %</td>` + acts.map(a => {
+    if (a.notCoded) return '<td class="nc"></td>';
+    let t = 0, p = 0; for (const it of ITEMS) { const v = a[r][it.key]; if (typeof v === 'number') { t += v; p += 5; } }
+    return `<td>${p ? Math.round(t / p * 100) + '%' : ''}</td>`;
+  }).join('') + '</tr>';
+  return `<div class="tbl-wrap"><table class="t matrix"><thead><tr><th class="l">Item</th>${head}</tr></thead><tbody>${rows}</tbody><tfoot>${pctRow('sup', 'Supervisor')}${pctRow('self', 'Self')}</tfoot></table></div>
+    <p class="muted" style="margin-top:-6px">Large number: supervisor. Small grey number: self-rating. Colour follows the supervisor's score (the self-rating's when the supervisor hasn't scored).</p>`;
+}
+function historySummary(h) {
+  const kids = `${h.children} different child${h.children === 1 ? '' : 'ren'}`;
+  const blank = h.noChild ? ` (${h.noChild} with no child recorded, not counted as a child)` : '';
+  const pending = h.skipped ? ` ${h.skipped} observation${h.skipped > 1 ? 's' : ''} not yet fully scored by the supervisor ${h.skipped > 1 ? 'were' : 'was'} skipped.` : '';
+  if (h.children >= 3) return `Fidelity reached: the supervisor's scores meet the criteria on the latest ${h.run} observations in a row, covering ${kids}${blank}.${pending}`;
+  return `Latest observations meeting the criteria in a row (supervisor's scores): ${h.run}${h.run ? `, covering ${kids}${blank}` : ''}. Fidelity is three consecutive children.${pending}`;
+}
+function historyHTML(o) {
+  const h = clinicianHistory(o, all);
+  if (!h) return '<p class="muted">Enter the clinician\'s name to see their other observations saved in this browser.</p>';
+  const rows = h.rows.map(r => `<tr${r.o === o ? ' class="cur"' : ''}><td class="l">${esc(fmtDate(r.o.date))}</td><td class="l">${esc(r.o.child || '—')}</td><td>${fmtPct(r.supSt.pct)}</td><td>${fmtPct(r.selfSt.pct)}</td><td class="verdict ${r.sup.k}">${esc(r.sup.label)}</td></tr>`).join('');
+  const msg = `<div class="note-box${h.children >= 3 ? ' good' : ''}">${esc(historySummary(h))}${h.children >= 3 ? '' : ' Observations still being scored are skipped; the first one that does not meet the criteria ends the run.'}</div>`;
+  return `${msg}<div class="tbl-wrap"><table class="t matrix"><thead><tr><th class="l">Session date</th><th class="l">Child</th><th>Supervisor</th><th>Self</th><th>Result (supervisor)</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <p class="muted" style="margin-top:-6px">Only observations saved in this browser under the same clinician name are listed.</p>`;
+}
+function renderResults() {
+  const o = cur(); if (!o) return;
+  const sup = raterStats(o, 'sup'), self = raterStats(o, 'self');
+  const vs = verdict(sup), vf = verdict(self), ag = agreement(o);
+  $('results').innerHTML = `<div class="boxes">${box('Supervisor', sup, vs)}${box('Self-rating', self, vf)}
+      <div class="box"><div class="bl">Agreement</div><div class="bv ${ag.adj == null ? 'none' : ag.adj >= 80 ? 'good' : ag.adj >= 60 ? 'mid' : 'bad'}">${fmtPct(ag.adj)}</div><div class="bd">${ag.both ? `${ag.both} items rated by both · exact match ${fmtPct(ag.exact)}` : 'needs both ratings'}</div><div class="bd">5s counted as 4s, as the manual does for agreement</div></div></div>
+    ${criteriaHTML(sup, self, vs, vf)}
+    <h3 style="font-size:15px;margin:16px 0 8px">Coding sheet</h3>${matrixHTML(o)}
+    <h3 style="font-size:15px;margin:16px 0 8px">This clinician's observations</h3>${historyHTML(o)}`;
+}
+
+/* ═══════════════ Print ═══════════════ */
+function buildPrint() {
+  const o = cur(), el = $('printView');
+  if (!o) { el.innerHTML = ''; return; }
+  const sup = raterStats(o, 'sup'), self = raterStats(o, 'self'), vs = verdict(sup), vf = verdict(self), ag = agreement(o);
+  const meta = [['Clinician observed', o.interventionist + (o.role ? ' (' + o.role + ')' : '')], ['Child', o.child], ['Session date', fmtDate(o.date)], ['Observed', (o.format === 'live' ? 'Live' : 'From video') + (o.minutes ? `, ${o.minutes} min` : '')], ['Supervisor (rater)', o.rater], ['Self-rating date', fmtDate(o.selfDate)], ['Supervisor review date', fmtDate(o.supDate)]];
+  const kf = KEY_FACTORS.map(f => `<li><strong>${esc(f.label)}:</strong> ${o.kf[f.id] === 'yes' ? 'Yes' : o.kf[f.id] === 'no' ? 'No' : '—'}${o.kfNotes[f.id] ? ' — ' + esc(o.kfNotes[f.id]) : ''}</li>`).join('');
+  const acts = o.activities.map((a, i) => {
+    const jarBits = [['Setup', a.jar.setup, a.jar.setupTeaching], ...a.jar.themes.map((t, j) => [j ? 'Progression ' + (j + 1) : 'Initial theme', t.notes, t.teaching]), ['Closing & transition', a.jar.closing, a.jar.closingTeaching]]
+      .filter(b => b[1] || b[2]).map(b => `<li><strong>${esc(b[0])}:</strong> <span class="pre">${esc(b[1])}</span>${b[2] ? ` <em>Teaching:</em> <span class="pre">${esc(b[2])}</span>` : ''}</li>`).join('');
+    const notes = ITEMS.filter(it => a.notes[it.key]).map(it => `<li><strong>${it.key}</strong> (supervisor ${scoreLabel(a.sup[it.key]) || '—'}, self ${scoreLabel(a.self[it.key]) || '—'}): <span class="pre">${esc(a.notes[it.key])}</span></li>`).join('');
+    return `<div class="p-act"><h3>Activity ${i + 1}: ${esc(a.name || '')}${a.notCoded ? ' — not coded' : ''}${a.time ? ` <small>(${esc(a.time)})</small>` : ''}</h3>
+      ${a.goals ? `<p><strong>Objectives targeted:</strong> ${esc(a.goals)}</p>` : ''}${jarBits ? `<ul>${jarBits}</ul>` : ''}${notes ? `<p><strong>Item notes</strong></p><ul>${notes}</ul>` : ''}</div>`;
+  }).join('');
+  el.innerHTML = `<h1>ESDM Fidelity Rating</h1><p>ESDM Fidelity Rating System, 2nd edition (Rogers &amp; Dawson) · QuickStart Nova Scotia</p>
+    <table class="p-meta"><tbody>${meta.map(m => `<tr><td><strong>${esc(m[0])}</strong></td><td>${esc(m[1] || '—')}</td></tr>`).join('')}</tbody></table>
+    <h2>Results</h2>
+    <table class="t"><thead><tr><th class="l"></th><th>Supervisor</th><th>Self</th></tr></thead><tbody>
+      <tr><td class="l">Score</td><td>${fmtPct(sup.pct)}${sup.possible ? ` (${sup.total}/${sup.possible})` : ''}</td><td>${fmtPct(self.pct)}${self.possible ? ` (${self.total}/${self.possible})` : ''}</td></tr>
+      <tr><td class="l">Coded activities</td><td>${sup.acts.length}</td><td>${self.acts.length}</td></tr>
+      <tr><td class="l">Best three in a row</td><td>${sup.run3 ? `Activities ${actList(sup.run3)}: ${fmtPct(sup.run3.pct)}` : '—'}</td><td>${self.run3 ? `Activities ${actList(self.run3)}: ${fmtPct(self.run3.pct)}` : '—'}</td></tr>
+      <tr><td class="l">Items under 3</td><td>${sup.low.map(l => `Act ${l.act + 1} · ${l.key} (${l.v})`).join(', ') || (vs.k === 'empty' ? '—' : 'none')}</td><td>${self.low.map(l => `Act ${l.act + 1} · ${l.key} (${l.v})`).join(', ') || (vf.k === 'empty' ? '—' : 'none')}</td></tr>
+      <tr><td class="l"><strong>Result</strong></td><td>${esc(vs.label)}</td><td>${esc(vf.label)}</td></tr>
+    </tbody></table>
+    <p>Agreement (5s counted as 4s): ${fmtPct(ag.adj)}${ag.both ? `, exact ${fmtPct(ag.exact)}, over ${ag.both} items` : ''}. Fidelity: three consecutively coded activities with no item under 3 and a mean of at least 80% across them, for three consecutive children.</p>
+    ${(() => { const h = clinicianHistory(o, all); return h ? `<p><strong>This clinician:</strong> ${esc(historySummary(h))} (Observations saved in the browser this was printed from.)</p>` : ''; })()}
+    <h2>Coding sheet</h2>${matrixHTML(o)}
+    <h2>Key ESDM factors</h2><ul>${kf}</ul>
+    <h2>Activities</h2>${acts}
+    <h2>Feedback</h2><p><strong>Keep doing:</strong> <span class="pre">${esc(o.feedbackKeep || '—')}</span></p><p><strong>Consider doing:</strong> <span class="pre">${esc(o.feedbackConsider || '—')}</span></p>`;
+}
+
+/* ═══════════════ Actions ═══════════════ */
+function switchTo(i) { active = i; actIdx = 0; openDesc.clear(); persist(); renderObs(); }
+function newObservation() {
+  const prev = cur();
+  const o = normObs({ id: newId(), date: todayStr(), rater: prev ? prev.rater : '', activities: [newAct(1), newAct(2), newAct(3)], createdAt: new Date().toISOString() });
+  all.push(o);
+  switchTo(all.length - 1);
+  $('f-interventionist').focus();
+}
+function deleteActive() {
+  const o = cur(); if (!o) return;
+  if (!confirm(`Delete the observation of ${o.interventionist || 'this clinician'}${o.child ? ' with ' + o.child : ''} (${fmtDate(o.date)})? This can't be undone.`)) return;
+  all.splice(active, 1);
+  active = all.length ? Math.min(active, all.length - 1) : -1;
+  actIdx = 0; persist(); renderObs();
+}
+const fileSafe = s => String(s || '').replace(/[^\p{L}\p{N}.-]+/gu, '_').replace(/^_+|_+$/g, '');
+function exportJSON() {
+  const o = cur(); if (!o) return;
+  const blob = new Blob([JSON.stringify({ tool: 'qs-esdm-fidelity', ...o }, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = ['ESDM-fidelity', fileSafe(o.interventionist), fileSafe(o.child), fileSafe(o.date)].filter(Boolean).join('-') + '.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+function importJSON(file) {
+  if (!file) return;
+  const rd = new FileReader();
+  rd.onload = () => {
+    let d;
+    try { d = JSON.parse(String(rd.result)); } catch { alert('That file is not an observation exported from this tool.'); return; }
+    const o = normObs(d);
+    if (!o || d.tool !== 'qs-esdm-fidelity') { alert('That file is not an observation exported from this tool.'); return; }
+    const i = all.findIndex(x => x.id === o.id);
+    if (i >= 0) {
+      const here = all[i];
+      if (!confirm(`This observation (${here.interventionist || 'clinician'}, ${fmtDate(here.date)}) is already saved here.\n\nReplace the copy here (last changed ${here.savedAt ? new Date(here.savedAt).toLocaleString() : 'unknown'}) with the imported one (last changed ${o.savedAt ? new Date(o.savedAt).toLocaleString() : 'unknown'})?`)) return;
+      all[i] = o; switchTo(i);
+    } else { all.push(o); switchTo(all.length - 1); }
+  };
+  rd.readAsText(file);
+}
+
+/* ═══════════════ Events ═══════════════ */
+/* Re-rendering replaces the control that had focus; put focus back on its replacement so keyboard users keep their place. */
+const FOCUS_KEYS = ['score', 'val', 'kf', 'action', 'i', 'actFlag', 'rater'];
+function focusSelector(el) {
+  if (!el || !el.dataset) return null;
+  const parts = FOCUS_KEYS.filter(k => el.dataset[k] != null).map(k => `[data-${k.replace(/[A-Z]/g, c => '-' + c.toLowerCase())}="${CSS.escape(el.dataset[k])}"]`);
+  return parts.length ? el.tagName.toLowerCase() + parts.join('') : null;
+}
+function restoreFocus(sel) {
+  if (!sel || (document.activeElement && document.activeElement !== document.body && document.activeElement.isConnected)) return;
+  const el = document.querySelector(sel);
+  if (el) el.focus({ preventScroll: true });
+}
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-action], [data-score], [data-kf], [data-rater]');
+  if (!t) return;
+  const sel = focusSelector(t);
+  handleClick(t);
+  restoreFocus(sel);
+});
+function handleClick(t) {
+  const o = cur(), a = curAct();
+  if (t.dataset.score && a) {
+    const key = t.dataset.score, val = t.dataset.val === 'NO' ? 'NO' : parseInt(t.dataset.val, 10);
+    const s = a[prefs.rater];
+    if (s[key] === val) delete s[key]; else s[key] = val;
+    touched(); refreshAfterScore(key);
+    return;
+  }
+  if (t.dataset.kf && o) {
+    o.kf[t.dataset.kf] = o.kf[t.dataset.kf] === t.dataset.val ? undefined : t.dataset.val;
+    if (!o.kf[t.dataset.kf]) delete o.kf[t.dataset.kf];
+    touched(); renderKF();
+    return;
+  }
+  if (t.dataset.rater) { prefs.rater = t.dataset.rater; persist(); renderObs(); return; }
+  switch (t.dataset.action) {
+    case 'switch': switchTo(+t.dataset.i); break;
+    case 'new': newObservation(); break;
+    case 'act': actIdx = +t.dataset.i; openDesc.clear(); renderActPills(); renderActCard(); break;
+    case 'add-act': if (o && o.activities.length < MAX_ACTS) { o.activities.push(newAct(o.activities.length + 1)); actIdx = o.activities.length - 1; touched(); renderActPills(); renderActCard(); renderResults(); } break;
+    case 'remove-act': {
+      if (!o || o.activities.length <= 1) break;
+      const j = a.jar, jarText = [j.setup, j.setupTeaching, j.closing, j.closingTeaching, ...j.themes.flatMap(t => [t.notes, t.teaching])];
+      const has = Object.keys(a.sup).length || Object.keys(a.self).length || Object.values(a.notes).some(Boolean)
+        || [a.goals, a.time, ...jarText].some(Boolean) || (a.name && a.name !== 'Activity ' + (actIdx + 1));
+      if (has && !confirm(`Remove activity ${actIdx + 1} (${a.name || 'unnamed'}) with its scores and notes?`)) break;
+      o.activities.splice(actIdx, 1); actIdx = Math.max(0, actIdx - 1); touched(); renderActPills(); renderActCard(); renderResults(); renderTabs();
+      break;
+    }
+    case 'add-theme': if (a && a.jar.themes.length < MAX_THEMES) { a.jar.themes.push({ notes: '', teaching: '' }); touched(); renderActCard(); } break;
+    case 'remove-theme': if (a && a.jar.themes.length > 1) { const i = +t.dataset.i; const th = a.jar.themes[i]; if ((th.notes || th.teaching) && !confirm('Remove this progression and its notes?')) break; a.jar.themes.splice(i, 1); touched(); renderActCard(); } break;
+    case 'print': buildPrint(); window.print(); break;
+    case 'export': exportJSON(); break;
+    case 'import': $('importFile').click(); break;
+    case 'delete': deleteActive(); break;
+    case 'load-anchors': $('anchorFile').click(); break;
+    case 'remove-anchors':
+      if (!confirm('Remove the loaded item descriptions from this browser?')) break;
+      anchors = null; try { localStorage.removeItem(K_ANCH); } catch { /* nothing stored */ }
+      renderAnchorsPanel(); if (cur()) renderActCard();
+      break;
+  }
+}
+document.addEventListener('input', e => {
+  const t = e.target, o = cur();
+  if (!o || !t.closest('#workspace')) return;
+  const a = curAct();
+  if (t.dataset.field) {
+    o[t.dataset.field] = t.value; touched(); renderTabs();
+    if (['interventionist', 'child', 'date'].includes(t.dataset.field)) renderResults();
+  } else if (t.dataset.actField && a) {
+    a[t.dataset.actField] = t.value; touched(); if (t.dataset.actField === 'name') renderActPills();
+  } else if (t.dataset.jar && a) {
+    a.jar[t.dataset.jar] = t.value; touched();
+  } else if (t.dataset.theme != null && a) {
+    const th = a.jar.themes[+t.dataset.theme]; if (th) { th[t.dataset.tf] = t.value; touched(); }
+  } else if (t.dataset.note && a) {
+    if (t.value) a.notes[t.dataset.note] = t.value; else delete a.notes[t.dataset.note];
+    autoGrow(t); touched();
+  } else if (t.dataset.kfNote) {
+    if (t.value) o.kfNotes[t.dataset.kfNote] = t.value; else delete o.kfNotes[t.dataset.kfNote];
+    touched();
+  }
+});
+document.addEventListener('change', e => {
+  const t = e.target, o = cur();
+  if (t.id === 'anchorFile') { readAnchorFile(t.files[0]); t.value = ''; return; }
+  if (t.id === 'importFile') { importJSON(t.files[0]); t.value = ''; return; }
+  if (t.id === 'showOther') { prefs.showOther = t.checked; persist(); renderActCard(); return; }
+  if (t.id === 'order') { prefs.order = t.value === 'review' ? 'review' : 'az'; persist(); renderActCard(); return; }
+  if (t.dataset.actFlag === 'notCoded' && o) { const a = curAct(); a.notCoded = t.checked; touched(); renderActPills(); renderActCard(); renderResults(); renderTabs(); restoreFocus('input[data-act-flag="notCoded"]'); return; }
+  if (t.dataset.field && o) { o[t.dataset.field] = t.value; touched(); renderTabs(); renderResults(); }
+});
+document.addEventListener('toggle', e => {
+  const d = e.target;
+  if (d.matches && d.matches('details.desc')) { const k = d.closest('.item').dataset.item; if (d.open) openDesc.add(k); else openDesc.delete(k); }
+  else if (d.matches && d.matches('details.jar')) openJar = d.open;
+}, true);
+{
+  const panel = $('anchorsPanel');
+  panel.addEventListener('dragover', e => { e.preventDefault(); panel.classList.add('drag'); });
+  panel.addEventListener('dragleave', () => panel.classList.remove('drag'));
+  panel.addEventListener('drop', e => { e.preventDefault(); panel.classList.remove('drag'); readAnchorFile(e.dataTransfer.files[0]); });
+}
+window.addEventListener('beforeprint', buildPrint);
+/* Another tab of this page saved: take its copy, staying on the same observation. */
+window.addEventListener('storage', e => {
+  if (e.key === K_ANCH) {
+    try { const a = JSON.parse(e.newValue || 'null'); anchors = a && a.items ? a : null; } catch { anchors = null; }
+    renderAnchorsPanel(); if (cur()) renderActCard();
+    return;
+  }
+  if (e.key !== K_OBS) return;
+  const id = cur() && cur().id, keepAct = actIdx;
+  all = readObservations();
+  const i = all.findIndex(o => o.id === id);
+  active = i >= 0 ? i : (all.length ? 0 : -1);
+  actIdx = i >= 0 ? keepAct : 0;
+  renderObs();
+});
+
+loadState();
+if (storageNote) { const n = document.createElement('div'); n.className = 'interim'; n.textContent = storageNote; $('anchorsPanel').before(n); }
+renderAnchorsPanel();
+renderObs();
+</script>
+</body>
+</html>
