@@ -1815,9 +1815,9 @@
 </ul>
 <p><strong>Greenspace upload of the PPAS Integrated form (specifics):</strong></p>
 <ul>
-<li>Path: Notes → Create a Note → select <strong>"Service Delivery Consent Form"</strong> as the note type.</li>
+<li>Path: Notes → Create a Note → select <strong>"Integrated Service Delivery Consent Form"</strong> as the note type.</li>
 <li><strong>Shared With — tick Clinician(s):</strong> at the top of the New Note form, tick <strong>Clinician(s)</strong> in addition to the default <strong>Clinic Admin(s)</strong>; otherwise the note is visible only to admin-level Greenspace accounts (same rule as the <a href="#section-13-end-of-qs-services--transition-back-to-cicc">Section 13 closeout notes</a>).</li>
-<li>Naming convention: <code>[Child acronym]_PPAS Integrated Service Delivery Consent Form - (date)</code>. Use date format like <code>9.Dec.2026</code>.</li>
+<li>Naming convention for the attached PDF (this note type has no Title field): <code>[Child acronym]_PPAS Integrated Service Delivery Consent Form - (date)</code>. Use date format like <code>9.Dec.2026</code>.</li>
 </ul>
 <p>Once all three forms are signed and uploaded, mark received in the consent form tracking tab of the Participation Info workbook. <span class="topic-tag" data-topic="participation-info-sheet" style="background:#f0e6da;color:#6e4a1a;border:1px solid #d4b890">Participation Sheet</span></p>
 <h4 id="physical-copy-fallback-when-docusign-isnt-workable">Physical Copy Fallback (when DocuSign isn't workable)</h4>
@@ -1850,7 +1850,7 @@
 </details>
 <h4 id="consent-changes-during-programming">Consent Changes During Programming <span class="topic-tag" data-topic="ppas" style="background:#ddeaea;color:#1a5a5a;border:1px solid #9fc6c6">PPAS</span></h4>
 <blockquote>
-<p><strong>Responsible:</strong> <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> (documents withdrawal, pre-fills and coordinates updated consent; <span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span> uploads the updated form when sent)</p>
+<p><strong>Responsible:</strong> <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> (documents withdrawal, pre-fills and coordinates updated consent; <span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span> uploads the updated form and notes what changed)</p>
 </blockquote>
 <p>Consent is not static. A family may withdraw or modify their consent at any point during programming. Two categories to handle:</p>
 <p><strong>(1) Partial change / preference update</strong> (most common — e.g., a family becomes connected with a new external community program such as NSECDIS partway through participation, or adds or removes a partner agency or information type).</p>
@@ -1893,29 +1893,31 @@
 </ul>
 </details>
 <p><strong>Storage and documentation</strong> (either route):</p>
+<p>The updated form is added alongside the earlier one, never in place of it. Withdrawal is not retroactive, so the earlier form is the record that covered any sharing up to the change, and ANS must keep it as part of the child's organizational record (Feb 2026 PPAS memo). The updated form goes in a note of the consent type, not a Document note: anyone checking a child's consent in Greenspace looks there, so the form that now governs has to be there too, not only the earlier one.</p>
 <ul>
-<li>Once signed, <span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span> downloads the new PDF and uploads to:<ul>
-<li><strong>Greenspace</strong> (Notes → Create a Note → "Service Delivery Consent Form", same naming convention as initial signing)</li>
-<li><strong>ShareVision</strong> (organizational record)</li>
-</ul>
-</li>
+<li><strong>Leave the earlier consent note in Greenspace as it is</strong>: don't delete, replace, or edit it.</li>
+<li>Once signed, <span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span> downloads the new PDF and adds a <strong>new</strong> consent note in Greenspace (Notes → Create a Note):<br />
+<strong>Shared With:</strong> tick <strong>Clinician(s)</strong> (in addition to the default Clinic Admin(s))<br />
+<strong>Type:</strong> <strong>Integrated Service Delivery Consent Form</strong> (not Document)<br />
+<strong>Date:</strong> the date the caregiver signed the updated form<br />
+<strong>Comments:</strong> start with a heading line, <code>UPDATED CONSENT: replaces the form signed [date]</code>, then what changed (e.g., "Removed: [providers]. Added: [partner]. Everything else unchanged from the [date] form.")<br />
+<strong>Attachment:</strong> the new PDF, named as at initial signing with the new date</li>
+<li><span class="role-badge" data-topic="role-parent-coach" style="background:#e67e22">Parent Coach</span> uploads the new PDF to <strong>ShareVision</strong> (organizational record), also keeping the earlier form there.</li>
 <li><strong>Reminder:</strong> Delete the downloaded PDF from local computer / Downloads folder once it's been uploaded to both systems.</li>
-<li>Document the change:<ul>
-<li><strong>Greenspace:</strong> <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> adds a note describing what changed (e.g., "added Hearing and Speech NS as a partner") and the date.</li>
 <li><strong>ShareVision:</strong> <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> adds an "updated consent" post under "Announcements for this individual".</li>
-</ul>
-</li>
 </ul>
 <blockquote>
 <p><span class="topic-tag" data-topic="open-item" style="background:#fde8e8;color:#9b1c1c;border:1px solid #f5a3a3">Open Item</span> <strong>OPEN ITEM (<span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span>):</strong> Pre-filling is a mitigation, not a fix — the underlying issue is that the PPAS Integrated Service Delivery Consent has no mechanism for amending a single entry, so a one-line change to a family's external providers requires a full re-signing. Worth raising with PPAS whether an addendum or amendment page could be added for exactly this case (adding or removing a community partner mid-participation), which is how the retired QS Consent to Release and Share effectively worked. Also settle whether one delivery medium should be the default (physical vs. DocuSign) or whether it stays a per-family judgment, and whether a saved per-family pre-filled copy can be retained to make the <em>next</em> update quicker.</p>
 </blockquote>
 <p><strong>(2) Full withdrawal</strong> (rare — family fully revokes consent). Per the PPAS MOU, withdrawal is communicated in writing (e.g., by email or letter). The written communication itself is the authoritative document — no new DocuSign is sent. The supervisor stops information sharing per the <a href="#docusign-consent--reference">General rule</a> and documents the withdrawal.</p>
 <ul>
-<li><strong>Greenspace:</strong> <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> creates a new note documenting:<ul>
-<li>Date of withdrawal</li>
-<li>That the withdrawal is a full revocation</li>
-</ul>
-</li>
+<li><strong>Leave the earlier consent note in Greenspace as it is</strong>: it is the record that covered sharing up to the withdrawal.</li>
+<li><strong>Greenspace:</strong> <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> adds a <strong>new</strong> consent note, so the withdrawal sits where anyone checking the child's consent will look:<br />
+<strong>Shared With:</strong> tick <strong>Clinician(s)</strong> (in addition to the default Clinic Admin(s))<br />
+<strong>Type:</strong> <strong>Integrated Service Delivery Consent Form</strong> (not Document)<br />
+<strong>Date:</strong> the date of the family's written withdrawal<br />
+<strong>Comments:</strong> start with a heading line, <code>CONSENT WITHDRAWN: full revocation</code>, then the date of withdrawal and how it was received (e.g., email, letter)<br />
+<strong>Attachment:</strong> the family's written withdrawal (e.g., the email saved as a PDF)</li>
 <li><strong>ShareVision:</strong> <span class="role-badge" data-topic="role-qs-supervisor" style="background:#27ae60">QS Supervisor</span> adds a "withdrawal of consent" post under "Announcements for this individual".</li>
 </ul>
 <h4 id="auditing">Auditing</h4>
@@ -2672,7 +2674,7 @@
 </ul>
 <h4 id="consent-documentation-at-end-of-service">Consent Documentation at End of Service <span class="topic-tag" data-topic="ppas" style="background:#ddeaea;color:#1a5a5a;border:1px solid #9fc6c6">PPAS</span></h4>
 <p>Confirm that the family's signed PPAS Integrated Service Delivery Consent Form is on file in <strong>both</strong> GreenSpace and ShareVision (per the Feb 2026 PPAS MOU storage requirement — see Section 10 for details on the form). The form remains valid for 1 year from initial signing unless withdrawn. QS-specific consents (Participation &amp; Confidentiality Agreement, Video Consent) are retained in ShareVision only.</p>
-<p>If the family wants to update or withdraw consent at end of service (for example, modify which partners can receive a copy of the Discharge Report), document the change in both GreenSpace and ShareVision and reissue the consent form via DocuSign as needed.</p>
+<p>If the family wants to update or withdraw consent at end of service (for example, modify which partners can receive a copy of the Discharge Report), document the change in both GreenSpace and ShareVision and reissue the consent form via DocuSign as needed, following <a href="#consent-changes-during-programming">Consent Changes During Programming</a>.</p>
 </details>
 </div>
 <hr />
